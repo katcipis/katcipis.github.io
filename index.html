@@ -16,7 +16,7 @@ title: Blog
 
     {% if post.content contains "<!-- more -->" %}
       {{ post.content | split:"<!-- more -->" | first % }}
-      <a class="read-more" href="{{ post.url }}">&raquo; Read everything on "{{ post.title }}"</a>
+      <a class="read-more" href="{{ post.url }}">Continue reading &raquo;</a>
     {% else %}
       {{ post.content | strip_html | truncatewords:100 }}
     {% endif %}
