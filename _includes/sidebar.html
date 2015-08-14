@@ -1,0 +1,40 @@
+<div class="sidebar">
+  <div class="container sidebar-sticky">
+    <div class="sidebar-about">
+
+      <h1>
+        <a href="{{ site.baseurl }}">
+          <img class="profile-picture" src="{{ site.baseurl }}public/225e531.jpg" />
+          {{ site.title }}
+        </a>
+      </h1>
+      <p class="lead">{{ site.description }}</p>
+
+      <p class="book">
+        <a href="https://leanpub.com/deploying-php-applications">
+          <small>Book</small><br />
+          Deploying PHP Applications
+          <img class="book-picture" src="{{ site.baseurl }}public/large.jpeg" />
+        </a>
+      </p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item{% if page.url == site.baseurl %} active{% endif %}" href="{{ site.baseurl }}">Blog</a>
+
+      {% assign pages_list = site.pages %}
+      {% for node in pages_list %}
+        {% if node.title != null %}
+          {% if node.layout == "page" %}
+            <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="{{ node.url }}">{{ node.title }}</a>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      <a class="sidebar-nav-item" href="mailto:niklas@modess.io">E-mail</a>
+      <a class="sidebar-nav-item" href="https://twitter.com/niklasmodess">Twitter</a>
+      <a class="sidebar-nav-item" href="https://github.com/modess">GitHub</a>
+      <a class="sidebar-nav-item" href="/atom.xml">RSS</a>
+    </nav>
+  </div>
+</div>

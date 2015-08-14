@@ -1,0 +1,20 @@
+# Dependencies
+markdown:         redcarpet
+highlighter:      pygments
+
+# Permalinks
+permalink:        pretty
+relative_permalinks: true
+
+# Setup
+title:            modess.io
+tagline:          ''
+description:      "My name is Niklas Modess, I'm a PHP developer and consultant, Laravel enthusiast, author."
+url:              http://modess.io
+baseurl:          /
+
+author:
+  name:           'Niklas Modess'
+  url:            https://twitter.com/niklasmodess
+
+paginate:         5
