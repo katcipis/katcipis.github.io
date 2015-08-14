@@ -9,7 +9,7 @@ relative_permalinks: true
 # Setup
 title:            modess.io
 tagline:          ''
-description:      "My name is Niklas Modess, I'm a PHP developer and consultant, Laravel enthusiast, author."
+description:      "My name is Niklas Modess, I'm a PHP developer and consultant, Laravel/AngularJS/ReactJS enthusiast, author, creator of <a href=\"https://github.com/modess/git-pretty-stats\">Git Pretty Stats</a>. Organizer for <a href=\"http://www.meetup.com/Laravel-Stockholm/\">Laravel Stockholm</a>."
 url:              http://modess.io
 baseurl:          /
 
