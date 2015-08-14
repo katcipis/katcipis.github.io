@@ -3,7 +3,7 @@ layout: post
 title: Continuos integration for Laravel with Jenkins and Git
 ---
 
-This will be a hands on guide for setting up automated builds for [Laravel][1] using [Jenkins][2]. Pretty much that when you do a commit, Jenkins will automagically make a build and in that check code errors and syntax, run unit tests and provide visual code coverage for your code base. Along with other goodies.
+This will be a hands on guide for setting up automated builds for [Laravel](http://www.laravel.com) using [Jenkins](http://www.jenkins-ci.org). Pretty much that when you do a commit, Jenkins will automagically make a build and in that check code errors and syntax, run unit tests and provide visual code coverage for your code base. Along with other goodies.
 
 <!-- more -->
 
@@ -39,7 +39,7 @@ git clone https://github.com/laravel/laravel.git laravel
 
 And now you'll a fresh installation of Laravel in  `/var/www/laravel`. 
 
-Now we continue by installing all the PHP packages through PEAR and also the plugins Jenkins need. Most of this is based on [jenkins-php][4]. We also download the latest jenkins.war file since the one shipped with the standard package in Ubuntu has caused me nothing but problem.
+Now we continue by installing all the PHP packages through PEAR and also the plugins Jenkins need. Most of this is based on [jenkins-php](http://jenkins-php.org/). We also download the latest jenkins.war file since the one shipped with the standard package in Ubuntu has caused me nothing but problem.
 
 ```
 sudo apt-get install php-pear
@@ -57,11 +57,11 @@ Go to Jenkins web interface (when it has finished restarting) and go to `Manage 
 
 ## Configure build 
 
-Now clone my github repository [laravel-jenkins][6] which is the boilerplate for all the config files and the Jenkins job.
+Now clone my github repository [laravel-jenkins](https://github.com/modess/laravel-jenkins) which is the boilerplate for all the config files and the Jenkins job.
 
 ```
 cd /var/www
-git clone git://github.com/nerdklers/laravel-jenkins.git
+git clone git://github.com/modess/laravel-jenkins.git
 mv laravel-jenkins/* laravel/
 cd /var/www/laravel
 ```
@@ -123,10 +123,3 @@ git commit -m "Test autobuild in Jenkins"
 ![](/public/img/jenkins-build.png)
 
 After your commit you should see this in Jenkins, and the build should pass. Since Laravel ships with an example test (that just asserts true is true) you should have one passed test as well.
-
- [1]: http://www.laravel.com
- [2]: http://www.jenkins-ci.org
- [3]: http://www.codingswag.com/wp-content/uploads/2012/11/jenkins.png
- [4]: http://jenkins-php.org/
- [5]: http://www.codingswag.com/wp-content/uploads/2012/11/jenkins-git-settings.png
- [6]: https://github.com/nerdklers/laravel-jenkins

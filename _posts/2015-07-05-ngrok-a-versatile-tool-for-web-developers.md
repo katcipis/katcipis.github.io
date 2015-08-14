@@ -56,7 +56,7 @@ After this we can specify our tunnels, let's call it `vagrant` and points to our
 {% highlight yaml %}
 tunnels:
   vagrant:
-    subdomain: "codingswag-vagrant"
+    subdomain: "modess-vagrant"
     proto:
       http: "192.168.1.200:80"
 {% endhighlight %}
@@ -68,7 +68,7 @@ ngrok
 
 Tunnel Status                 online
 Version                       1.7/1.7
-Forwarding                    http://codingswag-vagrant.ngrok.com -> 192.168.1.200:80
+Forwarding                    http://modess-vagrant.ngrok.com -> 192.168.1.200:80
 Web Interface                 127.0.0.1:4040
 # Conn                        0
 Avg Conn Time                 0.00ms
