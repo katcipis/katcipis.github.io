@@ -14,9 +14,9 @@ description:      >
     My name is Niklas Modess, I'm a PHP developer and consultant based in Stockholm, Sweden.
   </p> 
   <p class="lead">
-    I'm a Laravel/AngularJS/ReactJS enthusiast, author of <a href=\"https://leanpub.com/deploying-php-applications\">Deploying PHP Applications</a>, 
-    creator of <a href=\"https://github.com/modess/git-pretty-stats\">Git Pretty Stats</a>. 
-    Organizer for <a href=\"http://www.meetup.com/Laravel-Stockholm/\">Laravel Stockholm</a>.
+    I'm a Laravel/AngularJS/ReactJS enthusiast, author of <a href="https://leanpub.com/deploying-php-applications">Deploying PHP Applications</a>, 
+    creator of <a href="https://github.com/modess/git-pretty-stats">Git Pretty Stats</a>. 
+    Organizer for <a href="http://www.meetup.com/Laravel-Stockholm/">Laravel Stockholm</a>.
   </p>
 url:              http://modess.io
 baseurl:          /
