@@ -7,22 +7,18 @@ permalink:        pretty
 relative_permalinks: true
 
 # Setup
-title:            modess.io
+title:            plb
 tagline:          ''
 description:      >
   <p class="lead">
-    My name is Niklas Modess, I'm a PHP developer and consultant based in Stockholm, Sweden.
+    I'm Paulo Leonardo Benatto, from south Brazil and living in Brighton, UK. Working as 
+    Linux Sysadmin, but developer in spare time.
   </p> 
-  <p class="lead">
-    I'm a Laravel/AngularJS/ReactJS enthusiast, author of <a href="https://leanpub.com/deploying-php-applications">Deploying PHP Applications</a>, 
-    creator of <a href="https://github.com/modess/git-pretty-stats">Git Pretty Stats</a>. 
-    Organizer for <a href="http://www.meetup.com/Laravel-Stockholm/">Laravel Stockholm</a>.
-  </p>
-url:              http://modess.io
+url:              http://patito.github.io
 baseurl:          /
 
 author:
-  name:           'Niklas Modess'
-  url:            https://twitter.com/niklasmodess
+  name:           'Paulo Leonardo Benatto'
+  url:            https://twitter.com/pbenatto
 
 paginate:         5
