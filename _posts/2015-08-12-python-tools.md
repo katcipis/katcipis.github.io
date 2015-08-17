@@ -188,17 +188,20 @@ Changes not staged for commit:
 I can see that I have modified the file `list.go`. So we have to `add` this file, commit it and send to the server. Looks like complicated, but it is not.
 
 Adding a file.
+
 ```
 $ git add list.go
 ```
 
 Commiting your changes.
+
 ```
 $ git commit -m "Change comments at list.go"
 ```
 
 Pushing your changes.
-```shell
+
+```
 $ git push
 ```
 
