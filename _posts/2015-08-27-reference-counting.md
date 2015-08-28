@@ -145,7 +145,7 @@ void person_unref(Person *obj)
 ## Releasing the memory
 
 This static method is the real responsible for releasing the memory. We call this method inside of 
-*person_ref()*. Look the code below that we are using *free()* function.
+*person_unref()*. Look the code below that we are using *free()* function.
 
 ```c
 static void _person_destroy(Person *obj)
