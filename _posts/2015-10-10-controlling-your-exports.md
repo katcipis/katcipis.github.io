@@ -17,8 +17,8 @@ Sometimes when we write a python module we don't want to export
 everything that we have inside of the module, but how to do that?
 The answer to this question we will explain in this post.
 
-Lets create a new module called `pub.py` and inside of the module
-implement to functions: `drink()` and `food()`.
+Let's create a new module called `pub.py` and inside of it
+implement two functions: `drink()` and `food()`.
 
 ```python
 # pub.py
@@ -33,7 +33,7 @@ def food:
     print('I want a sunday roast!')
 ```
 
-Lets try to import our module.
+Let's try to import our module.
 
 ```
 $ python
