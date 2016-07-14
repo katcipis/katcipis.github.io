@@ -135,7 +135,7 @@ Let's understand the code above.
 
 As you know, all variables have a memory address. In the example the x address is *0x20818a220* and the p address is *0x20818a228*. The variable x is an Integer and stores the value 10. The p variable is a pointer to integer and stores the value *0x20818a220*. When we do this instruction **"*p = 5”** we are using dereference to save the value 5 in place of 10.
 
-I don't know if I was clear enough. I hope so /o\. Let's do one more example, now using a struct.
+I don't know if I was clear enough. I hope so /o\\. Let's do one more example, now using a struct.
 
 ```go
 package main
