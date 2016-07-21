@@ -1,10 +1,10 @@
 # Dependencies
-markdown:         redcarpet
+#markdown:         redcarpet
 highlighter:      pygments
 
 # Permalinks
-permalink:        pretty
-relative_permalinks: true
+#permalink:        pretty
+#relative_permalinks: true
 
 # Setup
 title:            plb
@@ -21,3 +21,4 @@ author:
   url:            https://twitter.com/pbenatto
 
 paginate:         5
+gems: [jekyll-paginate]
