@@ -32,26 +32,25 @@ Why it was very hard to maintain ? The usual:
 * no tests
 * no clear thought about design on the code
 * strong coupling with the database
-* sadly even the DSL where the scrapers are written is coupled on the database
+* sadly even the DSL used to write the scrapers is coupled on the database
 
 We basically had what is described on [this talk by Robert Martin](https://vimeo.com/43612849), but not
 the good side, the bad side. There was no clear architecture and service boundaries, everything was
 floating around the database. Besides the obvious disadvantage of being very hard to understand
-(concepts like scheduling and storage where all mixed up there) we got hit by a even harder problem,
+(concepts like scheduling and storage were all mixed up there) we got hit by a even harder problem,
 the database was not scaling well anymore, this was the trigger to start a new architecture
 that would have clear boundaries/services and would have to scale just as the needs of the clients
 was scaling.
 
 This little history is the reason why I work at [Neoway](http://neoway.com.br/),
 I got hired there exactly to help with this work. So we had a lot of cool choices to make,
-how the new scrappers where going to be developed and
-how the services around them would be developed.
+how the new scrappers where going to be developed and how the services around them would be developed.
 
 To scrap data from the web we decided to use [Scrapy](http://scrapy.org/), which uses Twisted to
 handle the heavy I/O based workload without requiring a ridiculously amount of threads to enable high concurrency.
 I wont get in much detail on these right now, but if you are interested they are fairly well documented.
 
-The services that we needed to develop where:
+The services that we needed to develop were:
 
 * Proxy providing
 * Captcha breaking
@@ -111,7 +110,7 @@ binary and running it.
 
 I worked with these interpreted languages on the more harsh and odd places,
 think about inhospitable environments, where there is no life and fun :-), like old kernels
-where proprietary crappy packaging systems where the norm. It was hell and the stuff that I had
+where proprietary crappy packaging systems were the norm. It was hell and the stuff that I had
 to do just to get shit working takes my sleep at night (not literally of course, I love drama :-)).
 
 To be honest, even in C it was a hell because of dynamic libraries, but even that Go got right, it is
