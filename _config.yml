@@ -1,24 +1,16 @@
 # Dependencies
-#markdown:         redcarpet
 highlighter:      rouge
 
-# Permalinks
-#permalink:        pretty
-#relative_permalinks: true
-
 # Setup
-title:            plb
-tagline:          ''
-description:      >
-  <p class="lead">
-    Brazilian compressed with LZO, delivering nonsense bugs.
-  </p> 
-url:              http://patito.github.io
-baseurl:          /
+title: Bend or Break
+tagline: ''
+description: If you don't have stupid ideas you are too conservative
+url: http://katcipis.github.io
+baseurl: /
 
 author:
-  name:           'Paulo Leonardo Benatto'
-  url:            https://twitter.com/pbenatto
+  name: 'Tiago César Katcipis'
+  url: https://twitter.com/tiagokatcipis
 
 paginate:         5
 gems: [jekyll-paginate]
