@@ -373,7 +373,5 @@ And sometimes even the more high level abstractions wont cut it, as can be seen
 Since this post is already pretty big, I'm going to talk about the experience of developing the
 first services in Go and the bad and the good on a next one, or this one would get dangerously big.
 
-The focus on why here is because a decision like that must be well based, never use something
-just because a lot of people is using, or because there is a lot of fancy conferences about that.
-
-Since we were building an entire new architecture, it was important to choose good tools to do that.
+I focused a lot on why here because a decision like that must be well based, I dont like the idea of
+using something just because it is trending an there is a lot of fancy conferences about that.
