@@ -78,8 +78,10 @@ Total cost now is:
 * GoodDesign, cost=20
 * BadDesign, cost=25
 
-The good design payed off. Of course it is not that simple, this is oversimplified, but it helps
+The good design payed off (that is the **only** reason we can say it is actually good).
+Of course it is not that simple, this is wildly oversimplified, but it helps
 me to see the tradeoffs and even seeing the important paper that the future has on your code.
+
 The more convinced you are that a lot of change will take place on your code, the more concerned
 you have to be on how it will accommodate this change. If you are sure that no one is never going
 to change the code or even see it, design does not matter at all (although I don't think such
@@ -87,7 +89,19 @@ software exists :-), prototypes would be an instance of this when people don't d
 toss then on production later).
 
 Another thing to bear in mind is that on each cycle of change your software suffers the impact
-of bad design is cumulative, this is what some people refers as entropy. If no real thought is
+of bad design is cumulative, this is what some people refers as software entropy. If no real thought is
 given to a piece of software that is changed every week chances are that you are going to end
 up with software that can't be changed at all.
 
+
+## Learning and Ego
+
+This is the reason as a developer that I relate more and this is the one that explains the
+gigantic refactorings, the months without delivering features, excessive attention to hacking great
+code while you completely forget about the client. Excessive attention to how the ride is cool
+and forgetting where you where trying to go, just drive and feel the wind on the hair :-).
+
+Not being aware of human nature or how someone achieves great performance may make this reason
+as superfluous, like something that must be corrected, damn developers and their egos.
+Reading the [Talent is overrated](https://www.amazon.com/Talent-Overrated-Separates-World-Class-Performers/dp/1591842948)
+book helped me get some new insights about this and what motivates people do amazing stuff.
