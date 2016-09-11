@@ -22,7 +22,7 @@ the correct behaviour depending on the combination).
 With nil I still dont get the benefit quite clearly. For example, a nil map behaves like
 an empty map:
 
-```
+```go
 package main
 
 import (
@@ -39,7 +39,7 @@ func main() {
 Hmm, it seems like a way to initialize a empty map, ok. But it is a read only map,
 if you try to add any data on it a panic will occur:
 
-```
+```go
 package main
 
 import (
@@ -64,7 +64,7 @@ But that is not even why I started to write this, I had an interesting experienc
 playing around with error aggregation + nil behaviour + interfaces + testify, and I hope this
 experience may be useful to someone else.
 
-Just wanted to start with some warm up on nil behaviour, if you still didnt know that nil maps
+Just wanted to start with some warm up on nil behaviour, if you didnt know that nil maps
 behave like that in Go, watch the presentation, it will be enlightening and will give some
 base to understand the rest of the post.
 
@@ -95,7 +95,7 @@ My first solution was to define an array of errors that behaves as one error,
 and I was feeling pretty hacker about it :-), with the exception that it exploded on my
 face. Here is an example of the idea, with some code omitted for brevity sake:
 
-```
+```go
 type errorsAggregate []error
 
 func (errors errorsAggregate) Error() string {
@@ -121,7 +121,7 @@ very confused, specially with my previous tests still working.
 I had to isolate the problem since it was extremely bizarre, when I did this I came up
 with something like this:
 
-```
+```go
 package main
 
 import (
@@ -166,7 +166,7 @@ I do the traditional Go checking, if != nil, the error is actually not nil ?
 And on top of that, assert.Nil was working, how ? (it is not nil !!!)
 Here is the answer:
 
-```
+```go
 func isNil(object interface{}) bool {
 	if object == nil {
 		return true
@@ -193,7 +193,7 @@ try to explain at least what was happening with me based on what I learned there
 
 Well, a nil interface would be this:
 
-```
+```go
 package main
 
 import (
@@ -232,7 +232,7 @@ with the string type, and a nil string pointer. So it is not actually nil, it ha
 When an explicit assignment is made, and you are aware of how interfaces are initialized, this starts
 to seem intuitive. The problem is that on a function return this is more subtle:
 
-```
+```go
 func returnsErrors() error {
 	var errs errorsAggregate
 	fmt.Println(errs == nil)
@@ -248,7 +248,7 @@ testity.assert behaviour created a very bizarre scenario for me.
 Although testify assert behaviour makes perfectly sense, since the function accepts a empty interface,
 this kind of code would pass as non nil:
 
-```
+```go
 package main
 
 import (
@@ -285,7 +285,7 @@ but that would be a topic for a entire other post.
 The final solution is basically the aggregator with a method that actually returns a nil error
 if it is empty:
 
-```
+```go
 package main
 
 import (
