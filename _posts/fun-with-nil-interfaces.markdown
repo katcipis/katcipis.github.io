@@ -224,7 +224,7 @@ func main() {
 
 Why ? It seems to me that it happens because how interfaces are implemented:
 
-[!interface{}](http://research.swtch.com/gointer3.png)
+![interface{}](http://research.swtch.com/gointer3.png)
 
 When you assign the string to the interface{} variable, the interface{} is initialized
 with the string type, and a nil string pointer. So it is not actually nil, it has type information.
