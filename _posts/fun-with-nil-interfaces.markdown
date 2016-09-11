@@ -208,7 +208,7 @@ func main() {
 
 This is not:
 
-```
+```go
 package main
 
 import (
@@ -216,7 +216,7 @@ import (
 )
 
 func main() {
-        var b *string
+	var b *string
 	var a interface{} = b
 	fmt.Println(a == nil)
 }
@@ -260,7 +260,7 @@ func assertNil(a interface{}) {
 }
 
 func main() {
-        var b *string
+	var b *string
 	fmt.Println(b == nil)
 	assertNil(b)
 }
