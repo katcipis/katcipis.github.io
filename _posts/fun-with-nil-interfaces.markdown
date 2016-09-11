@@ -5,8 +5,9 @@ layout: post
 ---
 
 Learning and programming in Go has been delightful 99% of the time,
-and is an experience that I hadn't experienced for some time.
 This makes even more remarkable when the language bites you in the ass :-).
+Actually it is a mix of my own ignorance + some other detailsm but for everyone
+that I presented this situation it did not seem like something obvious and intuitive.
 
 A few weeks ago I have watched the [Understanding Nil](https://www.youtube.com/watch?v=ynoY2xz-F8s)
 presentation, it is great way to really understand what nil is in Go, and I had no idea
@@ -67,6 +68,10 @@ experience may be useful to someone else.
 Just wanted to start with some warm up on nil behaviour, if you didnt know that nil maps
 behave like that in Go, watch the presentation, it will be enlightening and will give some
 base to understand the rest of the post.
+
+In the end the problem is more about interface initialization than nil behaviour,
+but I wanted to use this opportunity to bring this up, since it is a common source
+of problem for newcomers.
 
 
 # The problem
@@ -319,6 +324,7 @@ func main() {
 
 I have this feeling that this is not the better solution out there, but it is doing
 its job properly right now.
+
 
 I have a long way to go on understand how interfaces in Go work, but this experience already
 taught me a lot and I hope it helps you to avoid this kind of problem on the future.
