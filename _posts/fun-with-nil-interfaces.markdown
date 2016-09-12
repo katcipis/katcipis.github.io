@@ -62,7 +62,8 @@ that a map is read only, and the minimal change on the behaviour of the code can
 a panic.
 
 But that is not even why I started to write this, I had an interesting experience
-playing around with error aggregation + nil behaviour + interfaces + testify, and I hope this
+playing around with error aggregation + nil behaviour + interfaces +
+[testify](https://github.com/stretchr/testify), and I hope this
 experience may be useful to someone else.
 
 Just wanted to start with some warm up on nil behaviour, if you didnt know that nil maps
@@ -114,7 +115,9 @@ func (errors errorsAggregate) Error() string {
 The idea was to use my errorsAggregate as any slice to append multiple errors.
 If no error at all has been appended on it, it would be nil, and I would be happy.
 
-I tested the code, using testify assert package, and it was working like a charm.
+I tested the code, using [testify assert package](https://github.com/stretchr/testify#assert-package),
+and it was working like a charm.
+
 If any error happened, assert.NotNil caught it. If no error happened, assert.Nil
 passed ok. Development continued on, and things started when I started to do some
 integration testing, stuff started to break down and I was very confusing.
