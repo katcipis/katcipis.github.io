@@ -167,12 +167,20 @@ errors is nil
 false
 ```
 
-What the actual fuck ? Inside the function my errs variable is nil, when I try
-to print the error with Error() it evaluates as nil, just as expected, but when
-I do the traditional Go checking, if != nil, the error is actually not nil ?
+What the actual fuck ??? Inside the function my errs variable is nil, when I try
+to print the error with Error() it evaluates as nil, but when
+I check err == nil on the error returned by **returnsErrors** the error is actually not nil ?
 
-And on top of that, assert.Nil was working, how ? (it is not nil !!!)
-Here is the answer:
+And on top of that calling assert.Nil on err, like:
+
+```go
+err := returnsErrors()
+assert.Nil(t, err)
+```
+
+Was passing the test. How ??? It is not nil !!!
+
+Here is the answer, inside the testify assert package:
 
 ```go
 func isNil(object interface{}) bool {
@@ -232,14 +240,21 @@ func main() {
 
 Why ? It seems to me that it happens because how interfaces are implemented:
 
-![interface{}](http://research.swtch.com/gointer3.png)
-
 When you assign the string to the interface{} variable, the interface{} is initialized
-with the string type, and a nil string pointer as data.
-So it is not actually nil, it has type information.
+with the string type, and a nil string pointer as data. The variable holds that, which is
+not nil.
+
+This image stole from Russ Cox post may make it more clear:
+
+<div style="text-align:center" markdown="1">
+![interface{}](http://research.swtch.com/gointer3.png)
+</div>
+
+Here he uses a Binary type, but it makes clear how the interface{} is initialized.
+It is not actually nil, it has type information.
 
 When an explicit assignment is made, and you are aware of how interfaces are initialized, this starts
-to seem intuitive. The problem is that on a function return this is more subtle:
+to get a little intuitive. But on a function return this is more subtle (at least for me):
 
 ```go
 func returnsErrors() error {
