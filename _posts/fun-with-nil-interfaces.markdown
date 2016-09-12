@@ -246,7 +246,7 @@ not nil.
 
 This image stole from Russ Cox post may make it more clear:
 
-<img style="vertical-align:middle" src="http://research.swtch.com/gointer3.png">
+![interface{}](http://research.swtch.com/gointer3.png)
 
 Here he uses a Binary type, but it makes clear how the interface{} is initialized.
 It is not actually nil, it has type information.
