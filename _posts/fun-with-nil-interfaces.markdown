@@ -344,3 +344,11 @@ its job properly right now.
 
 I have a long way to go on understand how interfaces in Go work, but this experience already
 taught me a lot and I hope it helps you to avoid this kind of problem on the future.
+
+
+# ACKs
+
+Special thanks for my friends that helped me reviewing my lousy English:
+
+* [Paulo Benatto](https://github.com/patito)
+* [Tiago Natel](https://github.com/tiago4orion)

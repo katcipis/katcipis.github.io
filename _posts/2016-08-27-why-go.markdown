@@ -375,3 +375,12 @@ first services in Go and the bad and the good on a next one, or this one would g
 
 I focused a lot on why here because a decision like that must be well based, I dont like the idea of
 using something just because it is trending an there is a lot of fancy conferences about that.
+
+
+# ACKs
+
+Special thanks for my friends that helped me reviewing my lousy English:
+
+* [Kamila Hinckel](https://github.com/kamilash)
+* [Paulo Benatto](https://github.com/patito)
+* [Tiago Natel](https://github.com/tiago4orion)
