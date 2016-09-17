@@ -1,13 +1,15 @@
 ---
-published: false
-title: Having fun with nil and interfaces
+published: true
+title: Having fun with Go's nil, interfaces and errors
 layout: post
 ---
 
 Learning and programming in Go has been delightful 99% of the time,
 This makes even more remarkable when the language bites you in the ass :-).
-Actually it is a mix of my own ignorance + some other detailsm but for everyone
+Actually it is a mix of my own ignorance + some other details, but for everyone
 that I presented this situation it did not seem like something obvious and intuitive.
+
+<!-- more -->
 
 A few weeks ago I have watched the [Understanding Nil](https://www.youtube.com/watch?v=ynoY2xz-F8s)
 presentation, it is great way to really understand what nil is in Go, and I had no idea
@@ -16,11 +18,12 @@ it still seems like a great lack of uniformity/symmetry the way nil behaves.
 
 It reminds me all my pain with channels, where there a full combinatorial explosion of
 different behaviours if you are reading/writing closed/nil/ok channels.
-For the channels I understood the reasons and the tradeoffs, it seems fair enough and I
+
+For the channels I understood the reasons and the trade offs, it seems fair enough and I
 still can't come up with better solutions (although I still have some problems remembering
 the correct behaviour depending on the combination).
 
-With nil I still dont get the benefit quite clearly. For example, a nil map behaves like
+With nil I still don't get the benefit quite clearly. For example, a nil map behaves like
 an empty map:
 
 ```go
@@ -66,17 +69,16 @@ playing around with error aggregation + nil behaviour + interfaces +
 [testify](https://github.com/stretchr/testify), and I hope this
 experience may be useful to someone else.
 
-Just wanted to start with some warm up on nil behaviour, if you didnt know that nil maps
+Just wanted to start with some warm up on nil behaviour, if you did not know that nil maps
 behave like that in Go, watch the presentation, it will be enlightening and will give some
 base to understand the rest of the post.
 
 In the end the problem is more about interface initialization than nil behaviour,
 but I wanted to use this opportunity to bring this up, since it is a common source
-of problem for newcomers.
+of problem for newcomers like me.
 
 
 # The problem
-
 
 There was I writing some new service in Go when I was presented with this situation where
 I had to perform two operations, if the first one failed I was also required to execute
@@ -95,7 +97,6 @@ solution has been found some thorns where on the way.
 
 
 # The first solution, an array of errors as an error
-
 
 My first solution was to define an array of errors that behaves as one error,
 and I was feeling pretty hacker about it :-), with the exception that it exploded on my
@@ -205,7 +206,6 @@ try to explain at least what was happening with me based on what I learned there
 
 
 # What is a nil interface ?
-
 
 Well, a nil interface would be this:
 
@@ -328,6 +328,8 @@ func (errs errorsAggregate) err() error {
 func returnsErrors() error {
 	var errs errorsAggregate
 	//some code here
+	//like errs = append(errs, err)
+	//altough a method to protect for appending nil errors would be better
 	return errs.err()
 }
 
@@ -340,7 +342,6 @@ func main() {
 
 I have this feeling that this is not the better solution out there, but it is doing
 its job properly right now.
-
 
 I have a long way to go on understand how interfaces in Go work, but this experience already
 taught me a lot and I hope it helps you to avoid this kind of problem on the future.
