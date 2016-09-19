@@ -244,7 +244,7 @@ When you assign the string to the interface{} variable, the interface{} is initi
 with the string type, and a nil string pointer as data. The variable holds that, which is
 not nil.
 
-This image stole from Russ Cox post may make it more clear:
+This image stolen from Russ Cox post may make it more clear:
 
 ![interface{}](http://research.swtch.com/gointer3.png)
 
