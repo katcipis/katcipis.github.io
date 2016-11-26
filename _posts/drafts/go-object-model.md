@@ -144,7 +144,7 @@ func main() {
 	fmt.Printf("func: %d + %d = %d\n", 1, 1, abstractedAdd(a, 1, 1))
 	fmt.Printf("func: %d + %d = %d\n", 1, 1, abstractedAdd(add, 1, 1))
 
-	var o ObjectAdder
+	var o *ObjectAdder
 	fmt.Printf("object: %d + %d = %d\n", 1, 1, abstractedAdd(o.Add, 1, 1))
 }
 ```
@@ -164,7 +164,7 @@ match any kind of method name, you just pass the method as a parameters, since
 the method is actually just a function, it could be something like:
 
 ```go
-	var o ObjectAdder
+	var o *ObjectAdder
 	fmt.Printf("object: %d + %d = %d\n", 1, 1, abstractedAdd(o.Whatever, 1, 1))
 ```
 
@@ -187,3 +187,100 @@ Do you see any difference on the type of the free function and
 the object method ? No...because there is none. That is why passing
 it as the parameter worked. This also explains another thing going on
 on our code that sometimes makes newcomers to Go confused.
+
+There is no fully initialized ObjectAdder on our example. I used a pointer
+by purpose, as you can see the pointer is not initialized at all (it is nil),
+yet it worked.  In any other object oriented language that I know (not much,
+C++, Python and Java basically) this would never work, but in
+Go it worked, why ?
+
+Well because in Go, there is no methods at all, there is no method type,
+methods are actually syntactic sugar for calling functions passing the
+struct as the first parameter (as people are used to do in C).
+
+Not convinced ? Lets elaborate our example:
+
+```go
+	fmt.Printf("ObjectAdder.Add: %T\n", (*ObjectAdder).Add)
+	fmt.Printf("ObjectAdder.Add: %d + %d = %d\n", 1, 1, (*ObjectAdder).Add(nil, 1, 1))
+```
+
+Result:
+
+```
+ObjectAdder.Add: func(*main.ObjectAdder, int, int) int
+ObjectAdder.Add: 1 + 1 = 2
+```
+
+As you can see, what Go actually does is to append a function on the type
+**\*ObjectAdder** that accepts a **\*ObjectAdder** as the first
+parameter. There is not method at all, it is just a function.
+
+What we see as an object in Go is actually a collection of functions appended
+to a type and syntactic sugar to pass the first argument for you.
+
+The implementation of object orientation usually is something like that,
+but in Go this is explicit (as almost everything in Go, there is great
+value on being explicit about stuff).
+
+This makes a lot of things more simple and uniform, the examples
+showed that, passing a function or a method as a argument has no
+difference at all.
+
+Here is the full code of the final example:
+
+```go
+package main
+
+import "fmt"
+
+type Adder func(int, int) int
+
+// Same type as Adder
+func add(a int, b int) int {
+	return a + b
+}
+
+func abstractedAdd(a Adder, b int, c int) int {
+	return a(b, c)
+}
+
+type ObjectAdder struct{}
+
+func (o *ObjectAdder) Add(a int, b int) int {
+	return a + b
+}
+
+func main() {
+	var a Adder
+	fmt.Printf("Adder: %v\n", a)
+	a = add
+	fmt.Printf("Adder initialized: %v\n", a)
+	fmt.Printf("func: %d + %d = %d\n", 1, 1, abstractedAdd(a, 1, 1))
+	fmt.Printf("func: %d + %d = %d\n", 1, 1, abstractedAdd(add, 1, 1))
+
+	var o *ObjectAdder
+	fmt.Printf("func add: %T\n", add)
+	fmt.Printf("object.Add: %T\n", o.Add)
+	fmt.Printf("object: %d + %d = %d\n", 1, 1, abstractedAdd(o.Add, 1, 1))
+
+	fmt.Printf("ObjectAdder.Add: %T\n", (*ObjectAdder).Add)
+	fmt.Printf("ObjectAdder.Add: %d + %d = %d\n", 1, 1, (*ObjectAdder).Add(nil, 1, 1))
+}
+```
+
+This example is completely stateless. Another argument that I read on some
+discussions about Go is that functions should be used when there is no state
+involved, and objects and interfaces should be used when there is
+state involved.
+
+This question comes up specially when your Interface has just one method,
+why not a function ? I'm not very sure about using the state as an argument
+on this discussion, because as we have seen there is no difference between
+methods and functions, there is just functions, and functions can be
+statefull too.
+
+
+# Statefull functions
+
+TODO
