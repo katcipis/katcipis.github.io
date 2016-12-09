@@ -277,10 +277,42 @@ state involved.
 This question comes up specially when your Interface has just one method,
 why not a function ? I'm not very sure about using the state as an argument
 on this discussion, because as we have seen there is no difference between
-methods and functions, there is just functions, and functions can be
-statefull too.
+methods and functions, there is just functions, and functions can have
+state too.
+
+In a specific domain defining a guideline that all functions passed as
+parameters should be stateless (or even idempotent) may be useful,
+but it is dangerous to trust that in Go.
 
 
-# Statefull functions
+# Functions and state
 
 TODO
+
+- Talk about closures
+- Create an "object" just with closures
+
+
+# What is an object anyway ?
+
+
+Until now it seems like an object is just a set of functions
+that operates on the same data structure. In all languages it
+is actually just that, with the exception that this is not
+just as explicit as it is in Go.
+
+There is just one thing missing, that is the hallmark of traditional
+object oriented languages (although it was not the original purpose),
+safe polymorphism achieved through inheritance.
+
+This is actually what differentiate objects on "modern" languages
+from sets of functions operating on the same data structure in Go
+(and in C, which is even more explicit on this subject).
+
+So how does Go approach the safe polymorphism problem ? Here enters
+one of the coolest features of Go, interfaces.
+
+Since this post is already very long, the evolution of the ideas to interfaces
+will be made on a subsequent post.
+
+Happy Go hacking ;-).
