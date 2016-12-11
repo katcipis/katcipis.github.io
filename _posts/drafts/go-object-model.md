@@ -23,7 +23,7 @@ Go works with objects.
 
 A vivid example is not seeing that a function that accepts
 a function as a parameter can also be called passing a method,
-So the idea is to de construct the object model to just functions
+So the idea is to de-construct the object model to just functions
 and build it back to how Go works, showing that the first class
 concept in Go is actually functions not objects.
 
@@ -190,13 +190,12 @@ on our code that sometimes makes newcomers to Go confused.
 
 There is no fully initialized ObjectAdder on our example. I used a pointer
 by purpose, as you can see the pointer is not initialized at all (it is nil),
-yet it worked.  In any other object oriented language that I know (not much,
-C++, Python and Java basically) this would never work, but in
-Go it worked, why ?
+yet it worked.  In any other object oriented language that I know this would
+never work, but in Go it worked, why ?
 
 Well because in Go, there is no methods at all, there is no method type,
 methods are actually syntactic sugar for calling functions passing the
-struct as the first parameter (as people are used to do in C).
+struct ("object") as the first parameter (as people are used to do in C).
 
 Not convinced ? Lets elaborate our example:
 
@@ -205,7 +204,30 @@ Not convinced ? Lets elaborate our example:
 	fmt.Printf("ObjectAdder.Add: %d + %d = %d\n", 1, 1, (*ObjectAdder).Add(nil, 1, 1))
 ```
 
-Result:
+What I'm doing here ? Just making it explicit what Go actually does when you
+declare something like:
+
+```go
+type ObjectAdder struct{}
+
+func (o *ObjectAdder) Add(a int, b int) int {
+}
+```
+
+It will append a function on the type **\*ObjectAdder**.
+This function is accessible and can be used as any other value on the
+language (being called, passed as a parameter, etc).
+
+If you are thinking "hey, but the type is ObjectAdder not \*ObjectAdder",
+well in Go the pointer counter part of a type is actually another type
+and has even a different set of functions appended to it.
+
+This is one of the more hard to understand parts of Go that I stumbled
+and I'm not going to be able to explain here right now, but it relates
+to [this](https://github.com/golang/go/wiki/MethodSets) and some other
+stuff that I assume are just implementation details.
+
+Anyway, going on, the result:
 
 ```
 ObjectAdder.Add: func(*main.ObjectAdder, int, int) int
@@ -218,13 +240,12 @@ parameter. There is not method at all, it is just a function.
 
 What we see as an object in Go is actually a collection of functions appended
 to a type and syntactic sugar to pass the first argument for you.
-
-The implementation of object orientation usually is something like that,
-but in Go this is explicit (as almost everything in Go, there is great
-value on being explicit about stuff).
+Which to be honest is like almost all object oriented languages implementation.
+The good thing is that in Go this is 100% explicit, not magic, just some
+syntactic sugar. Go is really serious about being explicit and simple :-).
 
 This makes a lot of things more simple and uniform, the examples
-showed that, passing a function or a method as a argument has no
+showed that. Passing a function or a method as a argument has no
 difference at all.
 
 Here is the full code of the final example:
@@ -268,6 +289,14 @@ func main() {
 	fmt.Printf("ObjectAdder.Add: %d + %d = %d\n", 1, 1, (*ObjectAdder).Add(nil, 1, 1))
 }
 ```
+
+To finish of this first part of the case, lets build Go "methods" by hand
+using the functions appended to the type:
+
+```go
+TODO:
+```
+
 
 This example is completely stateless. Another argument that I read on some
 discussions about Go is that functions should be used when there is no state
