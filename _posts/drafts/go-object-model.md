@@ -290,14 +290,6 @@ func main() {
 }
 ```
 
-To finish of this first part of the case, lets build Go "methods" by hand
-using the functions appended to the type:
-
-```go
-TODO:
-```
-
-
 This example is completely stateless. Another argument that I read on some
 discussions about Go is that functions should be used when there is no state
 involved, and objects and interfaces should be used when there is
@@ -310,16 +302,17 @@ methods and functions, there is just functions, and functions can have
 state too.
 
 In a specific domain defining a guideline that all functions passed as
-parameters should be stateless (or even idempotent) may be useful,
-but it is dangerous to trust that in Go.
+parameters should be stateless may be useful, but it is dangerous to
+trust that in Go.
 
 
 # Functions and state
 
 TODO
-
 - Talk about closures
 - Create an "object" just with closures
+- Fabricate methods for an object using its type functions and the
+  object itself as a closure
 
 
 # What is an object anyway ?
