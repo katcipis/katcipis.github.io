@@ -417,16 +417,114 @@ this provides the absolutely maximum level of encapsulation you can imagine.
 There is no way to access the state directly except through the function.
 
 So no, encapsulation has not been invented by object oriented programming.
-Lets take a look on how this would like using a object:
+Lets take a look on how this would like using a Go object:
 
 ```go
-TODO
+package main
+
+import "fmt"
+
+type iterator struct {
+	a int
+}
+
+func (i *iterator) iter() int {
+	i.a++
+	return i.a
+}
+
+func newIter() *iterator {
+	return &iterator{
+		a: 0,
+	}
+}
+
+func main() {
+	i := newIter()
+
+	fmt.Printf("iter 1: %d\n", i.iter())
+	fmt.Printf("iter 2: %d\n", i.iter())
+	fmt.Printf("iter 3: %d\n", i.iter())
+}
 ```
 
-TODO
-- Create an "object" just with closures
-- Fabricate methods for an object using its type functions and the
-  object itself as a closure
+As you can see, for something very simple the object way seems
+a little more clumsy, at least it looks like it to me.
+I even gave the same lousy name **a** to the integer, that is
+actually the state.
+
+Here you create a struct to hold the state, add a function to the type,
+and use that function to manipulate the state.
+
+The function version did the same thing, on a different way. And
+it was able to manage state just as an object would, with automatic
+lexical scoping to guarantee state isolation, just the function
+is able to change state.
+
+To finish this argument, lets develop a set of functions that
+operates on shared state (that is pretty much the work an object does):
+
+```go
+package main
+
+import "fmt"
+
+type stateChanger func() int
+
+func new() (stateChanger, stateChanger) {
+	a := 0
+	return func() int {
+			a++
+			return a
+		},
+		func() int {
+			a--
+			return a
+		}
+}
+
+func main() {
+	inc, dec := new()
+
+	fmt.Printf("inc 1: %d\n", inc())
+	fmt.Printf("inc 2: %d\n", inc())
+	fmt.Printf("inc 3: %d\n", inc())
+
+	fmt.Printf("dec 1: %d\n", dec())
+	fmt.Printf("dec 2: %d\n", dec())
+	fmt.Printf("dec 3: %d\n", dec())
+}
+```
+
+The output:
+
+```go
+inc 1: 1
+inc 2: 2
+inc 3: 3
+dec 1: 2
+dec 2: 1
+dec 3: 0
+```
+
+As can be seen clearly, both functions share the same common
+state and can manipulate it, just as you would do with an
+object with two methods.
+
+Of course I'm not advocating that you should just play around
+with a bunch of variables holding functions, structs exist exactly
+to give one shape to composition of other types. The same applies to
+functions, just having a lot of loose functions would be a mess
+on a lot of cases.
+
+Since Go does have first class functions, a struct could have some fields
+that holds functions, emulating the behaviour of methods. But that
+would be clumsy and error prone, like the possibility of a non
+initialized field being called (anyone that have programmed in C
+will understand this problem very well, and its consequences).
+
+The feature of adding methods to a type gives a compile time safe
+way to represent a set of functions that operate on the same type.
 
 
 # What is an object anyway ?
@@ -439,14 +537,14 @@ just as explicit as it is in Go.
 
 There is just one thing missing, that is the hallmark of traditional
 object oriented languages (although it was not the original purpose),
-safe polymorphism achieved through inheritance.
+safe polymorphism, usually achieved through inheritance.
 
 This is actually what differentiate objects on "modern" languages
 from sets of functions operating on the same data structure in Go
 (and in C, which is even more explicit on this subject).
 
-So how does Go approach the safe polymorphism problem ? Here enters
-one of the coolest features of Go, interfaces.
+So how does Go approach the safe polymorphism problem without inheritance ?
+Here enters one of the coolest features of Go, interfaces.
 
 Since this post is already very long, the evolution of the ideas to interfaces
 will be made on a subsequent post.
