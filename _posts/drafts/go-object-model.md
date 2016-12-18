@@ -3,34 +3,36 @@ published: false
 title: Fun with Go's object model
 layout: post
 ---
+
 Go object model gets easier to understand when you accept
 that there is no objects at all, there is just functions and
-contracts, that are basically sets of functions.
+sets of functions that can operate on common state, with
+some sugar sprinkled on it.
 
 <!-- more -->
 
-Ok, now that I got your attention and you must be thinking
+Ok, perhaps now I got your attention and you must be thinking
 "shut up, of course there are objects in Go", well, you are
-right. But it is a object model that is very different from
-the classical ones (like Java, C++, Python, the ones I know
-at least).
+right. And there is more to Go object model than syntactic sugar.
 
-Since I had my share of C programming, and also other cool
-languages like Lua, it is not very hard to me to think
-about closures and first class functions, but as I see
-other people developing in Go I sense some struggling
-to understand how Go works with objects.
+But it is a object model that is very different from
+the classical ones, like Java, C++ and Python
+(these are the ones I know at least).
 
-A vivid example is not seeing that a function that accepts
-a function as a parameter can also be called passing a method,
-So the idea is to de-construct the object model to just functions
-and build it back to how Go works, showing that Go is much more
-prone to functions with objects as an aid to make some idiom's
-easier than a object oriented language where objects domain
-with the traditional "everything is an object" idea.
+When struggling to get a sense of how Go objects works
+it helped me a lot to just let go of the object notion
+and think only in terms of functions.
 
-It will probably be a lousy de construction since I'm not an
-expert in Go, but yet I feel compelled to try :-).
+What I'm going to try to do is to de-construct the object model
+to just functions and build it back to how Go works,
+showing that Go is much more prone to functions with objects
+as an aid to make some idiom's
+easier than a object oriented language where everything
+is an object.
+
+It will probably be a lousy de de-construction since I'm not an
+expert in Go, but yet I feel compelled to try,
+since it looks like fun :-).
 
 
 # In the beginning there was the functions
@@ -103,8 +105,10 @@ and even pass a function directly as an argument too.
 
 With this example in mind we have the opportunity to start exploring
 Go's objects. Can a method satisfy the **Adder** type ? Depending
-on your background this may sound counter intuitive,
+on your background this may sound counter intuitive (something like,
+one is a method, but you need a function, etc)
 lets take a look at an adder object:
+
 
 ```go
 type ObjectAdder struct{}
@@ -123,7 +127,6 @@ import "fmt"
 
 type Adder func(int, int) int
 
-// Same type as Adder
 func add(a int, b int) int {
 	return a + b
 }
@@ -162,7 +165,7 @@ object: 1 + 1 = 2
 ```
 
 Yep, it worked. Differently from interfaces, the function signature will not
-match any kind of method name, you just pass the method as a parameters, since
+match any kind of method name, you just pass the method as a parameter, since
 the method is actually just a function, it could be something like:
 
 ```go
@@ -186,9 +189,9 @@ object.Add: func(int, int) int
 ```
 
 Do you see any difference on the type of the free function and
-the object method ? No...because there is none. That is why passing
+the object method ? No ? It's because there is none. That is why passing
 it as the parameter worked. This also explains another thing going on
-on our code that sometimes makes newcomers to Go confused.
+on our code that sometimes makes newcomers (like me) to Go confused.
 
 There is no fully initialized ObjectAdder on our example. I used a pointer
 by purpose, as you can see the pointer is not initialized at all (it is nil),
@@ -197,7 +200,10 @@ never work, but in Go it worked, why ?
 
 Well because in Go, there is no methods at all, there is no method type,
 methods are actually syntactic sugar for calling functions passing the
-struct ("object") as the first parameter (as people are used to do in C).
+struct (object) as the first parameter (as people are used to do in C).
+In Go this first parameter is usually called the method receiver, but there
+is nothing special about it, it is just a parameter being
+passed to a function.
 
 Not convinced ? Lets elaborate our example:
 
@@ -216,13 +222,15 @@ func (o *ObjectAdder) Add(a int, b int) int {
 }
 ```
 
-It will append a function on the type **\*ObjectAdder**.
+It will add a function on the type **\*ObjectAdder**.
 This function is accessible and can be used as any other value on the
 language (being called, passed as a parameter, etc).
 
 If you are thinking "hey, but the type is ObjectAdder not \*ObjectAdder",
 well in Go the pointer counter part of a type is actually another type
 and has even a different set of functions appended to it.
+To which of the types the function will be added is decided by the
+type of the method receiver, on this case it is a (\*ObjectAdder).
 
 This is one of the more hard to understand parts of Go that I stumbled
 and I'm not going to be able to explain here right now, but it relates
@@ -236,14 +244,16 @@ ObjectAdder.Add: func(*main.ObjectAdder, int, int) int
 ObjectAdder.Add: 1 + 1 = 2
 ```
 
-As you can see, what Go actually does is to append a function on the type
+As you can see, what Go actually does is to add a function on the type
 **\*ObjectAdder** that accepts a **\*ObjectAdder** as the first
 parameter. There is not method at all, it is just a function.
 
-What we see as an object in Go is actually a collection of functions appended
+What we see as an object in Go is actually a collection of functions associated
 to a type and syntactic sugar to pass the first argument for you.
-Which to be honest is like almost all object oriented languages implementation.
-The good thing is that in Go this is 100% explicit, not magic, just some
+
+Which to be honest is like almost all object oriented languages
+is actually implemented.
+The good thing is that in Go this is 100% explicit, no magic, just some
 syntactic sugar. Go is really serious about being explicit and simple :-).
 
 This makes a lot of things more simple and uniform, the examples
