@@ -17,15 +17,17 @@ at least).
 
 Since I had my share of C programming, and also other cool
 languages like Lua, it is not very hard to me to think
-about closures and functions, but as I see other people
-developing in Go I sense some struggling to understand how
-Go works with objects.
+about closures and first class functions, but as I see
+other people developing in Go I sense some struggling
+to understand how Go works with objects.
 
 A vivid example is not seeing that a function that accepts
 a function as a parameter can also be called passing a method,
 So the idea is to de-construct the object model to just functions
-and build it back to how Go works, showing that the first class
-concept in Go is actually functions not objects.
+and build it back to how Go works, showing that Go is much more
+prone to functions with objects as an aid to make some idiom's
+easier than a object oriented language where objects domain
+with the traditional "everything is an object" idea.
 
 It will probably be a lousy de construction since I'm not an
 expert in Go, but yet I feel compelled to try :-).
@@ -303,13 +305,125 @@ state too.
 
 In a specific domain defining a guideline that all functions passed as
 parameters should be stateless may be useful, but it is dangerous to
-trust that in Go.
+trust that in Go and it don't seem to be a general purpose guideline
+to choose between a function as parameter or a interface.
 
 
 # Functions and state
 
+To make the gap between functions and objects even smaller lets
+work with the oldest/simplest example, an iterator:
+
+```go
+package main
+
+import "fmt"
+
+func iterator() func() int {
+	a := 0
+	return func() int {
+		a++
+		return a
+	}
+}
+
+func main() {
+
+	iter := iterator()
+
+	fmt.Printf("iter 1: %d\n", iter())
+	fmt.Printf("iter 2: %d\n", iter())
+	fmt.Printf("iter 3: %d\n", iter())
+}
+```
+
+If you run this you will see that it is a valid iterator.
+What we have here exactly ? We have a **iterator** function
+that acts as a constructor for another function, that will
+be returned, that is why the return type of **iterator** is:
+
+```go
+func() int
+```
+
+What is usually referred as closure is this lexical construction:
+
+```go
+	a := 0
+	return func() int {
+		a++
+		return a
+	}
+```
+
+The function that we are instantiating access a variable that exists
+on the outer scope, this will associate the **a** variable to the
+newly created function, it has a reference to **a** and can manipulate it.
+
+This is a mind bender if you are just used to objects as a mean to
+managing state, and also the only thing that can be instantiated
+(actually it is odd to C programmers too, since functions are a static
+construction in C).
+
+In Go, functions are instantiated all the time, here goes another version
+of this example that makes it explicit that we are actually instantiating
+functions:
+
+```go
+package main
+
+import "fmt"
+
+func iterator() func() int {
+	a := 0
+	return func() int {
+		a++
+		return a
+	}
+}
+
+func main() {
+	itera := iterator()
+	iterb := iterator()
+
+	fmt.Printf("itera 1: %d\n", itera())
+	fmt.Printf("itera 2: %d\n", itera())
+	fmt.Printf("itera 3: %d\n", itera())
+
+	fmt.Printf("iterb 1: %d\n", iterb())
+	fmt.Printf("iterb 2: %d\n", iterb())
+	fmt.Printf("iterb 3: %d\n", iterb())
+}
+```
+
+We get:
+
+```
+itera 1: 1
+itera 2: 2
+itera 3: 3
+iterb 1: 1
+iterb 2: 2
+iterb 3: 3
+```
+
+So each iterator is completely isolated from each other and there is
+no way for one function to access state from the other, unless it is
+explicitly allowed lexically on the code, or you do some really bad
+ass pointer arithmetic.
+
+This is fun, since languages like Lisp have closures since ever and
+this provides the absolutely maximum level of encapsulation you can imagine.
+There is no way to access the state directly except through the function.
+
+So no, encapsulation has not been invented by object oriented programming.
+Lets take a look on how this would like using a object:
+
+```go
 TODO
-- Talk about closures
+```
+
+TODO
 - Create an "object" just with closures
 - Fabricate methods for an object using its type functions and the
   object itself as a closure
