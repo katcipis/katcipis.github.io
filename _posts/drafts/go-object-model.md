@@ -560,3 +560,10 @@ Since this post is already very long, the evolution of the ideas to interfaces
 will be made on a subsequent post.
 
 Happy Go hacking ;-).
+
+
+# Acknowledgments
+
+
+Special thanks to [i4k](https://github.com/tiago4orion) for taking
+time reviewing and pointing out a lot of stupid mistakes.
