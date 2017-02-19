@@ -4,42 +4,129 @@ title: Good Design
 layout: post
 ---
 
+# Good design  ?
+
+Software is very abstract. From the outside you cannot see software duct tape.
+Nor can you see a an over-engineered monstrosity that is equivalent to a car
+with 5 tires, one door and craft glue.
+
+With enough effort, even the most awfully designed software can be made to run
+- even reliably, so working or not working is not a good measure either.
+
+For me it is extremely hard to define what is good software, but at the same
+time the simple answer of "it depends" just annoys me as hell.
+
+I started to revisit the issue with new eyes when I read
+[Hackers and Painters](https://www.amazon.com/Hackers-Painters-Big-Ideas-Computer/dp/1449389554).
+The book is a collection of essays, and it is just awesome. More specifically,
+I'm talking about the [Taste for makers](http://www.paulgraham.com/taste.html)
+essay. The thing that I really liked was the idea that there is good and bad
+design, it is not subjective (even when comparing language design):
+
+```
+After dinning into you that taste is merely a matter of personal preference,
+they take you to the museum and tell you that you should pay attention because
+Leonardo is a great artist.
+
+What goes through the kid's head at this point? What does he think
+"great artist" means? After having been told for years that everyone just
+likes to do things their own way, he is unlikely to head straight for the
+conclusion that a great artist is someone whose work is better than the others'.
+A far more likely theory, in his Ptolemaic model of the universe,
+is that a great artist is something that's good for you, like broccoli,
+because someone said so in a book.
+
+Saying that taste is just personal preference is a good way to
+prevent disputes. The trouble is, it's not true.
+You feel this when you start to design things.
+```
+
+This marked me, because there was nothing that I considered more subjective
+than art, and yet, even on arts there is masters and geniuses. If art is
+subjective, what is the difference between a five year old drawing and
+a Leonardo masterpiece ?
+
+There must be a difference, what is really hard is that sometimes we
+have a really hard time telling why it feels good or right, but it
+is a fact that some things just feel right and others not and being
+hard to define it should not be an excuse to drop the subject altogether
+(more on this can be found on
+[How Art Can Be Good](http://www.paulgraham.com/goodart.html) )
+
+So, what could help me on my quest for establishing good parameters for design ?
+
+
+## Form ever follows function
+
+This concept comes from architecture (not software architecture).
+A quotation from [Louis Sullivan](https://en.wikipedia.org/wiki/Louis_Sullivan)'s
+[De architectura](https://en.wikipedia.org/wiki/De_architectura):
+
+```
+Whether it be the sweeping eagle in his flight, or the open apple-blossom,
+the toiling work-horse, the blithe swan, the branching oak,
+the winding stream at its base, the drifting clouds, over all the coursing sun,
+form ever follows function, and this is the law.
+
+Where function does not change, form does not change. The granite rocks,
+the ever-brooding hills, remain for ages; the lightning lives,
+comes into shape, and dies, in a twinkling.
+
+It is the pervading law of all things organic and inorganic,
+of all things physical and metaphysical, of all things human and all
+things superhuman, of all true manifestations of the head, of the heart,
+of the soul, that the life is recognizable in its expression,
+that form ever follows function. This is the law
+```
+
+Well, can't argue too much with this kind of logic, it is beautiful.
+What does work better than nature ? It may not be perfect but well, it
+is the best example of a working, sustainable, scalable system that
+we have to observe.
+
+The lesson to be take from this to software is that software developers
+usually are so concerned on applying a lot of "cool" design patterns
+and a lot of other stuff they read about that they forget to understand
+the problem properly and to accommodate the design to serve the purpose,
+not otherwise.
+
+I say this with property because besides watching this on
+other people, I myself have done this a lot of times, probably will still
+do. It is very easy to be carried away by your ego and just write code
+for yourself, just as there is a lot of famous architects that build stuff
+for themselves and their own egos, not for people that are going to use.
+
+This is specially dangerous, you can even seem like a great developer and
+still be doing this kind of mistake, because just as it happens with a building,
+software aesthetics can trick a lot of people on thinking that you have done
+a great job, specially people that just observe it from some distance.
+
+Who are the people that are going to really judge if the building is any good ?
+Only people that uses it on their daily basis,
+people that are directly affected by it.
+
+On software there is two main classes of people that fits this criteria, it is
+clients and maintainers. It is the feedback of these two classes that can
+provide good guidance if the design makes any sense.
+
+
+// TODO: IMPLICATIONS OF DESIGN DECISIONS AND SPEED OF CHANGE AND FEELINGS
+// WITH THE "WHAT I WANT IS NOT WHAT I NEED" PROBLEM.
+// https://www.youtube.com/watch?v=N9c7_8Gp7gI
+
+
+# Catalysing Change
+
 # SOLID
 
 # Four rules of simple design
 
-# Other interesting characteristics
+# Isolate hard design decisions
 
-## Symmetic
+# Symmetric
 
-## Uniform
+# Uniform
 
-## Orthogonal
+# Orthogonal
 
-## Make it seem simple
-
-## Bonus Round From Embedded Muse
-
-Charles Manning
-
-The last two months or so, I've been burning some null cycles trying to ponder what makes for well designed vs poorly designed software body, and it is very challenging to get a handle on any objective measures.
-
-Over the last 36+ years - including some time tutoring CS at university and many years as a consultant, I've seen a lot of code. Some has been well designed and some terribly designed. Unfortunately the terrible is vastly more common than the beautiful.
-
-But that assessment has been rather subjective - even very difficult to articulate.
-
-Software is very abstract. From the outside you cannot see software duct tape. Nor can you see a an over-engineered monstrosity that is equivalent to a car built out of I-beams and craft glue.
-
-With enough effort, even the most awfully designed software can be made to run - even reliably, so working or not working is not a good measure.
-
-So far my pondering has only given me two measurements:
-
-1) How long it takes to fix a bug once clear symptoms are known, Does it take a few minutes? Does it take days? Poorly designed code has convoluted code paths which make it very difficult to nail down where something is going wrong. Both well designed and poorly designed code have bugs, but poorly designed code is harder to fix, meaning the bugs live longer and take more effort to kill.
-
-In the 1980s IBM tried developing some quality metrics. One they used was bugs tracked on a module by module basis. What they found was that bugs were not randomly scattered around. Some modules would tend to have more bugs than others. Certainly some modules are more difficult to design than others, but some must surely be attributed to good vs poor design.
-
-2) Code complexity for the job at hand. When there's an order of magnitude more files and code than there should be then the chances are that the code body is poorly designed. The "code effectiveness" is very low and there's a lot of "lazy" code coming along for the ride.
-
-That "lazy code" is often a result of trying to band-aid over corner cases where the main code path fails, or code duplication. Both are signs of poor design.
-
-Neither of these are very satisfactory measures.
+# Make it seem simple
