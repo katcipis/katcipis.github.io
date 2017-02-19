@@ -100,15 +100,51 @@ This is specially dangerous, you can even seem like a great developer and
 still be doing this kind of mistake, because just as it happens with a building,
 software aesthetics can trick a lot of people on thinking that you have done
 a great job, specially people that just observe it from some distance.
-
-Who are the people that are going to really judge if the building is any good ?
-Only people that uses it on their daily basis,
+Who are the people that are going to really judge if the building is any good ?  Only people that uses it on their daily basis,
 people that are directly affected by it.
 
 On software there is two main classes of people that fits this criteria, it is
 clients and maintainers. It is the feedback of these two classes that can
 provide good guidance if the form of your software is following function.
 
+From [Designing has nothing to do with art](https://qz.com/823204/graphic-design-legend-milton-glaser-dispels-a-universal-misunderstanding-of-design-and-art/):
+
+```
+It’s good to understand that design has a purpose and art
+has another purpose,” said Glaser. Art’s power is mysterious and cannot be
+quantified, he explained, while design’s efficacy is measured by how well it
+delivers on a clients’ goal. “
+As you get older you get clearer about that distinction about design and art.
+```
+
+This makes it cristal clear how to measure design quality, but nothing is never
+as simple as we would like with software :-). It is easy to analyse just the
+features and the interface with the client, we would be analysing a important
+part of the software design, the user experience. Altought fundamental, at
+least for me it is not the hardest part of the problem (as a programmer,
+I'm biased), we are surrounded by software that just started great and went
+straight to hell after time.
+
+This happens because of the "soft" nature of software (duh, that is why it is
+"soft"ware :-) ). Comparing software with architecture is useful but
+the metaphor breaks on the pace of change, it reminds much more biologic
+evolution on this case, and not the evolution we are used on nature,
+more like X-Men evolution, rampaging crazily, that sadly creates more
+useless atrocities than awesome super heroes :-).
+
+There is a whole lot of problems that you can get by not managing what you
+want the software to do, but I will focus from now on how the code accommodate
+the changes, assuming that you choose the new features perfectly, things
+can still be horribly wrong as you try to do more, and everyone wants to do
+more with computers.
+
+
+## Change
+
+Start babling about how change is one of the main motivators of
+software engineering.
+
+Not the only one, mention code bumming on the MIT early days.
 
 // TODO: IMPLICATIONS OF DESIGN DECISIONS AND SPEED OF CHANGE AND FEELINGS
 // WITH THE "WHAT I WANT IS NOT WHAT I NEED" PROBLEM.
