@@ -107,7 +107,7 @@ people that are directly affected by it.
 
 On software there is two main classes of people that fits this criteria, it is
 clients and maintainers. It is the feedback of these two classes that can
-provide good guidance if the design makes any sense.
+provide good guidance if the form of your software is following function.
 
 
 // TODO: IMPLICATIONS OF DESIGN DECISIONS AND SPEED OF CHANGE AND FEELINGS
