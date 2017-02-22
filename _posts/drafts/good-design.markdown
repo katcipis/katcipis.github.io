@@ -160,6 +160,33 @@ systems this is more and more rare. Efficiency is something that should also
 be considered on good design, but to be honest keeping the pace of changes
 still triumphs that.
 
+Well, but not is never that simple with software. Since software development
+is a inherently social activity, the pace of change should also take that into
+account when being evaluated.
+
+You can have a mess of a code that is maintained just by one person. To that
+one person that code makes totally sense, but to other people it will be
+nearly impossible to understand it. This is a real problem since lone ranger
+development is really rare these days.
+
+The same fenomemon can happen to an entire team, it is usually to a team to
+be synchronized, but if everyone is very synchronized on the same bad ideas
+there is a good chance that terrible design will emerge and people will be
+able to cope with it and make changes considerably fast.
+
+These bad designs that are moving fast could only be considered good
+in a context where project owners and developers never changes. If this is
+you case you are welcomed to judge it as good design.
+
+But, there is another dimension to analyze, that even when people is
+going considerably fast, bad design gets bigger and bigger like a snowball,
+and even the writers of the code will stop making sense of it. The dimension
+to analyze is time. It is much easier to develop software thinking on only now,
+it is orders of magnitude harder to develop it on a way that can resist time.
+
+
+// CONCLUSION
+Good design is universally understandable (check out art can be good essay)
 
 // TODO: IMPLICATIONS OF DESIGN DECISIONS AND SPEED OF CHANGE AND FEELINGS
 // WITH THE "WHAT I WANT IS NOT WHAT I NEED" PROBLEM.
