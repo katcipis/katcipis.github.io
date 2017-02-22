@@ -141,10 +141,25 @@ more with computers.
 
 ## Change
 
-Start babling about how change is one of the main motivators of
-software engineering.
+I can't think on any other good metric to evaluate than the pace of
+change of the system. It is single handed the bigger problem that I always
+see people in software dealing with, not only on companies, open source
+projects too.
 
-Not the only one, mention code bumming on the MIT early days.
+It is not the only function to avaliate the form, on computing early days,
+on MIT IA lab, hackers where really excited with doing more and more stuff
+with extremely limited resources. In that context, being able to use
+less memory and instructions on a debugger was a great design choice since
+now they would be able to debug bigger programs.
+
+Today the context is considerably different, I still think efficiency is
+very important, since you literally pay for resources, but it is not on the
+same scale of being unable to debug something because the debugger used too
+much resources and you end up without the hability to debug it. Even on embedded
+systems this is more and more rare. Efficiency is something that should also
+be considered on good design, but to be honest keeping the pace of changes
+still triumphs that.
+
 
 // TODO: IMPLICATIONS OF DESIGN DECISIONS AND SPEED OF CHANGE AND FEELINGS
 // WITH THE "WHAT I WANT IS NOT WHAT I NEED" PROBLEM.
