@@ -569,5 +569,6 @@ Happy Go hacking ;-).
 # Acknowledgments
 
 
-Special thanks to [i4k](https://github.com/tiago4orion) for taking
+Special thanks to [i4k](https://github.com/tiago4orion) and
+[vitorarins](https://github.com/vitorarins) for taking
 time reviewing and pointing out a lot of stupid mistakes.
