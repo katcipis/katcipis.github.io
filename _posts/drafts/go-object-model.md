@@ -15,7 +15,7 @@ Ok, perhaps now I got your attention and you must be thinking
 "shut up, of course there are objects in Go", well, you are
 right. And there is more to Go object model than syntactic sugar.
 
-But it is a object model that is very different from
+But it is an object model very different from
 the classical ones, like Java, C++ and Python
 (these are the ones I know at least).
 
@@ -23,14 +23,14 @@ When struggling to get a sense of how Go objects works
 it helped me a lot to just let go of the object notion
 and think only in terms of functions.
 
-What I'm going to try to do is to de-construct the object model
+What I'm going to try is to de-construct the object model
 to just functions and build it back to how Go works,
 showing that Go is much more prone to functions with objects
 as an aid to make some idiom's
-easier than a object oriented language where everything
+easier than an object oriented language where everything
 is an object.
 
-It will probably be a lousy de de-construction since I'm not an
+It will probably be a lousy de-construction since I'm not an
 expert in Go, but yet I feel compelled to try,
 since it looks like fun :-).
 
@@ -39,7 +39,7 @@ since it looks like fun :-).
 
 
 Well I'm trying to make a point around thinking first about
-functions, so here goes an lousy example of what can be done with functions.
+functions, so here goes a stupid example of what can be done with functions.
 
 Lets define a type that is actually a function:
 
@@ -47,7 +47,7 @@ Lets define a type that is actually a function:
 type Adder func(int, int) int
 ```
 
-You can think about it as a interface (but it is not the same thing).
+You can think about it as an interface (but it is not the same thing).
 Any function that matches the signature will be acceptable as being of
 the type **Adder**:
 
@@ -66,7 +66,7 @@ func abstractedAdd(a Adder, b int, c int) int {
 }
 ```
 
-This reminds a lot the kind of thing you can do with interfaces.
+This really recalls the kind of thing you can do with interfaces.
 **abstractedAdd** does not know how to add, and it will accept any
 implementation of an Adder that respects the same signature.
 
@@ -191,7 +191,7 @@ object.Add: func(int, int) int
 Do you see any difference on the type of the free function and
 the object method ? No ? It's because there is none. That is why passing
 it as the parameter worked. This also explains another thing going on
-on our code that sometimes makes newcomers (like me) to Go confused.
+inside code that sometimes makes newcomers (like me) to Go confused.
 
 There is no fully initialized ObjectAdder on our example. I used a pointer
 by purpose, as you can see the pointer is not initialized at all (it is nil),
@@ -232,8 +232,9 @@ and has even a different set of functions appended to it.
 To which of the types the function will be added is decided by the
 type of the method receiver, on this case it is a (\*ObjectAdder).
 
-This is one of the more hard to understand parts of Go that I stumbled
-and I'm not going to be able to explain here right now, but it relates
+This is one of the hard to understand parts of Go that I stumbled
+and I'm not going to be able to explain here right now
+(I do not even understand the why's completely yet), but it relates
 to [this](https://github.com/golang/go/wiki/MethodSets) and some other
 stuff that I assume are just implementation details.
 
@@ -246,7 +247,7 @@ ObjectAdder.Add: 1 + 1 = 2
 
 As you can see, what Go actually does is to add a function on the type
 **\*ObjectAdder** that accepts a **\*ObjectAdder** as the first
-parameter. There is not method at all, it is just a function.
+parameter. There no method at all, it is just a function.
 
 What we see as an object in Go is actually a collection of functions associated
 to a type and syntactic sugar to pass the first argument for you.
@@ -257,7 +258,7 @@ The good thing is that in Go this is 100% explicit, no magic, just some
 syntactic sugar. Go is really serious about being explicit and simple :-).
 
 This makes a lot of things more simple and uniform, the examples
-showed that. Passing a function or a method as a argument has no
+showed that. Passing a function or a method as an argument has no
 difference at all.
 
 Here is the full code of the final example:
@@ -313,10 +314,13 @@ on this discussion, because as we have seen there is no difference between
 methods and functions, there is just functions, and functions can have
 state too.
 
-In a specific domain defining a guideline that all functions passed as
-parameters should be stateless may be useful, but it is dangerous to
-trust that in Go and it don't seem to be a general purpose guideline
-to choose between a function as parameter or a interface.
+In a specific domain, dfining a guideline that all functions passed as
+parameters will be stateless may be useful, but it's dangerous to
+assume Go will respect that, and it doesn't seem to be a general purpose
+guideline to choose between a function as a parameter or an interface.
+
+One clear advantage of interfaces is it's hability to be easily composed, that
+can be clearly seem on Go's [io](https://golang.org/pkg/io/) interfaces.
 
 
 # Functions and state
@@ -423,11 +427,11 @@ explicitly allowed lexically on the code, or you do some really bad
 ass pointer arithmetic.
 
 This is fun, since languages like Lisp have closures since ever and
-this provides the absolutely maximum level of encapsulation you can imagine.
+this provides the absolut maximum level of encapsulation you can imagine.
 There is no way to access the state directly except through the function.
 
 So no, encapsulation has not been invented by object oriented programming.
-Lets take a look on how this would like using a Go object:
+Lets take a look on how this would look like using a Go object:
 
 ```go
 package main
