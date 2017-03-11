@@ -5,23 +5,29 @@ layout: post
 ---
 
 Go object model gets easier to understand when you accept
-that there is no objects at all, there is just functions and
-sets of functions that can operate on common state, with
+that there is no objects at all, there is just sets of functions
+that can operate on common state, with
 some sugar sprinkled on it.
 
 <!-- more -->
 
-Ok, perhaps now I got your attention and you must be thinking
-"shut up, of course there are objects in Go", well, you are
-right. And there is more to Go object model than syntactic sugar.
+Perhaps you are thinking
+"shut up, of course there are objects in Go" or
+"sets of functions that operates on common state is the definition
+of an object", well, you are right.
+
+I can't see a difference between set of related functions
+operating on the same state and an object, at least thinking
+on the objects that I'm used, like Java, C++ and Python.
+And there is more to Go object model than syntactic sugar.
 
 But it is an object model very different from
 the classical ones, like Java, C++ and Python
 (these are the ones I know at least).
 
 When struggling to get a sense of how Go objects works
-it helped me a lot to just let go of the object notion
-and think only in terms of functions.
+it helped me a lot to just let go of my traditional object
+notion and think only in terms of functions.
 
 What I'm going to try is to de-construct the object model
 to just functions and build it back to how Go works,
@@ -34,9 +40,7 @@ It will probably be a lousy de-construction since I'm not an
 expert in Go, but yet I feel compelled to try,
 since it looks like fun :-).
 
-
 # In the beginning there was the functions
-
 
 Well I'm trying to make a point around thinking first about
 functions, so here goes a stupid example of what can be done with functions.
@@ -68,7 +72,7 @@ func abstractedAdd(a Adder, b int, c int) int {
 
 This really recalls the kind of thing you can do with interfaces.
 **abstractedAdd** does not know how to add, and it will accept any
-implementation of an Adder that respects the same signature.
+implementation of an Adder that respects the same protocol.
 
 Given this extremely useless and simple example,
 here is the full working code:
@@ -98,10 +102,6 @@ func main() {
 	fmt.Printf("%d + %d = %d\n", 1, 1, abstractedAdd(add, 1, 1))
 }
 ```
-
-As it can be seen, Go has first class functions, we can store
-functions in variables, pass them as arguments to other functions,
-and even pass a function directly as an argument too.
 
 With this example in mind we have the opportunity to start exploring
 Go's objects. Can a method satisfy the **Adder** type ? Depending
@@ -191,7 +191,7 @@ object.Add: func(int, int) int
 Do you see any difference on the type of the free function and
 the object method ? No ? It's because there is none. That is why passing
 it as the parameter worked. This also explains another thing going on
-inside code that sometimes makes newcomers (like me) to Go confused.
+in this code that sometimes makes newcomers (like me) to Go confused.
 
 There is no fully initialized ObjectAdder on our example. I used a pointer
 by purpose, as you can see the pointer is not initialized at all (it is nil),
@@ -199,13 +199,13 @@ yet it worked.  In any other object oriented language that I know this would
 never work, but in Go it worked, why ?
 
 Well because in Go, there is no methods at all, there is no method type,
-methods are actually syntactic sugar for calling functions passing the
-struct (object) as the first parameter (as people are used to do in C).
+methods are actually syntactic sugar for calling functions passing
+an instance of the type as the first parameter (as people are used to do in C).
 In Go this first parameter is usually called the method receiver, but there
 is nothing special about it, it is just a parameter being
 passed to a function.
 
-Not convinced ? Lets elaborate our example:
+Lets elaborate our example:
 
 ```go
 	fmt.Printf("ObjectAdder.Add: %T\n", (*ObjectAdder).Add)
@@ -232,11 +232,8 @@ and has even a different set of functions appended to it.
 To which of the types the function will be added is decided by the
 type of the method receiver, on this case it is a (\*ObjectAdder).
 
-This is one of the hard to understand parts of Go that I stumbled
-and I'm not going to be able to explain here right now
-(I do not even understand the why's completely yet), but it relates
-to [this](https://github.com/golang/go/wiki/MethodSets) and some other
-stuff that I assume are just implementation details.
+This related to the [method sets](https://github.com/golang/go/wiki/MethodSets)
+concept introduces on Go.
 
 Anyway, going on, the result:
 
@@ -245,21 +242,18 @@ ObjectAdder.Add: func(*main.ObjectAdder, int, int) int
 ObjectAdder.Add: 1 + 1 = 2
 ```
 
-As you can see, what Go actually does is to add a function on the type
-**\*ObjectAdder** that accepts a **\*ObjectAdder** as the first
-parameter. There no method at all, it is just a function.
-
-What we see as an object in Go is actually a collection of functions associated
+There is no method at all, it is just a function. What we see as an object in
+Go is actually a collection of functions associated
 to a type and syntactic sugar to pass the first argument for you.
 
 Which to be honest is like almost all object oriented languages
 is actually implemented.
 The good thing is that in Go this is 100% explicit, no magic, just some
-syntactic sugar. Go is really serious about being explicit and simple :-).
+syntactic sugar. Go is really serious about being explicit.
 
 This makes a lot of things more simple and uniform, the examples
 showed that. Passing a function or a method as an argument has no
-difference at all.
+difference at all (I can't think on a reason to exist a difference).
 
 Here is the full code of the final example:
 
@@ -312,16 +306,18 @@ This question comes up specially when your Interface has just one method,
 why not a function ? I'm not very sure about using the state as an argument
 on this discussion, because as we have seen there is no difference between
 methods and functions, there is just functions, and functions can have
-state too.
+state too (and side effects).
 
-In a specific domain, dfining a guideline that all functions passed as
+In a specific domain, defining a guideline that all functions passed as
 parameters will be stateless may be useful, but it's dangerous to
-assume Go will respect that, and it doesn't seem to be a general purpose
+assume Go will respect that (it won't), and it doesn't seem to be a general purpose
 guideline to choose between a function as a parameter or an interface.
 
 One clear advantage of interfaces is it's hability to be easily composed, that
 can be clearly seem on Go's [io](https://golang.org/pkg/io/) interfaces.
 
+But sometimes I just use a function as parameter, you write less code and
+less is more.
 
 # Functions and state
 
@@ -374,10 +370,9 @@ The function that we are instantiating access a variable that exists
 on the outer scope, this will associate the **a** variable to the
 newly created function, it has a reference to **a** and can manipulate it.
 
-This is a mind bender if you are just used to objects as a mean to
-managing state, and also the only thing that can be instantiated
-(actually it is odd to C programmers too, since functions are a static
-construction in C).
+This is a mind bender if you are used to only use objects as a mean to
+managing state (actually it is odd to most C programmers too,
+since functions are a static construction in C).
 
 In Go, functions are instantiated all the time, here goes another version
 of this example that makes it explicit that we are actually instantiating
@@ -424,13 +419,12 @@ iterb 3: 3
 So each iterator is completely isolated from each other and there is
 no way for one function to access state from the other, unless it is
 explicitly allowed lexically on the code, or you do some really bad
-ass pointer arithmetic.
+ass pointer arithmetic using the unsafe package.
 
 This is fun, since languages like Lisp have closures since ever and
-this provides the absolut maximum level of encapsulation you can imagine.
+this provides the absolute maximum level of encapsulation you can imagine.
 There is no way to access the state directly except through the function.
 
-So no, encapsulation has not been invented by object oriented programming.
 Lets take a look on how this would look like using a Go object:
 
 ```go
@@ -470,10 +464,33 @@ actually the state.
 Here you create a struct to hold the state, add a function to the type,
 and use that function to manipulate the state.
 
+If you are feeling fancy, you can do this in Go without an struct at all:
+
+```
+package main
+
+import "fmt"
+
+type iterator int
+
+func (i *iterator) iter() int {
+	*i++
+	return int(*i)
+}
+
+func main() {
+	var i iterator
+
+	fmt.Printf("iter 1: %d\n", i.iter())
+	fmt.Printf("iter 2: %d\n", i.iter())
+	fmt.Printf("iter 3: %d\n", i.iter())
+}
+```
+
 The function version did the same thing, on a different way. And
-it was able to manage state just as an object would, with automatic
+it was able to manage state just as an object would, with
 lexical scoping to guarantee state isolation, just the function
-is able to change state.
+is able to change the state.
 
 To finish this argument, lets develop a set of functions that
 operates on shared state (that is pretty much the work an object does):
@@ -527,47 +544,55 @@ object with two methods.
 
 Of course I'm not advocating that you should just play around
 with a bunch of variables holding functions, structs exist exactly
-to give one shape to composition of other types. The same applies to
-functions, just having a lot of loose functions would be a mess
-on a lot of cases.
+to give name and meaning to a composition of other types.
+
+The same applies to functions, just having a lot of loose
+functions would be a mess on a lot of cases (just as is with data).
 
 Since Go does have first class functions, a struct could have some fields
 that holds functions, emulating the behaviour of methods. But that
 would be clumsy and error prone, like the possibility of a non
-initialized field being called (anyone that have programmed in C
+initialized field/method being called (anyone that have programmed in C
 will understand this problem very well, and its consequences).
 
-The feature of adding methods to a type gives a compile time safe
+The feature of adding functions to a type gives a compile time safe
 way to represent a set of functions that operate on the same type.
-
 
 # What is an object anyway ?
 
-
 Until now it seems like an object is just a set of functions
-that operates on the same data structure. In all languages it
+that operates on the same data structure. In some languages it
 is actually just that, with the exception that this is not
 just as explicit as it is in Go.
 
 There is just one thing missing, that is the hallmark of traditional
-object oriented languages (although it was not the original purpose),
-safe polymorphism, usually achieved through inheritance.
+object oriented languages, safe polymorphism (usually achieved
+through inheritance).
 
 This is actually what differentiate objects on "modern" languages
-from sets of functions operating on the same data structure in Go
-(and in C, which is even more explicit on this subject).
+from sets of functions operating on the same data structure in C.
+The ability to express abstractions that are a composition of
+multiple functions safely (safety is always subjective to me,
+but in C you have no safety at all to do this, so this is
+a win for objects).
+
+All our abstractions until now consisted of something that could
+be expressed with just one function, but what can you do
+when the abstraction requires more than one function ?
+
+If there is no way to express this you would always have to conflate
+your abstractions in one function, that would look just horrible
+(think about a read/write abstraction modeled on just one function).
 
 So how does Go approach the safe polymorphism problem without inheritance ?
 Here enters one of the coolest features of Go, interfaces.
 
-Since this post is already very long, the evolution of the ideas to interfaces
-will be made on a subsequent post.
+Since this post is already very long, the evolution of the ideas
+to interfaces will be made on a subsequent post.
 
 Happy Go hacking ;-).
 
-
 # Acknowledgments
-
 
 Special thanks to [i4k](https://github.com/tiago4orion) and
 [vitorarins](https://github.com/vitorarins) for taking
