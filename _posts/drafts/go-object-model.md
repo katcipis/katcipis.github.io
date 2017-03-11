@@ -297,27 +297,8 @@ func main() {
 }
 ```
 
-This example is completely stateless. Another argument that I read on some
-discussions about Go is that functions should be used when there is no state
-involved, and objects and interfaces should be used when there is
-state involved.
-
-This question comes up specially when your Interface has just one method,
-why not a function ? I'm not very sure about using the state as an argument
-on this discussion, because as we have seen there is no difference between
-methods and functions, there is just functions, and functions can have
-state too (and side effects).
-
-In a specific domain, defining a guideline that all functions passed as
-parameters will be stateless may be useful, but it's dangerous to
-assume Go will respect that (it won't), and it doesn't seem to be a general purpose
-guideline to choose between a function as a parameter or an interface.
-
-One clear advantage of interfaces is it's hability to be easily composed, that
-can be clearly seem on Go's [io](https://golang.org/pkg/io/) interfaces.
-
-But sometimes I just use a function as parameter, you write less code and
-less is more :-).
+This example is completely stateless. Objects usually have state and
+side effects,can Go functions have state and side effects too ?
 
 # Functions and state
 
