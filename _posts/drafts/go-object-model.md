@@ -1,20 +1,20 @@
 ---
 published: false
-title: Fun with Go's object model
+title: Exploring Go's object model
 layout: post
 ---
 
 Go object model gets easier to understand when you accept
 that there is no objects at all, there is just sets of functions
 that can operate on common state, with
-some sugar sprinkled on it.
+some sugar sprinkled on top.
 
 <!-- more -->
 
 Perhaps you are thinking
 "shut up, of course there are objects in Go" or
 "sets of functions that operates on common state is the definition
-of an object", well, you are right.
+of an object", well, you are probably right.
 
 I can't see a difference between a set of related functions
 operating on the same state and an object, at least thinking
