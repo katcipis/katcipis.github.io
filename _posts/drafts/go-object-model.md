@@ -317,7 +317,7 @@ One clear advantage of interfaces is it's hability to be easily composed, that
 can be clearly seem on Go's [io](https://golang.org/pkg/io/) interfaces.
 
 But sometimes I just use a function as parameter, you write less code and
-less is more.
+less is more :-).
 
 # Functions and state
 
@@ -549,32 +549,100 @@ to give name and meaning to a composition of other types.
 The same applies to functions, just having a lot of loose
 functions would be a mess on a lot of cases (just as is with data).
 
-Since Go does have first class functions, a struct could have some fields
-that holds functions, emulating the behaviour of methods. But that
+Since Go does have functions as first class citizens,
+a struct could have some fields that holds functions,
+emulating the behaviour of methods, and representing a set of
+functions that operates on common state. But that
 would be clumsy and error prone, like the possibility of a non
 initialized field/method being called (anyone that have programmed in C
 will understand this problem very well, and its consequences).
 
-The feature of adding functions to a type gives a compile time safe
-way to represent a set of functions that operate on the same type.
+A working calculator:
 
-# What is an object anyway ?
+```
+package main
 
-Until now it seems like an object is just a set of functions
-that operates on the same data structure. In some languages it
-is actually just that, with the exception that this is not
-just as explicit as it is in Go.
+import "fmt"
 
-There is just one thing missing, that is the hallmark of traditional
-object oriented languages, safe polymorphism (usually achieved
-through inheritance).
+type Calculator struct {
+	Add func(int,int) int
+	Sub func(int,int) int
+}
 
-This is actually what differentiate objects on "modern" languages
-from sets of functions operating on the same data structure in C.
-The ability to express abstractions that are a composition of
-multiple functions safely (safety is always subjective to me,
-but in C you have no safety at all to do this, so this is
-a win for objects).
+func newCalculator() Calculator {
+	return Calculator{
+		Add: func(a int, b int) int {
+			return a + b
+		},
+		Sub: func(a int, b int) int {
+			return a - b
+		},
+	}
+}
+
+func main() {
+	calc := newCalculator()
+	fmt.Println(calc.Add(3, 2))
+	fmt.Println(calc.Sub(3, 2))
+}
+```
+
+Well, you could argue about the clumsiness, depending on your
+background this may seem better than the way Go expresses methods.
+But you can't argue about the space this gives to error's.
+
+For example, this:
+
+```
+package main
+
+import "fmt"
+
+type Calculator struct {
+	Add func(int,int) int
+	Sub func(int,int) int
+}
+
+func newCalculator() Calculator {
+	return Calculator{
+		Add: func(a int, b int) int {
+			return a + b
+		},
+		Sub: func(a int, b int) int {
+			return a - b
+		},
+	}
+}
+
+func main() {
+	var calc Calculator
+	fmt.Println(calc.Add(3, 2))
+	fmt.Println(calc.Sub(3, 2))
+}
+```
+
+Will result in:
+
+```
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0xffffffff addr=0x0 pc=0xc64e8]
+
+goroutine 1 [running]:
+main.main()
+	/tmp/sandbox772959961/main.go:23 +0x28
+```
+
+Even tough this is also possible to happen with methods, the feature of adding
+functions to a type gives a compile time safe way to represent a set of
+functions that operate on the same type. At least the call to the method is
+always safe (although you may have a invalid method receiver that will
+crash your program).
+
+Besides clumsiness and error proneness there is also the problem
+of how to express abstractions that are more complex than a single
+function.
+
+# Abstracting
 
 All our abstractions until now consisted of something that could
 be expressed with just one function, but what can you do
@@ -584,8 +652,55 @@ If there is no way to express this you would always have to conflate
 your abstractions in one function, that would look just horrible
 (think about a read/write abstraction modeled on just one function).
 
-So how does Go approach the safe polymorphism problem without inheritance ?
-Here enters one of the coolest features of Go, interfaces.
+The calculator example above provided a way to simulate methods to
+a level that someone looking at how the Calculator is used would
+be unable to tell that it's methods are not methods at all.
+
+But there is a very important concept missing, a concept where Go's
+methods are fundamental, how you express that you require a set
+of functions without defining who will implement them and how
+it will be implemented ?
+
+To complete it, given a function X, that requires a set of functions Y,
+how would you syntactically express that a type Z
+implements the required set of functions Y, hence being a viable choice
+to integrate with the function X ?
+
+One way to solve this is with **safe** polymorphism. I want to be able to have
+multiple different implementations of the same set of functions that
+can interoperate seamlessly. There is emphasis on the **safe** part
+of polymorphism. I had my share of C polymorphism, it is
+possible and works very well, but it is definitely not safe.
+You could argue that no implementation is completely safe, but safer
+than C would be the basic, and it is what most languages like Java and
+Python delivered on the time they where developed.
+
+Safe is important because the calculator example could be used to implement
+a form of this. We could do this:
+
+```go
+type Calculator struct {
+	Add func(int,int) int
+	Sub func(int,int) int
+}
+
+func codeThatDependsOnCalculator(c Calculator) {
+        // etc
+}
+```
+
+This would allow for N different implementations of a **Calculator**
+to integrate with the code that depends on it, but it would not
+be safe. It is very easy to provide just half the implementation and
+get away with it. All functions that accept a **Calculator**
+would need to check if **Add** and **Sub** are not nil.
+
+This is awfully a lot alike how this is usually implemented in C,
+and is clearly job that a compiler can do for you (in C you
+can use some macros).
+
+The answer Go have for this is interfaces, which is in
+my opinion the most awesome feature of Go.
 
 Since this post is already very long, the evolution of the ideas
 to interfaces will be made on a subsequent post.
