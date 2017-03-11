@@ -16,9 +16,9 @@ Perhaps you are thinking
 "sets of functions that operates on common state is the definition
 of an object", well, you are right.
 
-I can't see a difference between set of related functions
+I can't see a difference between a set of related functions
 operating on the same state and an object, at least thinking
-on the objects that I'm used, like Java, C++ and Python.
+on the objects that I'm used to.
 And there is more to Go object model than syntactic sugar.
 
 But it is an object model very different from
