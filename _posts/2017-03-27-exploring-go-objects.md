@@ -1,13 +1,12 @@
 ---
-published: false
-title: Exploring Go's object model
+published: true
+title: Exploring Go's objects
 layout: post
 ---
 
-Go object model gets easier to understand when you accept
+I started to understand Go's object model easier when I accepted
 that there is no objects at all, there is just sets of functions
-that can operate on common state, with
-some sugar sprinkled on top.
+that can operate on common state, with some sugar sprinkled on top.
 
 <!-- more -->
 
@@ -19,7 +18,8 @@ of an object", well, you are probably right.
 I can't see a difference between a set of related functions
 operating on the same state and an object, at least thinking
 on the objects that I'm used to.
-And there is more to Go object model than syntactic sugar.
+And there is more to Go object model than syntactic sugar
+(I was kinda pushing the idea to an extreme :-)).
 
 But it is an object model very different from
 the classical ones, like Java, C++ and Python
