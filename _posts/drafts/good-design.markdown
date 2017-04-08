@@ -188,6 +188,13 @@ it is orders of magnitude harder to develop it on a way that can resist time.
 // CONCLUSION
 Good design is universally understandable (check out art can be good essay)
 
+Dijkstra also talks about this as the concept of "intelectually manageable"
+
+http://www.cs.utexas.edu/users/EWD/transcriptions/EWD03xx/EWD340.html
+
+It is about communication and human cognition, realizing how small our
+skulls actually are :-).
+
 // TODO: IMPLICATIONS OF DESIGN DECISIONS AND SPEED OF CHANGE AND FEELINGS
 // WITH THE "WHAT I WANT IS NOT WHAT I NEED" PROBLEM.
 // https://www.youtube.com/watch?v=N9c7_8Gp7gI
