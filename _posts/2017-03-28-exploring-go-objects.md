@@ -232,8 +232,8 @@ and has even a different set of functions appended to it.
 To which of the types the function will be added is decided by the
 type of the method receiver, on this case it is a (\*ObjectAdder).
 
-This related to the [method sets](https://github.com/golang/go/wiki/MethodSets)
-concept introduces on Go.
+This relates to the [method sets](https://github.com/golang/go/wiki/MethodSets)
+concept introduced by Go.
 
 Anyway, going on, the result:
 
