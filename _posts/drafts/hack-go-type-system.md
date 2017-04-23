@@ -193,6 +193,371 @@ func convT2E(t *_type, elem unsafe.Pointer, x unsafe.Pointer) (e eface) {
 Yeah, definitely seems to be initializing the eface and returning it.
 Now I just have to figure a way to get my hands on the **_type** pointer.
 
-Since this is all internal to Go from now on there will be a lot
-of unsafe fun and this will probably not be portable code (as most
-fun stuff).
+I still don't have a good idea on how to get the *_type, or how to manipulate
+the eface type. My guess would be to just cast it as a pointer and do some
+old school pointer manipulation, but I'm not sure yet.
+
+One function that is a good candidate to give some pointers
+on how to do it is **reflect.TypeOf**:
+
+```
+func TypeOf(i interface{}) Type {
+	eface := *(*emptyInterface)(unsafe.Pointer(&i))
+	return toType(eface.typ)
+}
+```
+
+Yeah, just cast the pointer to a eface pointer:
+
+```
+// emptyInterface is the header for an interface{} value.
+type emptyInterface struct {
+	typ  *rtype
+	word unsafe.Pointer
+}
+```
+
+It seems that although the eface was private on the **runtime**
+package it is copied here on the **reflect** package. Well, if the
+reflect package can do it, so can I :-).
+
+Before going on, I was curious about where the types are initialized.
+It seems that there is just one unique pointer with all the type
+information for each type. Thanks to [vim-go](TODO) and [go guru](TODO)
+for the invaluable help on analysing code and allowing me to
+check all the referers to a type. Thanks to these tools it has been
+pretty easy to find this on symtab:
+
+```
+// moduledata records information about the layout of the executable
+// image. It is written by the linker. Any changes here must be
+// matched changes to the code in cmd/internal/ld/symtab.go:symtab.
+// moduledata is stored in read-only memory; none of the pointers here
+// are visible to the garbage collector.
+type moduledata struct {
+	pclntable    []byte
+	ftab         []functab
+	filetab      []uint32
+	findfunctab  uintptr
+	minpc, maxpc uintptr
+
+	text, etext           uintptr
+	noptrdata, enoptrdata uintptr
+	data, edata           uintptr
+	bss, ebss             uintptr
+	noptrbss, enoptrbss   uintptr
+	end, gcdata, gcbss    uintptr
+	types, etypes         uintptr
+
+	typelinks []int32 // offsets from types
+	itablinks []*itab
+
+	modulename   string
+	modulehashes []modulehash
+
+	gcdatamask, gcbssmask bitvector
+
+	typemap map[typeOff]*_type // offset to *_rtype in previous module
+
+	next *moduledata
+}
+```
+
+A good candidate is the **typemap** field, checking out how
+it is used I found this:
+
+```
+// typelinksinit scans the types from extra modules and builds the
+// moduledata typemap used to de-duplicate type pointers.
+func typelinksinit() {
+	if firstmoduledata.next == nil {
+		return
+	}
+	typehash := make(map[uint32][]*_type)
+
+	modules := []*moduledata{}
+	for md := &firstmoduledata; md != nil; md = md.next {
+		modules = append(modules, md)
+	}
+	prev, modules := modules[len(modules)-1], modules[:len(modules)-1]
+	for len(modules) > 0 {
+		// Collect types from the previous module into typehash.
+	collect:
+		for _, tl := range prev.typelinks {
+			var t *_type
+			if prev.typemap == nil {
+				t = (*_type)(unsafe.Pointer(prev.types + uintptr(tl)))
+			} else {
+				t = prev.typemap[typeOff(tl)]
+			}
+			// Add to typehash if not seen before.
+			tlist := typehash[t.hash]
+			for _, tcur := range tlist {
+				if tcur == t {
+					continue collect
+				}
+			}
+			typehash[t.hash] = append(tlist, t)
+		}
+
+		// If any of this module's typelinks match a type from a
+		// prior module, prefer that prior type by adding the offset
+		// to this module's typemap.
+		md := modules[len(modules)-1]
+		md.typemap = make(map[typeOff]*_type, len(md.typelinks))
+		for _, tl := range md.typelinks {
+			t := (*_type)(unsafe.Pointer(md.types + uintptr(tl)))
+			for _, candidate := range typehash[t.hash] {
+				if typesEqual(t, candidate) {
+					t = candidate
+					break
+				}
+			}
+			md.typemap[typeOff(tl)] = t
+		}
+
+		prev, modules = md, modules[:len(modules)-1]
+	}
+}
+```
+
+It seems that the typemap is initialized on the startup of the
+process, with help of information collected by the linker, on
+build time.
+
+The typelinksinit is called here:
+
+```
+// The bootstrap sequence is:
+//
+//	call osinit
+//	call schedinit
+//	make & queue new G
+//	call runtime·mstart
+//
+// The new G calls runtime·main.
+func schedinit() {
+	// raceinit must be the first call to race detector.
+	// In particular, it must be done before mallocinit below calls racemapshadow.
+	_g_ := getg()
+	if raceenabled {
+		_g_.racectx, raceprocctx0 = raceinit()
+	}
+
+	sched.maxmcount = 10000
+
+	tracebackinit()
+	moduledataverify()
+	stackinit()
+	mallocinit()
+	mcommoninit(_g_.m)
+	alginit()       // maps must not be used before this call
+	typelinksinit() // uses maps
+	itabsinit()
+
+	msigsave(_g_.m)
+	initSigmask = _g_.m.sigmask
+
+	goargs()
+	goenvs()
+	parsedebugvars()
+	gcinit()
+
+	sched.lastpoll = uint64(nanotime())
+	procs := int(ncpu)
+	if procs > _MaxGomaxprocs {
+		procs = _MaxGomaxprocs
+	}
+	if n := atoi(gogetenv("GOMAXPROCS")); n > 0 {
+		if n > _MaxGomaxprocs {
+			n = _MaxGomaxprocs
+		}
+		procs = n
+	}
+	if procresize(int32(procs)) != nil {
+		throw("unknown runnable goroutine during bootstrap")
+	}
+
+	if buildVersion == "" {
+		// Condition should never trigger. This code just serves
+		// to ensure runtime·buildVersion is kept in the resulting binary.
+		buildVersion = "unknown"
+	}
+}
+```
+
+And schedinit, at least according to go guru, is not called anywhere.
+The output of -gcflags -S also have no reference to this initialization.
+
+Searching inside the **runtime** package:
+
+```
+(runtime)λ> grep -R schedinit .
+./asm_amd64.s: CALL    runtime·schedinit(SB)
+./asm_mips64x.s:       JAL     runtime·schedinit(SB)
+./asm_arm.s:   BL      runtime·schedinit(SB)
+./proc.go://   call schedinit
+./proc.go:func schedinit() {
+./asm_s390x.s: BL      runtime·schedinit(SB)
+./traceback.go:        // schedinit calls this function so that the variables are
+./asm_ppc64x.s:        BL      runtime·schedinit(SB)
+./asm_arm64.s: BL      runtime·schedinit(SB)
+./asm_386.s:   CALL    runtime·schedinit(SB)
+./asm_amd64p32.s:      CALL    runtime·schedinit(SB)
+```
+
+It seems like the bootstraping code for each supported platform, is ASM.
+Lets take a look at the **amd64** implementation:
+
+```
+	MOVL	16(SP), AX		// copy argc
+	MOVL	AX, 0(SP)
+	MOVQ	24(SP), AX		// copy argv
+	MOVQ	AX, 8(SP)
+	CALL	runtime·args(SB)
+	CALL	runtime·osinit(SB)
+	CALL	runtime·schedinit(SB)
+
+	// create a new goroutine to start program
+	MOVQ	$runtime·mainPC(SB), AX		// entry
+	PUSHQ	AX
+	PUSHQ	$0			// arg size
+	CALL	runtime·newproc(SB)
+	POPQ	AX
+	POPQ	AX
+
+	// start this M
+	CALL	runtime·mstart(SB)
+```
+
+The whole thing has more than 2000 lines, so I just copied the
+part that confirms that schedinit is called before running
+the actual code, and on schedinit the typelinksinit will be
+called, that will initialized the types map.
+
+Sorry, got pretty far from the objective, lets go back to the type system
+hacking fun. Lets start the copying fun, just like the reflect package does,
+to inspect details on different types:
+
+```
+package main
+
+import (
+	"fmt"
+	"unsafe"
+)
+
+// tflag values must be kept in sync with copies in:
+//	cmd/compile/internal/gc/reflect.go
+//	cmd/link/internal/ld/decodesym.go
+//	runtime/type.go
+type tflag uint8
+
+type typeAlg struct {
+	// function for hashing objects of this type
+	// (ptr to object, seed) -> hash
+	hash func(unsafe.Pointer, uintptr) uintptr
+	// function for comparing objects of this type
+	// (ptr to object A, ptr to object B) -> ==?
+	equal func(unsafe.Pointer, unsafe.Pointer) bool
+}
+
+type nameOff int32 // offset to a name
+type typeOff int32 // offset to an *rtype
+
+type rtype struct {
+	size       uintptr
+	ptrdata    uintptr
+	hash       uint32   // hash of type; avoids computation in hash tables
+	tflag      tflag    // extra type information flags
+	align      uint8    // alignment of variable with this type
+	fieldAlign uint8    // alignment of struct field with this type
+	kind       uint8    // enumeration for C
+	alg        *typeAlg // algorithm table
+	gcdata     *byte    // garbage collection data
+	str        nameOff  // string form
+	ptrToThis  typeOff  // type for pointer to this type, may be zero
+}
+
+type eface struct {
+	typ  *rtype
+	word unsafe.Pointer
+}
+
+func (e eface) String() string {
+	return fmt.Sprintf("type: %#v\n\ndataptr: %v", *e.typ, e.word)
+}
+
+func getEface(i interface{}) eface {
+	return *(*eface)(unsafe.Pointer(&i))
+}
+
+func main() {
+	var a int
+	var b int
+	var c string
+	var d float32
+	var e float64
+	var f rtype
+	var g eface
+
+	fmt.Printf("a int:\n%s\n\n", getEface(a))
+	fmt.Printf("b int:\n%s\n\n", getEface(b))
+	fmt.Printf("c string:\n%s\n\n", getEface(c))
+	fmt.Printf("d float32:\n%s\n\n", getEface(d))
+	fmt.Printf("e float64:\n%s\n\n", getEface(e))
+	fmt.Printf("f rtype:\n%s\n\n", getEface(f))
+	fmt.Printf("g eface:\n%s\n\n", getEface(g))
+}
+```
+
+The output of running the code:
+
+```
+(typehack(git master))λ> go run inspectype.go
+a int:
+type: main.rtype{size:0x8, ptrdata:0x0, hash:0xf75371fa, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x82, alg:(*main.typeAlg)(0x4fb3d0), gcdata:(*uint8)(0x4b0eb8), str:843, ptrToThis:35392}
+
+dataptr: 0xc42000a2f0
+
+b int:
+type: main.rtype{size:0x8, ptrdata:0x0, hash:0xf75371fa, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x82, alg:(*main.typeAlg)(0x4fb3d0), gcdata:(*uint8)(0x4b0eb8), str:843, ptrToThis:35392}
+
+dataptr: 0xc42000a390
+
+c string:
+type: main.rtype{size:0x10, ptrdata:0x8, hash:0xe0ff5cb4, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x18, alg:(*main.typeAlg)(0x4fb3f0), gcdata:(*uint8)(0x4b0eb8), str:5274, ptrToThis:44480}
+
+dataptr: 0xc42000a400
+
+d float32:
+type: main.rtype{size:0x4, ptrdata:0x0, hash:0xb0c23ed3, tflag:0x7, align:0x4, fieldAlign:0x4, kind:0x8d, alg:(*main.typeAlg)(0x4fb420), gcdata:(*uint8)(0x4b0eb8), str:6791, ptrToThis:34880}
+
+dataptr: 0xc42000a478
+
+e float64:
+type: main.rtype{size:0x8, ptrdata:0x0, hash:0x2ea27ffb, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x8e, alg:(*main.typeAlg)(0x4fb430), gcdata:(*uint8)(0x4b0eb8), str:6802, ptrToThis:34944}
+
+dataptr: 0xc42000a4e8
+
+f rtype:
+type: main.rtype{size:0x30, ptrdata:0x28, hash:0x622c3ba0, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x19, alg:(*main.typeAlg)(0x482ca0), gcdata:(*uint8)(0x4b0ec9), str:11620, ptrToThis:35904}
+
+dataptr: 0xc420014270
+
+g eface:
+type: main.rtype{size:0x10, ptrdata:0x10, hash:0x4358c73f, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x19, alg:(*main.typeAlg)(0x4fb3e0), gcdata:(*uint8)(0x4b0eba), str:11606, ptrToThis:74272}
+
+dataptr: 0xc42000a5c0
+```
+
+// TODO: Comment on the outputs, what we can learn from it.
+
+There is a lot of ways to manipulate this type information, but the
+more naive way that I can think of is to define a function that gets
+the type information of a interface{} variable **a** 
+and the value of another interface{} variable **b**
+and return a new interface{} variable **c** with the type information
+of **a** but the value of **b**.
+
+TODO: Type Frankstein thing :-)
