@@ -744,7 +744,7 @@ func main() {
 }
 ```
 
-And get... this:
+And get this:
 
 ```
 x {100}
@@ -758,6 +758,14 @@ cast just like you do in C:
 ```
 A Pointer can be converted to a pointer value of any type.
 ```
+
+My first feeling was:
+
+![frustrated](img/hack-go-types/frustrated.jpg)
+
+Followed by:
+
+![retard](img/hack-go-types/full-retard.jpg)
 
 Once again the value of reading documentation is proved :-).
 
