@@ -703,8 +703,8 @@ This test is "safe" because both structs have the same size,
 C programmers must be feeling butterflies on their bellies :-).
 
 Although the hack is small, there is a lot of fun we can have
-with it, but before we go on there one single line of magic
-that was completely unknow to me in Go, this:
+with it, but before we go on there one single line of unsafeness
+that is usually unknow to Go newcomers:
 
 ```go
 func geteface(i *interface{}) *eface {
@@ -712,12 +712,11 @@ func geteface(i *interface{}) *eface {
 }
 ```
 
-My feeling the first time I saw this (and copied it) was:
+My feeling the first time I saw this was:
 
 ![Go or C](img/hack-go-types/fly.jpg)
 
-If this kind of casting works on Go, all my hack is even
-more stupid than it already is, since I could just do:
+With this kind of casting, my hack could be written as:
 
 ```go
 package main
@@ -759,16 +758,6 @@ cast just like you do in C:
 A Pointer can be converted to a pointer value of any type.
 ```
 
-My first feeling was:
-
-![frustrated](img/hack-go-types/frustrated.jpg)
-
-Followed by:
-
-![retard](img/hack-go-types/full-retard.jpg)
-
-Once again the value of reading documentation is proved :-).
-
 To not allow me to look completely ridiculous, the objective was
 to hack the type system, which is to make the runtime casting
 facility behave as I want (unsafely), my interest was to break this:
@@ -778,8 +767,10 @@ facility behave as I want (unsafely), my interest was to break this:
 ```
 
 Make the "safe" cast behave unsafely, based on sheer curiosity on
-how this can actually be safe. And this has been achieved. So lets
-forget that there is a **VERY** simpler way to force casts in Go
+how this can actually be safe (take a look under the hood).
+And this has been achieved.
+
+So lets forget that there is a **VERY** simpler way to force casts in Go
 and have some fun with my useless hack (we should at least have some
 fun, right ?).
 
