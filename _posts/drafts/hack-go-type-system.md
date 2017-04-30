@@ -551,13 +551,50 @@ type: main.rtype{size:0x10, ptrdata:0x10, hash:0x4358c73f, tflag:0x7, align:0x8,
 dataptr: 0xc42000a5c0
 ```
 
-// TODO: Comment on the outputs, what we can learn from it.
+Since this is already getting pretty extensive I won't dive in every single
+detail of the outputs. But we can observe some interesting things.
+
+The hack seems to have worked perfectly, since the size of all types
+makes sense. Alignment information also makes sense too.
+And also there is the **kind** information. Like I said on the start,
+type systems usually just use a number to differentiate on the types.
+
+But comparing two different structs shows an interesting characteristic
+from Go. Although **rtype** and **eface** are two different types, and
+casting between the two types won't work, they are of the same kind **0x19**.
+
+On the reflect package there is the [Kind](https://golang.org/pkg/reflect/#Kind)
+type, which is a enumeration of all Go's base types. There is some information
+about that [here](https://golang.org/ref/spec#Types). Every named/unnamed type
+you define in Go will always have an underlying type, which will be one
+of the types on the kind enumeration (that shows up on our type struct).
+
+So in Go you can't create types in the same sense of the native types that
+comes with the language, you can't create new kinds, at least AFAIK.
+This is considerably confusing, because kind is a synonim of type :-),
+but it is one of the two hardest challenges on programming, giving names
+to things (the other ones is implementing caches :-)).
+
+But the types you create work well enough, the compiler will help you, and
+reflection will also work properly. Even with the same kind, different
+types will have different **rtype** pointers associated with them, even different
+size in the struct case, but it is a interesting detail that I tought it was
+worth mentioning.
+
+Well, now we can go back to hacking the type system.
 
 There is a lot of ways to manipulate this type information, but the
 more naive way that I can think of is to define a function that gets
-the type information of a interface{} variable **a** 
-and the value of another interface{} variable **b**
-and return a new interface{} variable **c** with the type information
-of **a** but the value of **b**.
+a interface{} variable and a reflect.Type:
 
-TODO: Type Frankstein thing :-)
+```go
+func Cast(a {}interface, t reflect.Type) interface{}
+```
+
+Well, in this case the lack of generics on Go obligates me
+to use a interface{} and push the cast to the client, or develop
+a function for every basic type, but types defined by the client
+would require the client writing its own function, or just
+casting. Let's just let the client do some heavy lifting on this
+case, [Jersey's style](https://www.jwz.org/doc/worse-is-better.html)
+(not that "The right thing" also does not have it's place).
