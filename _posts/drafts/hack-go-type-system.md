@@ -1,8 +1,21 @@
-# Hacking Go's type system
+---
+published: false
+title: Hacking Go's type system
+layout: post
+---
+
+Are you in the mood for a stroll inside Go's type system ?
+If you are alredy familiarized with it, this post can be funny
+for you, or just plain stupid.
+
+If you have no idea how types and interfaces are implemented on Go,
+you may learn something, I sure did :-)
+
+<!-- more -->
 
 Since I worked with handwritten type systems in C,
-like the one found in [glib GObjects](TODO), I'm
-always curious on how languages implement the
+like the one found in [glib GObjects](https://developer.gnome.org/gobject/stable/),
+I'm always curious on how languages implement the
 concept of type safety on a machine that actually only
 has numbers. This curiosity has extended to how I could
 bend Go's type system to my own will.
@@ -52,7 +65,8 @@ Is this:
 ```
 
 The **runtime.assertE2T** call caught my attention, it was not hard to
-find it on the [iface.go](TODO) file on the golang source code.
+find it on the [iface.go](https://github.com/golang/go/blob/master/src/runtime/iface.go)
+file on the golang source code.
 
 It's code (on the time of writing, Go 1.8):
 
@@ -77,7 +91,7 @@ func assertE2T(t *_type, e eface, r unsafe.Pointer) {
 There is the eface type, that has a **_type** field. Checking out what
 would be a **eface** I found this:
 
-```
+```go
 type iface struct {
 	tab  *itab
 	data unsafe.Pointer
@@ -90,18 +104,19 @@ type eface struct {
 ```
 
 From what I read before on
-[Russ Cox post about interfaces](TODO)
+[Russ Cox post about interfaces](https://research.swtch.com/interfaces)
 I would guess that the **iface** is used when you are using
 interfaces that have actually methods on it (that is why it has
 a itab, the interface table, which is roughly equivalent to
-C++ vtable).
+a C++ vtable).
 
 I will ignore the iface (althought it is interesting) since it does not
 seem to be what I need to hack Go's type system, there is more potential
-on **eface**, which covers the special case of empty interfaces. On the
-post Russ Cox says that the empty interface is a special case that holds
+on **eface**, which covers the special case of empty interfaces (equivalent
+to C's void pointer in C, the origin of all fun unsafe casting in the world :-).
+On the post Russ Cox says that the empty interface is a special case that holds
 only the type information + the data, there is no itable, since it makes
-no sense at all.
+no sense at all (interface{} has no methods).
 
 The interface{} is just a way to transport runtime type information + data
 on a generic way through your code and it seems to be the more promissing
@@ -138,7 +153,8 @@ a direct pointer comparison:
 ```
 
 It seems easier to just find a way to get the eface struct and overwrite its
-**type** with the one I desire. This smells like a job to the [unsafe](TODO)
+**type** pointer with the one I desire. This smells like a job to the
+[unsafe](https://golang.org/pkg/unsafe/)
 package. But before that I needed more information on how a interface{}
 is initialized. Going back to the assembly code.
 
@@ -223,7 +239,8 @@ reflect package can do it, so can I :-).
 
 Before going on, I was curious about where the types are initialized.
 It seems that there is just one unique pointer with all the type
-information for each type. Thanks to [vim-go](TODO) and [go guru](TODO)
+information for each type. Thanks to [vim-go](https://github.com/fatih/vim-go)
+and [go guru](https://godoc.org/golang.org/x/tools/cmd/guru)
 for the invaluable help on analysing code and allowing me to
 check all the referers to a type. Thanks to these tools it has been
 pretty easy to find this on symtab:
@@ -585,16 +602,242 @@ Well, now we can go back to hacking the type system.
 
 There is a lot of ways to manipulate this type information, but the
 more naive way that I can think of is to define a function that gets
-a interface{} variable and a reflect.Type:
+a interface{} variable representing the value that will be casted
+and another interface{} variable that will carry the type information
+from where you want to cast to. The return is a new interface{}
+that can be casted to the desired target type. Something like this:
 
 ```go
-func Cast(a {}interface, t reflect.Type) interface{}
+func Morph(value interface{}, desiredtype interface{}) interface{}
 ```
 
 Well, in this case the lack of generics on Go obligates me
 to use a interface{} and push the cast to the client, or develop
 a function for every basic type, but types defined by the client
-would require the client writing its own function, or just
-casting. Let's just let the client do some heavy lifting on this
+would require the client writing its own function.
+
+Let's just let the client do some heavy lifting on this
 case, [Jersey's style](https://www.jwz.org/doc/worse-is-better.html)
 (not that "The right thing" also does not have it's place).
+
+The final implementation can be found on [morfus](https://github.com/katcipis/morfos),
+the most small and stupid Go library ever :-).
+
+I say this because the final hack on the type system is so simple
+that it makes me want to cry, Go is indeed terribly simple, nothing
+to feed my ego here :-(. The whole magic:
+
+```go
+package morfos
+
+import "unsafe"
+
+type eface struct {
+	Type unsafe.Pointer
+	Word unsafe.Pointer
+}
+
+func geteface(i *interface{}) *eface {
+	return (*eface)(unsafe.Pointer(i))
+}
+
+// Morph will coerce the given value to the type stored on desiredtype
+// without copying or changing any data on value. The result will
+// be a merge of the data stored on value with the type stored on
+// desiredtype, basically a frankstein :-).
+//
+// The result value should be castable to the type of desiredtype.
+func Morph(value interface{}, desiredtype interface{}) interface{} {
+	valueeface := geteface(&value)
+	typeeface := geteface(&desiredtype)
+	valueeface.Type = typeeface.Type
+	return value
+}
+```
+
+My very first passing test:
+
+```go
+package morfos_test
+
+import (
+	"testing"
+
+	"github.com/katcipis/morfos"
+)
+
+func TestStructsSameSize(t *testing.T) {
+	type original struct {
+		x int
+		y int
+	}
+	type notoriginal struct {
+		z int
+		w int
+	}
+
+	orig := original{x: 100, y: 200}
+	_, ok := interface{}(orig).(notoriginal)
+	if ok {
+		t.Fatal("casting should be invalid")
+	}
+
+	morphed := morfos.Morph(orig, notoriginal{})
+	morphedNotOriginal, ok := morphed.(notoriginal)
+
+	if !ok {
+		t.Fatal("casting should be valid now")
+	}
+
+	if orig.x != morphedNotOriginal.z {
+		t.Fatalf("expected x[%d] == z[%d]", orig.x, morphedNotOriginal.z)
+	}
+
+	if orig.y != morphedNotOriginal.w {
+		t.Fatalf("expected y[%d] == w[%d]", orig.y, morphedNotOriginal.w)
+	}
+}
+```
+
+This test is "safe" because both structs have the same size,
+C programmers must be feeling butterflies on their bellies :-).
+
+Although the hack is small, there is a lot of fun we can have
+with it, but before we go on there one single line of magic
+that was completely unknow to me in Go, this:
+
+```go
+func geteface(i *interface{}) *eface {
+	return (*eface)(unsafe.Pointer(i))
+}
+```
+
+My feeling the first time I saw this (and copied it) was:
+
+![Go or C](img/hack-go-types/fly.jpg)
+
+If this kind of casting works on Go, all my hack is even
+more stupid than it already is, since I could just do:
+
+```go
+package main
+
+import (
+ 	"fmt"
+	"unsafe"
+)
+
+type a struct {
+	a int
+}
+
+type b struct {
+	b int
+}
+
+func main() {
+	x := a{a:100}
+	y := *(*b)(unsafe.Pointer(&x))
+	
+	fmt.Printf("x %v\n", x)
+	fmt.Printf("y %v\n", y)
+}
+```
+
+And get... this:
+
+```
+x {100}
+y {100}
+```
+
+It works, as can be read [here](https://golang.org/pkg/unsafe/#Pointer)
+the unsafe.Pointer has special properties that allows it to be
+cast just like you do in C:
+
+```
+A Pointer can be converted to a pointer value of any type.
+```
+
+Once again the value of reading documentation is proved :-).
+
+To not allow me to look completely ridiculous, the objective was
+to hack the type system, which is to make the runtime casting
+facility behave as I want (unsafely), my interest was to break this:
+
+```go
+        a, ok := b.(someType)
+```
+
+Make the "safe" cast behave unsafely, based on sheer curiosity on
+how this can actually be safe. And this has been achieved. So lets
+forget that there is a **VERY** simpler way to force casts in Go
+and have some fun with my useless hack (we should at least have some
+fun, right ?).
+
+In Go strings are immutable, or are they ?
+
+```go
+func TestMutatingString(t *testing.T) {
+
+	type stringStruct struct {
+		str unsafe.Pointer
+		len int
+	}
+
+	var rawstr [5]byte
+	rawstr[0] = 'h'
+	rawstr[1] = 'e'
+	rawstr[2] = 'l'
+	rawstr[3] = 'l'
+	rawstr[4] = 'o'
+
+	hi := stringStruct{
+		str: unsafe.Pointer(&rawstr),
+		len: len(rawstr),
+	}
+
+	somestr := ""
+
+	morphed := morfos.Morph(hi, somestr)
+	mutableStr := morphed.(string)
+
+	if mutableStr != "hello" {
+		t.Fatalf("expected hello, got: %s", mutableStr)
+	}
+
+	rawstr[0] = 'h'
+	rawstr[1] = 'a'
+	rawstr[2] = 'c'
+	rawstr[3] = 'k'
+	rawstr[4] = 'd'
+
+	if mutableStr != "hackd" {
+		t.Fatalf("expected hackd, got: %s", mutableStr)
+	}
+}
+```
+
+To do this I exploited the fact that Go's strings are just structs
+with a pointer to the actual string and a len, the string does not
+need to be null terminated, thanks to the len field.
+
+As expected this test pass, without reassigning the **mutableStr**
+variable at any moment I was able to make it represent a different
+string, by changing its internal byte array.
+
+Besides being fun, this hack is another example on how using the
+**unsafe** package will trully make your program unsafe. Seeing this
+on the code:
+
+```go
+        y := *(*b)(unsafe.Pointer(&x))
+```
+
+Will make all kind of alarms bell on your head, but this:
+
+```go
+        a, ok := b.(someType)
+```
+
+Well, if **ok** is true it is safe to use a, or is it ? :-)
