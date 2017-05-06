@@ -68,7 +68,7 @@ The **runtime.assertE2T** call caught my attention, it was not hard to
 find it on the [iface.go](https://github.com/golang/go/blob/master/src/runtime/iface.go)
 file on the golang source code.
 
-It's code (on the time of writing, Go 1.8):
+It's code (on the time of writing, Go 1.7.3):
 
 ```
 func assertE2T(t *_type, e eface, r unsafe.Pointer) {
