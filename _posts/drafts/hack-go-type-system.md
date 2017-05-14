@@ -126,7 +126,7 @@ interfaces that actually have methods on it (that is why it has
 a itab, the interface table, which is roughly equivalent to
 a C++ vtable).
 
-I will ignore the iface (althought it is interesting) since it does not
+I will ignore the iface (although it is interesting) since it does not
 seem to be what I need to hack Go's type system, there is more potential
 on **eface**, which covers the special case of empty interfaces (equivalent
 to C's void pointer in C, the origin of all fun unsafe casting in the world :-).
@@ -575,7 +575,7 @@ to things (the other ones is implementing caches :-)).
 But the types you create work well enough, the compiler will help you, and
 reflection will also work properly. Even with the same kind, different
 types will have different **rtype** pointers associated with them, even different
-size in the struct case, but it is a interesting detail that I tought it was
+size in the struct case, but it is a interesting detail that I thought it was
 worth mentioning.
 
 Well, now we can go back to hacking the type system.
@@ -754,7 +754,7 @@ So lets forget that there is a **VERY** simpler way to force casts in Go
 and have some fun with my useless hack (we should at least have some
 fun, right ?).
 
-In Go strings are immutable, or are they ?
+In Go strings are immutable, or aren't they ?
 
 ```go
 func TestMutatingString(t *testing.T) {
