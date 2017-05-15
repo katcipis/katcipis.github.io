@@ -21,7 +21,7 @@ has numbers. This curiosity has extended to how I could
 bend Go's type system to my own will.
 
 Go's instances do not carry type information on the instances,
-so my only chance will involve using a interface{}. All type systems
+so my only chance will involve using an interface{}. All type systems
 that I'm aware off usually implement types as some sort of integer code,
 which is used to check if the type corresponds to the one you are casting.
 
@@ -106,14 +106,14 @@ type eface struct {
 From what I read before on
 [Russ Cox post about interfaces](https://research.swtch.com/interfaces)
 I would guess that the **iface** is used when you are using
-interfaces that have actually methods on it (that is why it has
-a itab, the interface table, which is roughly equivalent to
-a C++ vtable).
+interfaces that have actually methods on it. That is why it has
+an itab, the interface table, which is roughly equivalent to
+a C++ vtable.
 
 I will ignore the iface (althought it is interesting) since it does not
 seem to be what I need to hack Go's type system, there is more potential
 on **eface**, which covers the special case of empty interfaces (equivalent
-to C's void pointer in C, the origin of all fun unsafe casting in the world :-).
+to C's void pointer in C).
 On the post Russ Cox says that the empty interface is a special case that holds
 only the type information + the data, there is no itable, since it makes
 no sense at all (interface{} has no methods).
@@ -155,7 +155,7 @@ a direct pointer comparison:
 It seems easier to just find a way to get the eface struct and overwrite its
 **type** pointer with the one I desire. This smells like a job to the
 [unsafe](https://golang.org/pkg/unsafe/)
-package. But before that I needed more information on how a interface{}
+package. But before that I needed more information on how an interface{}
 is initialized. Going back to the assembly code.
 
 This line:
@@ -209,7 +209,7 @@ func convT2E(t *_type, elem unsafe.Pointer, x unsafe.Pointer) (e eface) {
 Yeah, definitely seems to be initializing the eface and returning it.
 Now I just have to figure a way to get my hands on the **_type** pointer.
 
-I still don't have a good idea on how to get the *_type, or how to manipulate
+I still don't have a good idea on how to get the **\_type**, or how to manipulate
 the eface type. My guess would be to just cast it as a pointer and do some
 old school pointer manipulation, but I'm not sure yet.
 
@@ -404,7 +404,7 @@ func schedinit() {
 ```
 
 And schedinit, at least according to go guru, is not called anywhere.
-The output of -gcflags -S also have no reference to this initialization.
+The output of -gcflags -S also has no reference to this initialization.
 
 Searching inside the **runtime** package:
 
@@ -450,7 +450,7 @@ Lets take a look at the **amd64** implementation:
 The whole thing has more than 2000 lines, so I just copied the
 part that confirms that schedinit is called before running
 the actual code, and on schedinit the typelinksinit will be
-called, that will initialized the types map.
+called, that will initialize the types map.
 
 Sorry, got pretty far from the objective, lets go back to the type system
 hacking fun. Lets start the copying fun, just like the reflect package does,
@@ -595,14 +595,14 @@ to things (the other ones is implementing caches :-)).
 But the types you create work well enough, the compiler will help you, and
 reflection will also work properly. Even with the same kind, different
 types will have different **rtype** pointers associated with them, even different
-size in the struct case, but it is a interesting detail that I tought it was
+size in the struct case, but it is an interesting detail that I tought it was
 worth mentioning.
 
 Well, now we can go back to hacking the type system.
 
 There is a lot of ways to manipulate this type information, but the
 more naive way that I can think of is to define a function that gets
-a interface{} variable representing the value that will be casted
+an interface{} variable representing the value that will be casted
 and another interface{} variable that will carry the type information
 from where you want to cast to. The return is a new interface{}
 that can be casted to the desired target type. Something like this:
@@ -612,7 +612,7 @@ func Morph(value interface{}, desiredtype interface{}) interface{}
 ```
 
 Well, in this case the lack of generics on Go obligates me
-to use a interface{} and push the cast to the client, or develop
+to use an interface{} and push the cast to the client, or develop
 a function for every basic type, but types defined by the client
 would require the client writing its own function.
 
@@ -703,7 +703,7 @@ This test is "safe" because both structs have the same size,
 C programmers must be feeling butterflies on their bellies :-).
 
 Although the hack is small, there is a lot of fun we can have
-with it, but before we go on there one single line of unsafeness
+with it, but before we go on there is one single line of unsafeness
 that is usually unknow to Go newcomers:
 
 ```go
