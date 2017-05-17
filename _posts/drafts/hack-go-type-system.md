@@ -5,7 +5,7 @@ layout: post
 ---
 
 Are you in the mood for a stroll inside Go's type system ?
-If you are alredy familiarized with it, this post can be funny
+If you are already familiarized with it, this post can be funny
 for you, or just plain stupid.
 
 If you have no idea how types and interfaces are implemented on Go,
@@ -53,38 +53,54 @@ Found that the assembly code corresponding to this:
 	c := b.(int)
 ```
 
-Is this:
+Is (roughly) this:
 
 ```
-	0x0075 00117 (cast.go:8)	MOVQ	CX, 8(SP)
-	0x007a 00122 (cast.go:8)	MOVQ	AX, 16(SP)
-	0x007f 00127 (cast.go:8)	LEAQ	"".autotmp_1+64(SP), AX
-	0x0084 00132 (cast.go:8)	MOVQ	AX, 24(SP)
-	0x0089 00137 (cast.go:8)	PCDATA	$0, $0
-	0x0089 00137 (cast.go:8)	CALL	runtime.assertE2T(SB)
+	0x002a 00042 (cast.go:7)	LEAQ	type.int(SB), AX
+	0x0031 00049 (cast.go:8)	CMPQ	AX, AX
+	0x0034 00052 (cast.go:8)	JNE	$0, 162
+	0x0036 00054 (cast.go:9)	MOVQ	$0, ""..autotmp_3+56(SP)
+	0x003f 00063 (cast.go:9)	MOVQ	$0, ""..autotmp_2+64(SP)
+	0x0048 00072 (cast.go:9)	MOVQ	$0, ""..autotmp_2+72(SP)
+	0x0051 00081 (cast.go:9)	MOVQ	AX, (SP)
+	0x0055 00085 (cast.go:9)	LEAQ	""..autotmp_3+56(SP), AX
+	0x005a 00090 (cast.go:9)	MOVQ	AX, 8(SP)
+	0x005f 00095 (cast.go:9)	PCDATA	$0, $1
+	0x005f 00095 (cast.go:9)	CALL	runtime.convT2E(SB)
 ```
 
-The **runtime.assertE2T** call caught my attention, it was not hard to
+The **runtime.convT2E** call caught my attention, it was not hard to
 find it on the [iface.go](https://github.com/golang/go/blob/master/src/runtime/iface.go)
 file on the golang source code.
 
-It's code (on the time of writing, Go 1.7.3):
+It's code (on the time of writing, Go 1.8.1):
 
 ```
-func assertE2T(t *_type, e eface, r unsafe.Pointer) {
-	if e._type == nil {
-		panic(&TypeAssertionError{"", "", t.string(), ""})
+// The conv and assert functions below do very similar things.
+// The convXXX functions are guaranteed by the compiler to succeed.
+// The assertXXX functions may fail (either panicking or returning false,
+// depending on whether they are 1-result or 2-result).
+// The convXXX functions succeed on a nil input, whereas the assertXXX
+// functions fail on a nil input.
+
+func convT2E(t *_type, elem unsafe.Pointer) (e eface) {
+	if raceenabled {
+		raceReadObjectPC(t, elem, getcallerpc(unsafe.Pointer(&t)), funcPC(convT2E))
 	}
-	if e._type != t {
-		panic(&TypeAssertionError{"", e._type.string(), t.string(), ""})
+	if msanenabled {
+		msanread(elem, t.size)
 	}
-	if r != nil {
-		if isDirectIface(t) {
-			writebarrierptr((*uintptr)(r), uintptr(e.data))
-		} else {
-			typedmemmove(t, r, e.data)
-		}
+	if isDirectIface(t) {
+		// This case is implemented directly by the compiler.
+		throw("direct convT2E")
 	}
+	x := newobject(t)
+	// TODO: We allocate a zeroed object only to overwrite it with
+	// actual data. Figure out how to avoid zeroing. Also below in convT2I.
+	typedmemmove(t, x, elem)
+	e._type = t
+	e.data = x
+	return
 }
 ```
 
@@ -124,7 +140,7 @@ way to hack types.
 
 The **type** is:
 
-```
+```go
 type _type struct {
 	size       uintptr
 	ptrdata    uintptr // size of memory prefix holding all pointers
@@ -155,59 +171,11 @@ a direct pointer comparison:
 It seems easier to just find a way to get the eface struct and overwrite its
 **type** pointer with the one I desire. This smells like a job to the
 [unsafe](https://golang.org/pkg/unsafe/)
-package. But before that I needed more information on how an interface{}
-is initialized. Going back to the assembly code.
+package.
 
-This line:
-
-```
-	var b interface{} = a
-```
-
-Becomes this:
-
-```
-	0x0021 00033 (cast.go:7)	MOVQ	$0, "".autotmp_0+72(SP)
-	0x002a 00042 (cast.go:7)	MOVQ	$0, "".autotmp_3+48(SP)
-	0x0033 00051 (cast.go:7)	LEAQ	type.int(SB), AX
-	0x003a 00058 (cast.go:7)	MOVQ	AX, (SP)
-	0x003e 00062 (cast.go:7)	LEAQ	"".autotmp_0+72(SP), CX
-	0x0043 00067 (cast.go:7)	MOVQ	CX, 8(SP)
-	0x0048 00072 (cast.go:7)	LEAQ	"".autotmp_3+48(SP), CX
-	0x004d 00077 (cast.go:7)	MOVQ	CX, 16(SP)
-	0x0052 00082 (cast.go:7)	PCDATA	$0, $0
-	0x0052 00082 (cast.go:7)	CALL	runtime.convT2E(SB)
-	0x0057 00087 (cast.go:7)	MOVQ	32(SP), AX
-	0x005c 00092 (cast.go:7)	MOVQ	24(SP), CX
-```
-
-My first move is on **runtime.convT2E(SB)**:
-
-```	
-func convT2E(t *_type, elem unsafe.Pointer, x unsafe.Pointer) (e eface) {
-	if raceenabled {
-		raceReadObjectPC(t, elem, getcallerpc(unsafe.Pointer(&t)), funcPC(convT2E))
-	}
-	if msanenabled {
-		msanread(elem, t.size)
-	}
-	if isDirectIface(t) {
-		throw("direct convT2E")
-	}
-	if x == nil {
-		x = newobject(t)
-		// TODO: We allocate a zeroed object only to overwrite it with
-		// actual data. Figure out how to avoid zeroing. Also below in convT2I.
-	}
-	typedmemmove(t, x, elem)
-	e._type = t
-	e.data = x
-	return
-}
-```
-
-Yeah, definitely seems to be initializing the eface and returning it.
-Now I just have to figure a way to get my hands on the **_type** pointer.
+From the previously analyzed **convT2E** function it seems
+that a **interface{}** variable is basically a **eface** struct.
+I just have to figure a way to get my hands on the **_type** pointer.
 
 I still don't have a good idea on how to get the **\_type**, or how to manipulate
 the eface type. My guess would be to just cast it as a pointer and do some
@@ -235,7 +203,8 @@ type emptyInterface struct {
 
 It seems that although the eface was private on the **runtime**
 package it is copied here on the **reflect** package. Well, if the
-reflect package can do it, so can I :-).
+reflect package can do it, so can I :-) (a little duplication is
+better than a big dependency, right ?).
 
 Before going on, I was curious about where the types are initialized.
 It seems that there is just one unique pointer with all the type
@@ -243,9 +212,9 @@ information for each type. Thanks to [vim-go](https://github.com/fatih/vim-go)
 and [go guru](https://godoc.org/golang.org/x/tools/cmd/guru)
 for the invaluable help on analysing code and allowing me to
 check all the referers to a type. Thanks to these tools it has been
-pretty easy to find this on symtab:
+pretty easy to find this on runtime/symtab.go:
 
-```
+```go
 // moduledata records information about the layout of the executable
 // image. It is written by the linker. Any changes here must be
 // matched changes to the code in cmd/internal/ld/symtab.go:symtab.
@@ -266,8 +235,14 @@ type moduledata struct {
 	end, gcdata, gcbss    uintptr
 	types, etypes         uintptr
 
-	typelinks []int32 // offsets from types
-	itablinks []*itab
+	textsectmap []textsect
+	typelinks   []int32 // offsets from types
+	itablinks   []*itab
+
+	ptab []ptabEntry
+
+	pluginpath string
+	pkghashes  []modulehash
 
 	modulename   string
 	modulehashes []modulehash
@@ -281,23 +256,20 @@ type moduledata struct {
 ```
 
 A good candidate is the **typemap** field, checking out how
-it is used I found this:
+it is used I found this on runtime/type.go:
 
-```
+```go
 // typelinksinit scans the types from extra modules and builds the
 // moduledata typemap used to de-duplicate type pointers.
 func typelinksinit() {
 	if firstmoduledata.next == nil {
 		return
 	}
-	typehash := make(map[uint32][]*_type)
+	typehash := make(map[uint32][]*_type, len(firstmoduledata.typelinks))
 
-	modules := []*moduledata{}
-	for md := &firstmoduledata; md != nil; md = md.next {
-		modules = append(modules, md)
-	}
-	prev, modules := modules[len(modules)-1], modules[:len(modules)-1]
-	for len(modules) > 0 {
+	modules := activeModules()
+	prev := modules[0]
+	for _, md := range modules[1:] {
 		// Collect types from the previous module into typehash.
 	collect:
 		for _, tl := range prev.typelinks {
@@ -317,23 +289,26 @@ func typelinksinit() {
 			typehash[t.hash] = append(tlist, t)
 		}
 
-		// If any of this module's typelinks match a type from a
-		// prior module, prefer that prior type by adding the offset
-		// to this module's typemap.
-		md := modules[len(modules)-1]
-		md.typemap = make(map[typeOff]*_type, len(md.typelinks))
-		for _, tl := range md.typelinks {
-			t := (*_type)(unsafe.Pointer(md.types + uintptr(tl)))
-			for _, candidate := range typehash[t.hash] {
-				if typesEqual(t, candidate) {
-					t = candidate
-					break
+		if md.typemap == nil {
+			// If any of this module's typelinks match a type from a
+			// prior module, prefer that prior type by adding the offset
+			// to this module's typemap.
+			tm := make(map[typeOff]*_type, len(md.typelinks))
+			pinnedTypemaps = append(pinnedTypemaps, tm)
+			md.typemap = tm
+			for _, tl := range md.typelinks {
+				t := (*_type)(unsafe.Pointer(md.types + uintptr(tl)))
+				for _, candidate := range typehash[t.hash] {
+					if typesEqual(t, candidate) {
+						t = candidate
+						break
+					}
 				}
+				md.typemap[typeOff(tl)] = t
 			}
-			md.typemap[typeOff(tl)] = t
 		}
 
-		prev, modules = md, modules[:len(modules)-1]
+		prev = md
 	}
 }
 ```
@@ -342,9 +317,10 @@ It seems that the typemap is initialized on the startup of the
 process, with help of information collected by the linker, on
 build time.
 
-The typelinksinit is called here:
+The typelinksinit function is used on the schedinit function
+(from runtime/proc.go):
 
-```
+```go
 // The bootstrap sequence is:
 //
 //	call osinit
@@ -369,8 +345,9 @@ func schedinit() {
 	mallocinit()
 	mcommoninit(_g_.m)
 	alginit()       // maps must not be used before this call
-	typelinksinit() // uses maps
-	itabsinit()
+	modulesinit()   // provides activeModules
+	typelinksinit() // uses maps, activeModules
+	itabsinit()     // uses activeModules
 
 	msigsave(_g_.m)
 	initSigmask = _g_.m.sigmask
@@ -381,17 +358,14 @@ func schedinit() {
 	gcinit()
 
 	sched.lastpoll = uint64(nanotime())
-	procs := int(ncpu)
+	procs := ncpu
+	if n, ok := atoi32(gogetenv("GOMAXPROCS")); ok && n > 0 {
+		procs = n
+	}
 	if procs > _MaxGomaxprocs {
 		procs = _MaxGomaxprocs
 	}
-	if n := atoi(gogetenv("GOMAXPROCS")); n > 0 {
-		if n > _MaxGomaxprocs {
-			n = _MaxGomaxprocs
-		}
-		procs = n
-	}
-	if procresize(int32(procs)) != nil {
+	if procresize(procs) != nil {
 		throw("unknown runnable goroutine during bootstrap")
 	}
 
@@ -402,6 +376,7 @@ func schedinit() {
 	}
 }
 ```
+
 
 And schedinit, at least according to go guru, is not called anywhere.
 The output of -gcflags -S also has no reference to this initialization.
@@ -420,6 +395,7 @@ Searching inside the **runtime** package:
 ./asm_ppc64x.s:        BL      runtime·schedinit(SB)
 ./asm_arm64.s: BL      runtime·schedinit(SB)
 ./asm_386.s:   CALL    runtime·schedinit(SB)
+./asm_mipsx.s: JAL     runtime·schedinit(SB)
 ./asm_amd64p32.s:      CALL    runtime·schedinit(SB)
 ```
 
@@ -427,6 +403,9 @@ It seems like the bootstraping code for each supported platform, is ASM.
 Lets take a look at the **amd64** implementation:
 
 ```
+	CLD				// convention is D is always left cleared
+	CALL	runtime·check(SB)
+
 	MOVL	16(SP), AX		// copy argc
 	MOVL	AX, 0(SP)
 	MOVQ	24(SP), AX		// copy argv
@@ -442,9 +421,6 @@ Lets take a look at the **amd64** implementation:
 	CALL	runtime·newproc(SB)
 	POPQ	AX
 	POPQ	AX
-
-	// start this M
-	CALL	runtime·mstart(SB)
 ```
 
 The whole thing has more than 2000 lines, so I just copied the
@@ -836,7 +812,7 @@ on the code:
 Will make all kind of alarms bell on your head, but this:
 
 ```go
-        a, ok := b.(someType)
+        val, ok := b.(someType)
 ```
 
-Well, if **ok** is true it is safe to use a, or is it ? :-)
+Well, if **ok** is true it is safe to use **val**, or is it ? :-)
