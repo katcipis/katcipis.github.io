@@ -128,8 +128,8 @@ a C++ vtable.
 
 I will ignore the iface (althought it is interesting) since it does not
 seem to be what I need to hack Go's type system, there is more potential
-on **eface**, which covers the special case of empty interfaces (equivalent
-to C's void pointer in C).
+on **eface**, which covers the special case of empty interfaces
+(the equivalent of a void pointer in C).
 On the post Russ Cox says that the empty interface is a special case that holds
 only the type information + the data, there is no itable, since it makes
 no sense at all (interface{} has no methods).
