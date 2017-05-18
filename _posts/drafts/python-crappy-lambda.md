@@ -58,3 +58,11 @@ invoco @i4k para a treta tb
 
 ​[1:14] 
 se eu tiver que criar uma classe com um metodo __call__ para resolver isso....desisto do python
+
+
+## Lists are not iterable
+
+Yeah list are not iterable in Python.
+
+Iterators and lists works uniformely on loops
+but the abstraction breaks on the **next** function lol.
