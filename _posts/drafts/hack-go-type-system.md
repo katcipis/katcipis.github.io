@@ -813,3 +813,12 @@ Will make all kind of alarms bell on your head, but this:
 ```
 
 Well, if **ok** is true it is safe to use **val**, or is it ? :-)
+
+# Thanks
+
+Thanks to my friends/reviewers:
+
+* [Kamila Hinckel](https://github.com/kamilash)
+* [Paulo Benatto](https://github.com/patito)
+* [Tiago Natel](https://github.com/tiago4orion)
+* [Vitor Arins](https://github.com/vitorarins)
