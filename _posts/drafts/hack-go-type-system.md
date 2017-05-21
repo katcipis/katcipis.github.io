@@ -20,7 +20,7 @@ concept of type safety on a machine that actually only
 has numbers. This curiosity has extended to how I could
 bend Go's type system to my own will.
 
-Go's instances do not carry type information on the instances,
+Go's instances do not carry type information on them,
 so my only chance will involve using an interface{}. All type systems
 that I'm aware off usually implement types as some sort of integer code,
 which is used to check if the type corresponds to the one you are casting.
@@ -130,9 +130,10 @@ I will ignore the iface (althought it is interesting) since it does not
 seem to be what I need to hack Go's type system, there is more potential
 on **eface**, which covers the special case of empty interfaces
 (the equivalent of a void pointer in C).
+
 On the post Russ Cox says that the empty interface is a special case that holds
 only the type information + the data, there is no itable, since it makes
-no sense at all (interface{} has no methods).
+no sense at all (a interface{} has no methods).
 
 The interface{} is just a way to transport runtime type information + data
 on a generic way through your code and it seems to be the more promissing
@@ -159,7 +160,7 @@ type _type struct {
 }
 ```
 
-Lots of promissing fields to hack with, but since the comparison is just
+Lots of promissing fields to hack with, but actual type check is just
 a direct pointer comparison:
 
 ```
@@ -170,18 +171,13 @@ a direct pointer comparison:
 
 It seems easier to just find a way to get the eface struct and overwrite its
 **type** pointer with the one I desire. This smells like a job to the
-[unsafe](https://golang.org/pkg/unsafe/)
-package.
-
-From the previously analyzed **convT2E** function it seems
-that a **interface{}** variable is basically a **eface** struct.
-I just have to figure a way to get my hands on the **_type** pointer.
+[unsafe](https://golang.org/pkg/unsafe/) package.
 
 I still don't have a good idea on how to get the **\_type**, or how to manipulate
 the eface type. My guess would be to just cast it as a pointer and do some
 old school pointer manipulation, but I'm not sure yet.
 
-One function that is a good candidate to give some pointers
+One function that is a good candidate to give some directions
 on how to do it is **reflect.TypeOf**:
 
 ```
@@ -211,8 +207,8 @@ It seems that there is just one unique pointer with all the type
 information for each type. Thanks to [vim-go](https://github.com/fatih/vim-go)
 and [go guru](https://godoc.org/golang.org/x/tools/cmd/guru)
 for the invaluable help on analysing code and allowing me to
-check all the referers to a type. Thanks to these tools it has been
-pretty easy to find this on runtime/symtab.go:
+check all the referers to a type it has been
+pretty easy to find this on [runtime/symtab.go](https://github.com/golang/go/blob/master/src/runtime/symtab.go):
 
 ```go
 // moduledata records information about the layout of the executable
@@ -318,7 +314,7 @@ process, with help of information collected by the linker, on
 build time.
 
 The typelinksinit function is used on the schedinit function
-(from runtime/proc.go):
+(from [runtime/proc.go](https://github.com/golang/go/blob/master/src/runtime/proc.go)):
 
 ```go
 // The bootstrap sequence is:
@@ -399,7 +395,7 @@ Searching inside the **runtime** package:
 ./asm_amd64p32.s:      CALL    runtime·schedinit(SB)
 ```
 
-It seems like the bootstraping code for each supported platform, is ASM.
+It seems like the bootstraping code for each supported platform is ASM code.
 Lets take a look at the **amd64** implementation:
 
 ```
@@ -432,7 +428,7 @@ Sorry, got pretty far from the objective, lets go back to the type system
 hacking fun. Lets start the copying fun, just like the reflect package does,
 to inspect details on different types:
 
-```
+```go
 package main
 
 import (
@@ -590,7 +586,7 @@ func Morph(value interface{}, desiredtype interface{}) interface{}
 Well, in this case the lack of generics on Go obligates me
 to use an interface{} and push the cast to the client, or develop
 a function for every basic type, but types defined by the client
-would require the client writing its own function.
+would require the client writing its own functions.
 
 Let's just let the client do some heavy lifting on this
 case, [Jersey's style](https://www.jwz.org/doc/worse-is-better.html)
@@ -734,9 +730,10 @@ cast just like you do in C:
 A Pointer can be converted to a pointer value of any type.
 ```
 
-To not allow me to look completely ridiculous, the objective was
-to hack the type system, which is to make the runtime casting
-facility behave as I want (unsafely), my interest was to break this:
+You may be thinking, what was the point of all this then ?
+Well, the objective was to hack the type system, which is to
+make the runtime casting facility behave as I want,
+my interest was to break this:
 
 ```go
         a, ok := b.(someType)
@@ -794,10 +791,10 @@ func TestMutatingString(t *testing.T) {
 ```
 
 To do this I exploited the fact that Go's strings are just structs
-with a pointer to the actual string and a len, the string does not
+with a pointer to the actual byte array and a len, the string does not
 need to be null terminated, thanks to the len field.
 
-As expected this test pass, without reassigning the **mutableStr**
+As expected this test pass. Without reassigning the **mutableStr**
 variable at any moment I was able to make it represent a different
 string, by changing its internal byte array.
 
