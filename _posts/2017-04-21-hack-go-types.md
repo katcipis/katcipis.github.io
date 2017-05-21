@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 title: Hacking Go's type system
 layout: post
 ---
