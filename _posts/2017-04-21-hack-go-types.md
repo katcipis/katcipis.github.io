@@ -686,7 +686,7 @@ func geteface(i *interface{}) *eface {
 
 My feeling the first time I saw this was:
 
-![Go or C](/_assets/hack-go-types/img/fly.jpg)
+![Go or C](https://github.com/katcipis/katcipis.github.io/blob/master/_assets/hack-go-types/img/fly.jpg)
 
 With this kind of casting, my hack could be written as:
 
