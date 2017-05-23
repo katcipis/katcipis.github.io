@@ -28,7 +28,7 @@ which is used to check if the type corresponds to the one you are casting.
 To begin the exploration I wanted to find how type assertions are
 made, so I wrote this ridiculous code:
 
-```
+```go
 package main
 
 import "fmt"
@@ -49,7 +49,7 @@ go build -gcflags -S cast.go
 
 Found that the assembly code corresponding to this:
 
-```
+```go
 	c := b.(int)
 ```
 
@@ -75,7 +75,7 @@ file on the golang source code.
 
 It's code (on the time of writing, Go 1.8.1):
 
-```
+```go
 // The conv and assert functions below do very similar things.
 // The convXXX functions are guaranteed by the compiler to succeed.
 // The assertXXX functions may fail (either panicking or returning false,
@@ -163,7 +163,7 @@ type _type struct {
 Lots of promissing fields to hack with, but actual type check is just
 a direct pointer comparison:
 
-```
+```go
 	if e._type != t {
 		panic(&TypeAssertionError{"", e._type.string(), t.string(), ""})
 	}
@@ -180,7 +180,7 @@ old school pointer manipulation, but I'm not sure yet.
 One function that is a good candidate to give some directions
 on how to do it is **reflect.TypeOf**:
 
-```
+```go
 func TypeOf(i interface{}) Type {
 	eface := *(*emptyInterface)(unsafe.Pointer(&i))
 	return toType(eface.typ)
@@ -189,7 +189,7 @@ func TypeOf(i interface{}) Type {
 
 Yeah, just cast the pointer to a eface pointer:
 
-```
+```go
 // emptyInterface is the header for an interface{} value.
 type emptyInterface struct {
 	typ  *rtype
