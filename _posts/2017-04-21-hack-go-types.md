@@ -41,7 +41,7 @@ func main() {
 }
 ```
 
-Compiled it outputing it's assembly:
+Compiled it outputing its assembly:
 
 ```
 go build -gcflags -S cast.go
@@ -590,7 +590,7 @@ would require the client writing its own functions.
 
 Let's just let the client do some heavy lifting on this
 case, [Jersey's style](https://www.jwz.org/doc/worse-is-better.html)
-(not that "The right thing" also does not have it's place).
+(not that "The right thing" also does not have its place).
 
 The final implementation can be found on [morfus](https://github.com/katcipis/morfos),
 the most small and stupid Go library ever :-).
