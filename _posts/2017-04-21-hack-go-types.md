@@ -71,9 +71,7 @@ Is (roughly) this:
 
 The **runtime.convT2E** call caught my attention, it was not hard to
 find it on the [iface.go](https://github.com/golang/go/blob/master/src/runtime/iface.go)
-file on the golang source code.
-
-It's code (on the time of writing, Go 1.8.1):
+file on the golang source code (on the time of writing, Go 1.8.1):
 
 ```go
 // The conv and assert functions below do very similar things.
