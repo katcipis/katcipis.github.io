@@ -134,7 +134,7 @@ only the type information + the data, there is no itable, since it makes
 no sense at all (a interface{} has no methods).
 
 The interface{} is just a way to transport runtime type information + data
-on a generic way through your code and it seems to be the more promissing
+on a generic way through your code and it seems to be the more promising
 way to hack types.
 
 The **type** is:
