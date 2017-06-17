@@ -1,9 +1,14 @@
 Talk about the process of learning TDD, mistakes made.
 Use personal notes ;-).
 
-[Manual Test is Unsustainable](http://www.renaissancesoftware.net/blog/archives/206).
+* [Manual Test is Unsustainable](http://www.renaissancesoftware.net/blog/archives/206).
 
-#Why TDD ?
+# Why TDD ?
+
+* Repeatable proof
+
+Talk about how [Uncle Bob](http://developeronfire.com/podcast/episode-114-robert-martin-master-craftsman)
+thought that TDD was stupid and took 3 years to get it properly.
 
 ##Why rules ?
 

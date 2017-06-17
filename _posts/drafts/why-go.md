@@ -1,4 +1,4 @@
-# First some context
+ First some context
 
 For me it makes no sense to talk about why a decision has been made without any context.
 So I will try to give some context on what was happening when we decided to give Go a shot.
