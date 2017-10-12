@@ -13,7 +13,7 @@ oriented languages.
 
 OK, true object orientation seems like a stretch,
 specially because who the hell am I to talk about
-what is really object orientation ?
+what object orientation really is ?
 
 I promise that I will try to back up my conclusions
 with more support than "I just think this is what objects
