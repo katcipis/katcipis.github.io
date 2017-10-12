@@ -182,7 +182,7 @@ How useful can be implementing protocols that you do not even known exists ?
 This is very useful if you want your code to be truly extensible, allow me
 to provide a real world example from [nash](https://github.com/NeowayLabs/nash).
 
-## Extending code beyond its original purpose
+# Extending code beyond its original purpose
 
 The first time I understood how powerful Go interfaces can be was
 when I was trying to code the tests for the built-in function **exit**
@@ -312,7 +312,7 @@ reused on several ways that you never thought to be possible. You don't
 even need to express interfaces explicitly for them to be defined and
 used with your objects later.
 
-## What is object orientation anyway ?
+# What is object orientation anyway ?
 
 TODO, source:
 
@@ -329,17 +329,25 @@ Cells membrane exists to avoid stuff from getting out and also
 avoiding things to get in, clear protocol is implemented on
 the membrane to express that.
 
-### To inherit or not to inherit ?
+## To inherit or not to inherit ?
 
 Inheritance as a means of creating taxonomy (C++ / Java).
 
 Inheritance as a means of lazy functions composition (Python mixins)
 
-### Duck Typing
+## Duck Typing
 
 Fuck the duck, focus on protocols not form.
 
-## Conclusion
+# Conclusion
 
 TODO: Go seems to me to be more object oriented
 than most "classical" object oriented languages.
+
+# Acknowledgments
+
+Special thanks to:
+
+
+For taking time reviewing and pointing out a lot
+of stupid mistakes.
