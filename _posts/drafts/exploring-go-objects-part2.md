@@ -22,18 +22,20 @@ should be about".
 On a [previous post](https://katcipis.github.io/2017/03/28/exploring-go-objects.html)
 I explored the idea of expressing everything just with functions, and that
 Go objects are actually just a safe way to express a 
-set of functions that always go together and may operate on same state.
+set of functions that always go together with the same closure
+and may operate on same state.
 
 Safely expressing sets of functions that operates on same state is pretty
 useful, but how to actually create abstractions that can have multiple
 different implementations ?
 
 Objects alone do not support that, each type has its own set of functions
-attached to it and that is it. Before I was referring to this need as
-polymorphism, but as I walk away from the traditional notion of object
-orientation being about the objects and its form I find that thinking about
-protocols instead of polymorphism is more aligned with what should be the
-focus when you are designing software (more on that later).
+attached to it (what we call methods) and that is it.
+This is referred as polymorphism, but as I walk away from the traditional
+notion of object orientation being about the objects and its form (type)
+I find that thinking about protocols instead of polymorphism is more aligned
+with what should be the focus when you are designing software
+(more on that later).
 
 # How to define a protocol ?
 
@@ -86,24 +88,45 @@ func main() {
 }
 ```
 
-Which is a very hard (if not impossible) to be a compile time
-safe way to express a protocol. This example for example causes
-a segmentation fault, on purpose.
+Which is very hard (if not impossible) to be a compile time
+safe way to express a protocol. To make a point this example
+causes a segmentation fault.
 
 Another problem is that the code implementing the protocol
 needs to known the protocol it is implementing explicitly
-in order to initialize the struct properly, or delegate
+in order to initialize the struct properly
+(just as how it happens with inheritance), or delegate
 the struct initialization to other part of the system
 which would spread around the code the knowledge on how
-to initialize the struct.  When you think about the same set
-of functions implementing multiple
+to initialize the struct properly.
+When you think about the same set of functions implementing multiple
 protocols this gets even worse.
 
-This is where Go interfaces comes in,
-it provides us with a safe way to express protocols eliminating
-all the boilerplate of initializing structs with the proper functions,
-it will initialize the structs for us (and even optimize to
-initialize the struct just once).
+The object that needs some third party protocol needs a way to:
+
+* Express clearly what is the protocol it needs
+* Be sure that when it starts interacting with an implementation no function is missing
+
+The object that implements the service needs to:
+
+* Be able to safely express that it has the required functions to satisfy the protocol
+* Be able to satisfy a protocol even without knowing it explicitly
+
+There is no need for two objects to interact to achieve a common goal
+to have a specific type, all that matters is if the protocol between
+them matches.
+
+This is where Go interfaces comes in.
+It provides us with a compile time safe way to express protocols eliminating
+all the boilerplate of initializing structs with the proper functions.
+It will initialize the structs for us, and even optimize to
+initialize the struct just once, what is called in Go the **iface**,
+which is comparable to C++ **vtable**.
+
+It will also allow the code to be more decoupled since you don't have
+to known the package where the interface is defined to implement it.
+This is fundamental to how Go allows more flexibility with the same
+compile time safety as languages like Java/C++.
 
 Lets revisit the previous file protocol with interfaces:
 
@@ -154,6 +177,8 @@ safe. The **useFileProtocol** do not have to worry with calling
 functions that are actually nil, the Go compiler will do the work
 of creating a struct that holds a pointer with a **iface** descriptor
 that has all the functions required to satisfy the protocol.
+It does this per match of type <-> interface, as it is used (initializes
+on first usage). 
 
 You still can cause a segmentation fault if you do something like this:
 
@@ -179,7 +204,7 @@ Also with the Go's interface mechanism an object can implement multiple differen
 protocols without even knowing these protocols.
 
 How useful can be implementing protocols that you do not even known exists ?
-This is very useful if you want your code to be truly extensible, allow me
+This is very useful if you want your code to be truly extensible. Allow me
 to provide a real world example from [nash](https://github.com/NeowayLabs/nash).
 
 # Extending code beyond its original purpose
