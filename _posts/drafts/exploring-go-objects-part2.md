@@ -328,51 +328,84 @@ inherits from it. To solve my problem I would have to change the core Go code
 to known my interface, with Go interfaces this is not required (yay hierarchies).
 
 This is extremely important because it allows developers to come up
-with simple objects since they dont have to predict every single way
+with simple objects since they don't have to predict every single way
 that the object may be used on the future,
 like coming up with which interfaces may be useful.
 
 As long as the protocol of your object is clear and useful it may be
 reused on several ways that you never thought to be possible. You don't
 even need to express interfaces explicitly for them to be defined and
-used with your objects later.
+used later.
 
 # What is object orientation anyway ?
 
-TODO, source:
+This is the part where I will try to make a point for Go as an awesome
+object oriented language. All the early contact that I had with programming
+was with languages like:
 
-Alan Kay [The computer revolution has not happened yet](https://www.youtube.com/watch?v=oKg1hTOQXoY)
+* Java
+* C++
+* Python
 
-Object orientation was supposed to model and focus on what is between the objects, not
-the objects itself.
+And learned about inheritance, multiple inheritance, diamond inheritance, etc.
+There was a great focus on what are the types and inheritance trees,
+an exercise on taxonomy. Like creating a good taxonomy would be the definition
+of a good object oriented design.
 
-Japanese word "ma", english word "interstitial"
+As I progressed I started to talk with people who said that object orientation
+was not about that (although all mainstream object oriented languages where)
+and that way of designing was not flexible. I did not understood
+that at the time but it got me curious. The best chance of understanding something
+is going the closest to its core as possible, so I went for Alan Kay which is
+the one who coined the term object orientation.
 
-Importance of encapsulation comparing to cells.
+There is much more awesome stuff that can be learned from him,
+but on the subject of object orientation there is the presentation
+[The computer revolution has not happened yet](https://www.youtube.com/watch?v=oKg1hTOQXoY)
+at OOPSLA where he talks a little about the origin of object orientation
+(among other things).
 
-Cells membrane exists to avoid stuff from getting out and also
-avoiding things to get in, clear protocol is implemented on
-the membrane to express that.
+He says that object orientation was supposed to focus on what is
+between the objects, not the objects itself. He even says that a more process
+oriented name would be better, because the focus on objects seems to have
+generated a focus on types and taxonomy instead of this thing that actually
+exists between the objects, which for me it is the protocols.
 
-## To inherit or not to inherit ?
+The important part of thinking about objects is the encapsulation
+(again, not types). He gives a good example which are cells, they have membranes
+that are explicit on what they allow to go out and what they allow to go in.
 
-Inheritance as a means of creating taxonomy (C++ / Java).
+Every cell that interacts with each other knows nothing about each other
+inner workings, they don't need to know the other cell type, they just have
+to implement the same protocol, exchange the same proteins, etc
+(I'm not that good with biology =)).
 
-Inheritance as a means of lazy functions composition (Python mixins)
-
-## Duck Typing
-
-Fuck the duck, focus on protocols not form.
+So we end up with encapsulation and clear protocols as what object orientation
+should be about, and with a great metaphor on how to develop systems that imitate
+organisms instead of mechanisms, since organic life scales orders of magnitude
+better.
 
 # Conclusion
 
-TODO: Go seems to me to be more object oriented
-than most "classical" object oriented languages.
+The example that I gave above in Go already shows a glimpse on how you can
+do more without having to change any pre existent code using the concept
+of protocols (Go's interfaces) instead of types,
+It seems to be easier to develop according
+to the [open closed](https://en.wikipedia.org/wiki/Open/closed_principle)
+principle since I can easily extend other code to do things that it was not
+initially intended to without having to change it.
+
+It may seem misleading that Go and Java have
+interfaces since they have very little in common. In Java interfaces
+create a **is a** relationship, in Go it does not, it simply defines a protocol
+to integrate an object with multiple others that may implement that protocol
+and this is more object oriented than anything that I known and extremely powerful.
 
 # Acknowledgments
 
 Special thanks to:
 
+TODO
 
 For taking time reviewing and pointing out a lot
 of stupid mistakes.
