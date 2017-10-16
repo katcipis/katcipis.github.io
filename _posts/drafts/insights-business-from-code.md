@@ -14,3 +14,7 @@ Advantages of exposing events:
 * Decoupled
 * Easier to test (the idea came from there)
 * Easier to have more than one UI for the insights
+
+Was upset with the intrusion of instrumentation, perhaps
+this kind of insight should be modeled on the domain logic,
+there comes the event like approach.
