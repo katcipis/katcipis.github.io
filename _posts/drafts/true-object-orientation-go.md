@@ -405,15 +405,16 @@ really adaptative without being dynamic, even in Go you need some
 glue code to integrate the objects through manually created protocols).
 
 The most important take right now of this metaphor is not what
-would be best to represent it, quoting from the presentation:
+would be best to represent this kind of system but to have the
+right mindset to find possible answers, quoting from the presentation:
 
 ```
 The most dangerous thought that you can have as a creative person is to
 think that you known what you are doing
 ```
 
-But it is useful to let go of ideas that can't represent it.
-There is no space for inheritance when I think about programming
+Even though I try to keep an open mind I can't find space for
+inheritance when I think about programming
 using the metaphors above. Alien life would never integrate since
 they need a common ancestor that may simply not exist.
 
