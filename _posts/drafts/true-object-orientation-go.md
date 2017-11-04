@@ -389,9 +389,9 @@ better.
 Another great metaphor can be extracted from
 [The Future of Programming](https://vimeo.com/71278954) presentation.
 When talking about the beginning of the ARPANET and the "Intergalactic
-Network of Computers" one of the metaphors used to express how a system
+Computer Network" one of the metaphors used to express how a system
 could REALLY scale is how software would integrate with other software
-that is completely alien.
+that is completely alien (literally from other planet).
 
 The metaphor is great because it shows the need for good protocols
 and good forms to do content/protocol negotiation, which is what happens
@@ -408,15 +408,14 @@ The most important take right now of this metaphor is not what
 would be best to represent it, quoting from the presentation:
 
 ```
-The worst thing as a creative person that you can do is to think that you know what you are doing
+The most dangerous thought that you can have as a creative person is to
+think that you known what you are doing
 ```
 
 But it is useful to let go of ideas that can't represent it.
 There is no space for inheritance when I think about programming
 using the metaphors above. Alien life would never integrate since
-they need a common ancestor...that may simply not exist. Collaboration
-and communication do not require a common ancestor, just a way
-to exchange data, ideas, representations of the reality.
+they need a common ancestor that may simply not exist.
 
 # Conclusion
 
