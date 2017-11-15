@@ -1,5 +1,5 @@
 baseurl = "katcipis.github.io/"
-publishDir = "docs"
+publishDir = "public"
 languageCode = "en-us"
 title = "Hugo Future Imperfect"
 theme = "hugo-future-imperfect"
