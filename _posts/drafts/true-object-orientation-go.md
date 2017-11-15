@@ -378,28 +378,62 @@ that are explicit on what they allow to go out and what they allow to go in.
 Every cell that interacts with each other knows nothing about each other
 inner workings, they don't need to know the other cell type, they just have
 to implement the same protocol, exchange the same proteins, etc
-(I'm not that good with biology =)).
+(I'm not that good with biology =)). The focus is on the chemical reactions
+(processes) not the cells types.
 
 So we end up with encapsulation and clear protocols as what object orientation
 should be about, and with a great metaphor on how to develop systems that imitate
 organisms instead of mechanisms, since organic life scales orders of magnitude
 better.
 
+Another great metaphor can be extracted from
+[The Future of Programming](https://vimeo.com/71278954) presentation.
+When talking about the beginning of the ARPANET and the "Intergalactic
+Computer Network" one of the metaphors used to express how a system
+could REALLY scale is how software would integrate with other software
+that is completely alien (literally from other planet).
+
+The metaphor is great because it shows the need for good protocols
+and good forms to do content/protocol negotiation, which is what happens
+on nature all the time, and probably what would happen if we met
+alien life someday (hoping that we don't stupidly fight to death).
+
+This metaphor even makes some point for dynamic languages, but to
+be honest I don't have an understanding of this that is good enough
+to propose something right now (I find hard to think on something
+really adaptative without being dynamic, even in Go you need some
+glue code to integrate the objects through manually created protocols).
+
+The most important take right now of this metaphor is not what
+would be best to represent this kind of system but to have the
+right mindset to find possible answers, quoting from the presentation:
+
+```
+The most dangerous thought that you can have as a creative person is to
+think that you know what you are doing
+```
+
+Even though I try to keep an open mind I can't find space for
+inheritance when I think about programming
+using the metaphors above. Alien life would never integrate since
+they need a common ancestor that may simply not exist.
+
 # Conclusion
 
 The example that I gave above in Go already shows a glimpse on how you can
 do more without having to change any pre existent code using the concept
-of protocols (Go's interfaces) instead of types,
+of protocols (Go's interfaces) instead of types.
 It seems to be easier to develop according
 to the [open closed](https://en.wikipedia.org/wiki/Open/closed_principle)
 principle since I can easily extend other code to do things that it was not
 initially intended to without having to change it.
 
 It may seem misleading that Go and Java have
-interfaces since they have very little in common. In Java interfaces
-create a **is a** relationship, in Go it does not, it simply defines a protocol
-to integrate an object with multiple others that may implement that protocol
-and this is more object oriented than anything that I known and extremely powerful.
+interfaces since the only thing they have in common is their name.
+In Java interfaces create a **is a** relationship, in Go it does not,
+it simply defines a protocol to integrate an object with multiple others
+that may implement that protocol and this is more object oriented than
+anything that I know and extremely powerful.
 
 # Acknowledgments
 
