@@ -1,4 +1,6 @@
 # Dependencies
+theme: jekyll-theme-hacker
+
 highlighter: rouge
 
 # Setup
