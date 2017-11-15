@@ -1,10 +1,10 @@
 # Dependencies
-highlighter:      rouge
+highlighter: rouge
 
 # Setup
 title: Dead Programs Tell No Lies
 tagline: ''
-description: Random thoughts that I write while I'm not writing bugs
+description: Certainty is where creativity goes to die
 url: http://katcipis.github.io
 baseurl: /
 
