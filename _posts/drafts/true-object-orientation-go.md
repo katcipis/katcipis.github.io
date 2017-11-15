@@ -410,7 +410,7 @@ right mindset to find possible answers, quoting from the presentation:
 
 ```
 The most dangerous thought that you can have as a creative person is to
-think that you known what you are doing
+think that you know what you are doing
 ```
 
 Even though I try to keep an open mind I can't find space for
@@ -433,7 +433,7 @@ interfaces since the only thing they have in common is their name.
 In Java interfaces create a **is a** relationship, in Go it does not,
 it simply defines a protocol to integrate an object with multiple others
 that may implement that protocol and this is more object oriented than
-anything that I known and extremely powerful.
+anything that I know and extremely powerful.
 
 # Acknowledgments
 
