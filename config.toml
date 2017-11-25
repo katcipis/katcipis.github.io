@@ -124,7 +124,7 @@ pluralizeListTitles = false
 # and socialAppearAtBottom.
 [social]
   # Coding Communities
-  github          = "jpescador/hugo-future-imperfect"
+  github          = "katcipis"
   gitlab          = ""
   stackoverflow   = "" # User Number
   bitbucket       = ""
@@ -132,21 +132,21 @@ pluralizeListTitles = false
   codepen         = ""
   # Visual Art Communities
   deviantart      = ""
-  flickr          = "example"
+  flickr          = ""
   behance         = ""
   dribbble        = ""
   # Publishing Communities
   wordpress       = ""
   medium          = ""
   # Professional/Business Oriented Communities
-  linkedin        = "example"
+  linkedin        = "tiagokatcipis"
   foursquare      = ""
   xing            = ""
   slideshare      = ""
   # Social Networks
-  facebook        = "example"
-  googleplus      = ""
-  reddit          = "example"
+  facebook        = ""
+  googleplus      = "tiagokatcipis@gmail.com"
+  reddit          = ""
   quora           = ""
   youtube         = ""
   vimeo           = ""
@@ -154,13 +154,13 @@ pluralizeListTitles = false
     # WeChat and QQ need testing.
     wechat          = ""
     qq              = "" # User ID Number
-  instagram       = "example"
+  instagram       = ""
   tumblr          = ""
-  twitter         = "example"
+  twitter         = "tiagokatcipis"
   skype           = ""
   snapchat        = ""
-  pinterest       = "example"
-  telegram        = "example"
+  pinterest       = ""
+  telegram        = ""
   vine            = ""
   # Email
-  email           = "example"
+  email           = "tiagokatcipis@gmail"
