@@ -72,7 +72,7 @@ pluralizeListTitles = false
     src       = "/img/lambda.jpg"
     # Sets Image to be a cirlce
     circle    = true
-    width     = ""
+    width     = "300"
     alt       = "λ"
 
 [params.postAmount]
