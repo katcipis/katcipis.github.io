@@ -13,7 +13,7 @@ pluralizeListTitles = false
   # Sets the meta tag description
   description          = "HTML5 UP theme, Future Imperfect with some extra goodies, ported by Julio Pescador. Powered by Hugo"
   # Sets the navbarTitle that appears in the top left of the navigation bar
-  navbarTitle          = "λ"
+  navbarTitle          = "lambda"
   # Sets where "View More Posts" links
   viewMorePostLink     = "/blog/"
 
@@ -72,7 +72,7 @@ pluralizeListTitles = false
     src       = "/img/lambda.jpg"
     # Sets Image to be a cirlce
     circle    = true
-    width     = "300"
+    width     = "200px"
     alt       = "λ"
 
 [params.postAmount]
