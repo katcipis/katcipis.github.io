@@ -71,9 +71,7 @@ pluralizeListTitles = false
   [params.intro.pic]
     src       = "/img/lambda.jpg"
     # Sets Image to be a cirlce
-    circle    = false
-    # Sets Image to be Future Imperfect's hexagon
-    imperfect = true
+    circle    = true
     width     = ""
     alt       = "λ"
 
