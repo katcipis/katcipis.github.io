@@ -18,6 +18,9 @@ git worktree add -B gh-pages public origin/gh-pages
 echo "Removing existing files"
 rm -rf public/*
 
+echo "Copying theme"
+cp -r ./themes/hugo-future-imperfect/* ./public
+
 echo "Generating site"
 hugo
 
