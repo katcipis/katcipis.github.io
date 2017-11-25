@@ -12,6 +12,16 @@
     
     
     <item>
+      <title>Having fun with Go&#39;s nil, interfaces and errors</title>
+      <link>https://katcipis.github.io/blog/fun-nil-interfaces/</link>
+      <pubDate>Sat, 27 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://katcipis.github.io/blog/fun-nil-interfaces/</guid>
+      <description>Learning and programming in Go has been delightful 99% of the time, This makes even more remarkable when the language bites you in the ass :-). Actually it is a mix of my own ignorance + some other details, but for everyone that I presented this situation it did not seem like something obvious and intuitive.
+A few weeks ago I have watched the Understanding Nil presentation, it is great way to really understand what nil is in Go, and I had no idea nil could behave as explained on the presentation.</description>
+    </item>
+    
+    <item>
       <title>Why Go ?</title>
       <link>https://katcipis.github.io/blog/why-go/</link>
       <pubDate>Sat, 27 Aug 2016 00:00:00 +0000</pubDate>
@@ -19,17 +29,6 @@
       <guid>https://katcipis.github.io/blog/why-go/</guid>
       <description>For me it makes no sense to talk about why a decision has been made without any context. So I will try to give some context on what was happening when we decided to give Go a shot.
 We started to work at Neoway with the Go language for a year and a half right now, and on this post I will try to pass on some of the experience of learning Go.</description>
-    </item>
-    
-    <item>
-      <title>Having fun with Go&#39;s nil, interfaces and errors</title>
-      <link>https://katcipis.github.io/blog/fun-nil-interfaces/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://katcipis.github.io/blog/fun-nil-interfaces/</guid>
-      <description>+++ author = &amp;ldquo;Tiago Katcipis&amp;rdquo; categories = [&amp;ldquo;Go&amp;rdquo;] date = &amp;ldquo;2016-08-27&amp;rdquo; description = &amp;ldquo;Details on how I debugged a fun problem involving errors + nil + interface{}&amp;rdquo; featured = &amp;ldquo;blue-screen-death.png&amp;rdquo; featuredalt = &amp;ldquo;Error&amp;rdquo; featuredpath = &amp;ldquo;img&amp;rdquo; linktitle = &amp;ldquo;Having fun with Go&amp;rsquo;s nil, interfaces and errors&amp;rdquo; title = &amp;ldquo;Having fun with Go&amp;rsquo;s nil, interfaces and errors&amp;rdquo; type = &amp;ldquo;post&amp;rdquo;
-+++
-Learning and programming in Go has been delightful 99% of the time, This makes even more remarkable when the language bites you in the ass :-).</description>
     </item>
     
   </channel>

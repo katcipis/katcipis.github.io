@@ -1,9 +1,3 @@
----
-published: true
-title: Having fun with Go's nil, interfaces and errors
-layout: post
----
-
 +++
 author = "Tiago Katcipis"
 categories = ["Go"]

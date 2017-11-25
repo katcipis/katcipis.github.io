@@ -12,6 +12,16 @@
     
     
     <item>
+      <title>Having fun with Go&#39;s nil, interfaces and errors</title>
+      <link>https://katcipis.github.io/blog/fun-nil-interfaces/</link>
+      <pubDate>Sat, 27 Aug 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://katcipis.github.io/blog/fun-nil-interfaces/</guid>
+      <description>Learning and programming in Go has been delightful 99% of the time, This makes even more remarkable when the language bites you in the ass :-). Actually it is a mix of my own ignorance + some other details, but for everyone that I presented this situation it did not seem like something obvious and intuitive.
+A few weeks ago I have watched the Understanding Nil presentation, it is great way to really understand what nil is in Go, and I had no idea nil could behave as explained on the presentation.</description>
+    </item>
+    
+    <item>
       <title>Why Go ?</title>
       <link>https://katcipis.github.io/blog/why-go/</link>
       <pubDate>Sat, 27 Aug 2016 00:00:00 +0000</pubDate>
