@@ -1,16 +1,23 @@
----
-published: true
-title: Why Go ?
-layout: post
----
++++
+author = "Tiago Katcipis"
+categories = ["Go"]
+date = "2016-08-27"
+description = "Why Go ?"
+featured = "pic02.jpg"
+featuredalt = "Pic 2"
+featuredpath = "date"
+linktitle = "Why Go ?"
+title = "Why Go ?"
+type = "post"
+
++++
+
 For me it makes no sense to talk about why a decision has been made without any context.
 So I will try to give some context on what was happening when we decided to give Go a shot.
 
 We started to work at [Neoway](http://neoway.com.br/) with the Go language for
 a year and a half right now, and on this post I will try to pass on some of
 the experience of learning Go.
-
-<!-- more -->
 
 By no means this is a representation of the experience of everyone at [Neoway](http://neoway.com.br/),
 there is a lot of teams working with Go. This is a very narrow and personal
