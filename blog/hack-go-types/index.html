@@ -1,0 +1,1863 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        
+            
+                <title>Hacking Go&#39;s type system</title>
+            
+        
+
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="generator" content="Hugo 0.30.2" />
+        
+
+
+        
+            <meta name="author" content="Tiago Katcipis">
+        
+        
+            <meta name="description" content="Have some fun hacking Go type system to make safe casting unsafe again =)">
+        
+
+        <meta name="twitter:card" content="summary"/><meta name="twitter:title" content="Hacking Go&#39;s type system"/>
+<meta name="twitter:description" content="Have some fun hacking Go type system to make safe casting unsafe again =)"/>
+<meta name="twitter:site" content="@tiagokatcipis"/>
+
+        <meta property="og:title" content="Hacking Go&#39;s type system" />
+<meta property="og:description" content="Have some fun hacking Go type system to make safe casting unsafe again =)" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://katcipis.github.io/blog/hack-go-types/" />
+
+
+
+<meta property="article:published_time" content="2017-03-28T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2017-03-28T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
+
+        
+<meta itemprop="name" content="Hacking Go&#39;s type system">
+<meta itemprop="description" content="Have some fun hacking Go type system to make safe casting unsafe again =)">
+
+
+<meta itemprop="datePublished" content="2017-03-28T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2017-03-28T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="3321">
+
+
+
+<meta itemprop="keywords" content="" />
+
+        
+
+        
+            
+        
+
+        
+        
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
+            <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:400,800,900|Source+Sans+Pro:400,700">
+            <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.25/jquery.fancybox.min.css">
+            <link rel="stylesheet" href="/css/main.css">
+            <link rel="stylesheet" href="/css/add-on.css">
+        
+
+        
+            
+                
+            
+        
+
+      
+    </head>
+    <body>
+
+      
+      <div id="wrapper">
+
+    
+    
+<header id="header">
+    
+      <h1><a href="/">blog</a></h1>
+    
+
+    <nav class="links">
+        <ul>
+            
+                <li>
+                    <a href="/">
+                            <i class="fa fa-home">&nbsp;</i>Home
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/blog/">
+                            <i class="fa fa-newspaper-o">&nbsp;</i>Blog
+                    </a>
+                </li>
+            
+                <li>
+                    <a href="/categories/">
+                            <i class="fa fa-sitemap">&nbsp;</i>Categories
+                    </a>
+                </li>
+            
+        </ul>
+    </nav>
+    <nav class="main">
+        <ul>
+            
+            <li id="share-nav" class="share-menu" style="display:none;">
+                <a class="fa-share-alt" href="#share-menu">Share</a>
+            </li>
+            
+            <li class="search">
+                <a class="fa-search" href="#search">Search</a>
+                <form id="search" method="get" action="//google.com/search">
+                    <input type="text" name="q" placeholder="Search" />
+                    <input type="hidden" name="as_sitesearch" value="https://katcipis.github.io/">
+                </form>
+            </li>
+            <li class="menu">
+                <a class="fa-bars" href="#menu">Menu</a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+
+<section id="menu">
+
+    
+        <section>
+            <form class="search" method="get" action="//google.com/search">
+                <input type="text" name="q" placeholder="Search" />
+                <input type="hidden" name="as_sitesearch" value="https://katcipis.github.io/">
+            </form>
+        </section>
+
+    
+        <section>
+            <ul class="links">
+                
+                    <li>
+                        <a href="/">
+                            <h3>
+                                <i class="fa fa-home">&nbsp;</i>Home
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/blog/">
+                            <h3>
+                                <i class="fa fa-newspaper-o">&nbsp;</i>Blog
+                            </h3>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/categories/">
+                            <h3>
+                                <i class="fa fa-sitemap">&nbsp;</i>Categories
+                            </h3>
+                        </a>
+                    </li>
+                
+            </ul>
+        </section>
+
+    
+        <section id="recent-posts">
+            <div class="mini-posts">
+                <header>
+                    <h3>Recent Posts</h3>
+                </header>
+                
+
+                
+                    
+                
+
+                
+                        <article class="mini-post">
+                            <header>
+                                <h3><a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2017-03-28'>
+                                    March 28, 2017</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/exploring-go-objects/" class="image featured">
+            <img src="/img/goexplorer.png" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+                        <article class="mini-post">
+                            <header>
+                                <h3><a href="/blog/hack-go-types/">Hacking Go&#39;s type system</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2017-03-28'>
+                                    March 28, 2017</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/hack-go-types/" class="image featured">
+            <img src="/img/gohacking.jpg" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+                        <article class="mini-post">
+                            <header>
+                                <h3><a href="/blog/fun-nil-interfaces/">Having fun with Go&#39;s nil, interfaces and errors</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2016-08-27'>
+                                    August 27, 2016</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/fun-nil-interfaces/" class="image featured">
+            <img src="/img/godebug.jpg" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+                        <article class="mini-post">
+                            <header>
+                                <h3><a href="/blog/why-go/">Why Go ?</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2016-08-27'>
+                                    August 27, 2016</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/why-go/" class="image featured">
+            <img src="/img/gopher.jpg" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+
+                
+            </div>
+        </section>
+
+    
+        
+</section>
+
+    <section id="share-menu">
+    <section id="social-share-nav">
+        <ul class="links">
+            <header>
+                <h3>Share this post <i class="fa fa-smile-o"></i></h3>
+            </header>
+            
+
+
+<li>
+  <a href="//twitter.com/share?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&text=Hacking%20Go%27s%20type%20system&via=tiagokatcipis" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+    </a>
+</li>
+
+
+<li>
+  <a href="//plus.google.com/share?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+  </a>
+</li>
+
+
+<li>
+  <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+    </a>
+</li>
+
+
+<li>
+  <a href="//reddit.com/submit?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&title=Hacking%20Go%27s%20type%20system" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+  </a>
+</li>
+
+
+<li>
+  <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&title=Hacking%20Go%27s%20type%20system" target="_blank" class="share-btn linkedin">
+      <i class="fa fa-linkedin"></i>
+      <p>LinkedIn</p>
+    </a>
+</li>
+
+
+<li>
+  <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&title=Hacking%20Go%27s%20type%20system" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+  </a>
+</li>
+
+
+<li>
+  <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&description=Hacking%20Go%27s%20type%20system" target="_blank" class="share-btn pinterest">
+    <i class="fa fa-pinterest-p"></i>
+    <p>Pinterest</p>
+  </a>
+</li>
+
+
+<li>
+  <a href="mailto:?subject=Check out this post by Tiago%20Katcipis&body=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+  </a>
+</li>
+
+        </ul>
+    </section>
+</section>
+
+    
+    <div id="main">
+        
+        
+        <article class="post">
+  <header>
+    <div class="title">
+        
+            <h1><a href="/blog/hack-go-types/">Hacking Go&#39;s type system</a></h1>
+            
+        
+        
+            <p>Have some fun hacking Go type system to make safe casting unsafe again =)</p>
+        
+    </div>
+    <div class="meta">
+        
+
+        <time class="published"
+            datetime='2017-03-28'>
+            March 28, 2017</time>
+        <span class="author">Tiago Katcipis</span>
+        
+            <p>16 minute read</p>
+        
+        
+    </div>
+</header>
+
+
+  
+    <section id="social-share">
+      <ul class="icons">
+        
+
+
+<li>
+  <a href="//twitter.com/share?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&text=Hacking%20Go%27s%20type%20system&via=tiagokatcipis" target="_blank" class="share-btn twitter">
+    <i class="fa fa-twitter"></i>
+    <p>Twitter</p>
+    </a>
+</li>
+
+
+<li>
+  <a href="//plus.google.com/share?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f" target="_blank" class="share-btn google-plus">
+    <i class="fa fa-google-plus"></i>
+    <p>Google+</p>
+  </a>
+</li>
+
+
+<li>
+  <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f" target="_blank" class="share-btn facebook">
+    <i class="fa fa-facebook"></i>
+    <p>Facebook</p>
+    </a>
+</li>
+
+
+<li>
+  <a href="//reddit.com/submit?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&title=Hacking%20Go%27s%20type%20system" target="_blank" class="share-btn reddit">
+    <i class="fa fa-reddit-alien"></i>
+    <p>Reddit</p>
+  </a>
+</li>
+
+
+<li>
+  <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&title=Hacking%20Go%27s%20type%20system" target="_blank" class="share-btn linkedin">
+      <i class="fa fa-linkedin"></i>
+      <p>LinkedIn</p>
+    </a>
+</li>
+
+
+<li>
+  <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&title=Hacking%20Go%27s%20type%20system" target="_blank" class="share-btn stumbleupon">
+    <i class="fa fa-stumbleupon"></i>
+    <p>StumbleUpon</p>
+  </a>
+</li>
+
+
+<li>
+  <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f&description=Hacking%20Go%27s%20type%20system" target="_blank" class="share-btn pinterest">
+    <i class="fa fa-pinterest-p"></i>
+    <p>Pinterest</p>
+  </a>
+</li>
+
+
+<li>
+  <a href="mailto:?subject=Check out this post by Tiago%20Katcipis&body=https%3a%2f%2fkatcipis.github.io%2fblog%2fhack-go-types%2f" target="_blank" class="share-btn email">
+    <i class="fa fa-envelope"></i>
+    <p>Email</p>
+  </a>
+</li>
+
+      </ul>
+    </section>
+  
+
+  
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/hack-go-types/" class="image featured">
+            <img src="/img/gohacking.jpg" alt="">
+        </a>
+    
+
+
+  <div id="content">
+    
+
+<p>Are you in the mood for a stroll inside Go&rsquo;s type system ?
+If you are already familiarized with it, this post can be funny
+for you, or just plain stupid.</p>
+
+<p>If you have no idea how types and interfaces are implemented on Go,
+you may learn something, I sure did :-)</p>
+
+<p>Since I worked with handwritten type systems in C,
+like the one found in <a href="https://developer.gnome.org/gobject/stable/">glib GObjects</a>,
+I&rsquo;m always curious on how languages implement the
+concept of type safety on a machine that actually only
+has numbers. This curiosity has extended to how I could
+bend Go&rsquo;s type system to my own will.</p>
+
+<p>Go&rsquo;s instances do not carry type information on them,
+so my only chance will involve using an interface{}. All type systems
+that I&rsquo;m aware off usually implement types as some sort of integer code,
+which is used to check if the type corresponds to the one you are casting.</p>
+
+<p>To begin the exploration I wanted to find how type assertions are
+made, so I wrote this ridiculous code:</p>
+
+<pre><code class="language-go">package main
+
+import &quot;fmt&quot;
+
+func main() {
+	var a int
+	var b interface{} = a
+	c := b.(int)
+	fmt.Println(c)
+}
+</code></pre>
+
+<p>Compiled it outputing its assembly:</p>
+
+<pre><code>go build -gcflags -S cast.go
+</code></pre>
+
+<p>Found that the assembly code corresponding to this:</p>
+
+<pre><code class="language-go">	c := b.(int)
+</code></pre>
+
+<p>Is (roughly) this:</p>
+
+<pre><code>	0x002a 00042 (cast.go:7)	LEAQ	type.int(SB), AX
+	0x0031 00049 (cast.go:8)	CMPQ	AX, AX
+	0x0034 00052 (cast.go:8)	JNE	$0, 162
+	0x0036 00054 (cast.go:9)	MOVQ	$0, &quot;&quot;..autotmp_3+56(SP)
+	0x003f 00063 (cast.go:9)	MOVQ	$0, &quot;&quot;..autotmp_2+64(SP)
+	0x0048 00072 (cast.go:9)	MOVQ	$0, &quot;&quot;..autotmp_2+72(SP)
+	0x0051 00081 (cast.go:9)	MOVQ	AX, (SP)
+	0x0055 00085 (cast.go:9)	LEAQ	&quot;&quot;..autotmp_3+56(SP), AX
+	0x005a 00090 (cast.go:9)	MOVQ	AX, 8(SP)
+	0x005f 00095 (cast.go:9)	PCDATA	$0, $1
+	0x005f 00095 (cast.go:9)	CALL	runtime.convT2E(SB)
+</code></pre>
+
+<p>The <strong>runtime.convT2E</strong> call caught my attention, it was not hard to
+find it on the <a href="https://github.com/golang/go/blob/master/src/runtime/iface.go">iface.go</a>
+file on the golang source code (on the time of writing, Go 1.8.1):</p>
+
+<pre><code class="language-go">// The conv and assert functions below do very similar things.
+// The convXXX functions are guaranteed by the compiler to succeed.
+// The assertXXX functions may fail (either panicking or returning false,
+// depending on whether they are 1-result or 2-result).
+// The convXXX functions succeed on a nil input, whereas the assertXXX
+// functions fail on a nil input.
+
+func convT2E(t *_type, elem unsafe.Pointer) (e eface) {
+	if raceenabled {
+		raceReadObjectPC(t, elem, getcallerpc(unsafe.Pointer(&amp;t)), funcPC(convT2E))
+	}
+	if msanenabled {
+		msanread(elem, t.size)
+	}
+	if isDirectIface(t) {
+		// This case is implemented directly by the compiler.
+		throw(&quot;direct convT2E&quot;)
+	}
+	x := newobject(t)
+	// TODO: We allocate a zeroed object only to overwrite it with
+	// actual data. Figure out how to avoid zeroing. Also below in convT2I.
+	typedmemmove(t, x, elem)
+	e._type = t
+	e.data = x
+	return
+}
+</code></pre>
+
+<p>There is the eface type, that has a <strong>_type</strong> field. Checking out what
+would be a <strong>eface</strong> I found this:</p>
+
+<pre><code class="language-go">type iface struct {
+	tab  *itab
+	data unsafe.Pointer
+}
+
+type eface struct {
+	_type *_type
+	data  unsafe.Pointer
+}
+</code></pre>
+
+<p>From what I read before on
+<a href="https://research.swtch.com/interfaces">Russ Cox post about interfaces</a>
+I would guess that the <strong>iface</strong> is used when you are using
+interfaces that have actually methods on it. That is why it has
+an itab, the interface table, which is roughly equivalent to
+a C++ vtable.</p>
+
+<p>I will ignore the iface (althought it is interesting) since it does not
+seem to be what I need to hack Go&rsquo;s type system, there is more potential
+on <strong>eface</strong>, which covers the special case of empty interfaces
+(the equivalent of a void pointer in C).</p>
+
+<p>On the post Russ Cox says that the empty interface is a special case that holds
+only the type information + the data, there is no itable, since it makes
+no sense at all (a interface{} has no methods).</p>
+
+<p>The interface{} is just a way to transport runtime type information + data
+on a generic way through your code and it seems to be the more promising
+way to hack types.</p>
+
+<p>The <strong>type</strong> is:</p>
+
+<pre><code class="language-go">type _type struct {
+	size       uintptr
+	ptrdata    uintptr // size of memory prefix holding all pointers
+	hash       uint32
+	tflag      tflag
+	align      uint8
+	fieldalign uint8
+	kind       uint8
+	alg        *typeAlg
+	// gcdata stores the GC type data for the garbage collector.
+	// If the KindGCProg bit is set in kind, gcdata is a GC program.
+	// Otherwise it is a ptrmask bitmap. See mbitmap.go for details.
+	gcdata    *byte
+	str       nameOff
+	ptrToThis typeOff
+}
+</code></pre>
+
+<p>Lots of promissing fields to hack with, but actual type check is just
+a direct pointer comparison:</p>
+
+<pre><code class="language-go">	if e._type != t {
+		panic(&amp;TypeAssertionError{&quot;&quot;, e._type.string(), t.string(), &quot;&quot;})
+	}
+</code></pre>
+
+<p>It seems easier to just find a way to get the eface struct and overwrite its
+<strong>type</strong> pointer with the one I desire. This smells like a job to the
+<a href="https://golang.org/pkg/unsafe/">unsafe</a> package.</p>
+
+<p>I still don&rsquo;t have a good idea on how to get the <strong>_type</strong>, or how to manipulate
+the eface type. My guess would be to just cast it as a pointer and do some
+old school pointer manipulation, but I&rsquo;m not sure yet.</p>
+
+<p>One function that is a good candidate to give some directions
+on how to do it is <strong>reflect.TypeOf</strong>:</p>
+
+<pre><code class="language-go">func TypeOf(i interface{}) Type {
+	eface := *(*emptyInterface)(unsafe.Pointer(&amp;i))
+	return toType(eface.typ)
+}
+</code></pre>
+
+<p>Yeah, just cast the pointer to a eface pointer:</p>
+
+<pre><code class="language-go">// emptyInterface is the header for an interface{} value.
+type emptyInterface struct {
+	typ  *rtype
+	word unsafe.Pointer
+}
+</code></pre>
+
+<p>It seems that although the eface was private on the <strong>runtime</strong>
+package it is copied here on the <strong>reflect</strong> package. Well, if the
+reflect package can do it, so can I :-) (a little duplication is
+better than a big dependency, right ?).</p>
+
+<p>Before going on, I was curious about where the types are initialized.
+It seems that there is just one unique pointer with all the type
+information for each type. Thanks to <a href="https://github.com/fatih/vim-go">vim-go</a>
+and <a href="https://godoc.org/golang.org/x/tools/cmd/guru">go guru</a>
+for the invaluable help on analysing code and allowing me to
+check all the referers to a type it has been
+pretty easy to find this on <a href="https://github.com/golang/go/blob/master/src/runtime/symtab.go">runtime/symtab.go</a>:</p>
+
+<pre><code class="language-go">// moduledata records information about the layout of the executable
+// image. It is written by the linker. Any changes here must be
+// matched changes to the code in cmd/internal/ld/symtab.go:symtab.
+// moduledata is stored in read-only memory; none of the pointers here
+// are visible to the garbage collector.
+type moduledata struct {
+	pclntable    []byte
+	ftab         []functab
+	filetab      []uint32
+	findfunctab  uintptr
+	minpc, maxpc uintptr
+
+	text, etext           uintptr
+	noptrdata, enoptrdata uintptr
+	data, edata           uintptr
+	bss, ebss             uintptr
+	noptrbss, enoptrbss   uintptr
+	end, gcdata, gcbss    uintptr
+	types, etypes         uintptr
+
+	textsectmap []textsect
+	typelinks   []int32 // offsets from types
+	itablinks   []*itab
+
+	ptab []ptabEntry
+
+	pluginpath string
+	pkghashes  []modulehash
+
+	modulename   string
+	modulehashes []modulehash
+
+	gcdatamask, gcbssmask bitvector
+
+	typemap map[typeOff]*_type // offset to *_rtype in previous module
+
+	next *moduledata
+}
+</code></pre>
+
+<p>A good candidate is the <strong>typemap</strong> field, checking out how
+it is used I found this on runtime/type.go:</p>
+
+<pre><code class="language-go">// typelinksinit scans the types from extra modules and builds the
+// moduledata typemap used to de-duplicate type pointers.
+func typelinksinit() {
+	if firstmoduledata.next == nil {
+		return
+	}
+	typehash := make(map[uint32][]*_type, len(firstmoduledata.typelinks))
+
+	modules := activeModules()
+	prev := modules[0]
+	for _, md := range modules[1:] {
+		// Collect types from the previous module into typehash.
+	collect:
+		for _, tl := range prev.typelinks {
+			var t *_type
+			if prev.typemap == nil {
+				t = (*_type)(unsafe.Pointer(prev.types + uintptr(tl)))
+			} else {
+				t = prev.typemap[typeOff(tl)]
+			}
+			// Add to typehash if not seen before.
+			tlist := typehash[t.hash]
+			for _, tcur := range tlist {
+				if tcur == t {
+					continue collect
+				}
+			}
+			typehash[t.hash] = append(tlist, t)
+		}
+
+		if md.typemap == nil {
+			// If any of this module's typelinks match a type from a
+			// prior module, prefer that prior type by adding the offset
+			// to this module's typemap.
+			tm := make(map[typeOff]*_type, len(md.typelinks))
+			pinnedTypemaps = append(pinnedTypemaps, tm)
+			md.typemap = tm
+			for _, tl := range md.typelinks {
+				t := (*_type)(unsafe.Pointer(md.types + uintptr(tl)))
+				for _, candidate := range typehash[t.hash] {
+					if typesEqual(t, candidate) {
+						t = candidate
+						break
+					}
+				}
+				md.typemap[typeOff(tl)] = t
+			}
+		}
+
+		prev = md
+	}
+}
+</code></pre>
+
+<p>It seems that the typemap is initialized on the startup of the
+process, with help of information collected by the linker, on
+build time.</p>
+
+<p>The typelinksinit function is used on the schedinit function
+(from <a href="https://github.com/golang/go/blob/master/src/runtime/proc.go">runtime/proc.go</a>):</p>
+
+<pre><code class="language-go">// The bootstrap sequence is:
+//
+//	call osinit
+//	call schedinit
+//	make &amp; queue new G
+//	call runtime·mstart
+//
+// The new G calls runtime·main.
+func schedinit() {
+	// raceinit must be the first call to race detector.
+	// In particular, it must be done before mallocinit below calls racemapshadow.
+	_g_ := getg()
+	if raceenabled {
+		_g_.racectx, raceprocctx0 = raceinit()
+	}
+
+	sched.maxmcount = 10000
+
+	tracebackinit()
+	moduledataverify()
+	stackinit()
+	mallocinit()
+	mcommoninit(_g_.m)
+	alginit()       // maps must not be used before this call
+	modulesinit()   // provides activeModules
+	typelinksinit() // uses maps, activeModules
+	itabsinit()     // uses activeModules
+
+	msigsave(_g_.m)
+	initSigmask = _g_.m.sigmask
+
+	goargs()
+	goenvs()
+	parsedebugvars()
+	gcinit()
+
+	sched.lastpoll = uint64(nanotime())
+	procs := ncpu
+	if n, ok := atoi32(gogetenv(&quot;GOMAXPROCS&quot;)); ok &amp;&amp; n &gt; 0 {
+		procs = n
+	}
+	if procs &gt; _MaxGomaxprocs {
+		procs = _MaxGomaxprocs
+	}
+	if procresize(procs) != nil {
+		throw(&quot;unknown runnable goroutine during bootstrap&quot;)
+	}
+
+	if buildVersion == &quot;&quot; {
+		// Condition should never trigger. This code just serves
+		// to ensure runtime·buildVersion is kept in the resulting binary.
+		buildVersion = &quot;unknown&quot;
+	}
+}
+</code></pre>
+
+<p>And schedinit, at least according to go guru, is not called anywhere.
+The output of -gcflags -S also has no reference to this initialization.</p>
+
+<p>Searching inside the <strong>runtime</strong> package:</p>
+
+<pre><code>(runtime)λ&gt; grep -R schedinit .
+./asm_amd64.s: CALL    runtime·schedinit(SB)
+./asm_mips64x.s:       JAL     runtime·schedinit(SB)
+./asm_arm.s:   BL      runtime·schedinit(SB)
+./proc.go://   call schedinit
+./proc.go:func schedinit() {
+./asm_s390x.s: BL      runtime·schedinit(SB)
+./traceback.go:        // schedinit calls this function so that the variables are
+./asm_ppc64x.s:        BL      runtime·schedinit(SB)
+./asm_arm64.s: BL      runtime·schedinit(SB)
+./asm_386.s:   CALL    runtime·schedinit(SB)
+./asm_mipsx.s: JAL     runtime·schedinit(SB)
+./asm_amd64p32.s:      CALL    runtime·schedinit(SB)
+</code></pre>
+
+<p>It seems like the bootstraping code for each supported platform is ASM code.
+Lets take a look at the <strong>amd64</strong> implementation:</p>
+
+<pre><code>	CLD				// convention is D is always left cleared
+	CALL	runtime·check(SB)
+
+	MOVL	16(SP), AX		// copy argc
+	MOVL	AX, 0(SP)
+	MOVQ	24(SP), AX		// copy argv
+	MOVQ	AX, 8(SP)
+	CALL	runtime·args(SB)
+	CALL	runtime·osinit(SB)
+	CALL	runtime·schedinit(SB)
+
+	// create a new goroutine to start program
+	MOVQ	$runtime·mainPC(SB), AX		// entry
+	PUSHQ	AX
+	PUSHQ	$0			// arg size
+	CALL	runtime·newproc(SB)
+	POPQ	AX
+	POPQ	AX
+</code></pre>
+
+<p>The whole thing has more than 2000 lines, so I just copied the
+part that confirms that schedinit is called before running
+the actual code, and on schedinit the typelinksinit will be
+called, that will initialize the types map.</p>
+
+<p>Sorry, got pretty far from the objective, lets go back to the type system
+hacking fun. Lets start the copying fun, just like the reflect package does,
+to inspect details on different types:</p>
+
+<pre><code class="language-go">package main
+
+import (
+	&quot;fmt&quot;
+	&quot;unsafe&quot;
+)
+
+// tflag values must be kept in sync with copies in:
+//	cmd/compile/internal/gc/reflect.go
+//	cmd/link/internal/ld/decodesym.go
+//	runtime/type.go
+type tflag uint8
+
+type typeAlg struct {
+	// function for hashing objects of this type
+	// (ptr to object, seed) -&gt; hash
+	hash func(unsafe.Pointer, uintptr) uintptr
+	// function for comparing objects of this type
+	// (ptr to object A, ptr to object B) -&gt; ==?
+	equal func(unsafe.Pointer, unsafe.Pointer) bool
+}
+
+type nameOff int32 // offset to a name
+type typeOff int32 // offset to an *rtype
+
+type rtype struct {
+	size       uintptr
+	ptrdata    uintptr
+	hash       uint32   // hash of type; avoids computation in hash tables
+	tflag      tflag    // extra type information flags
+	align      uint8    // alignment of variable with this type
+	fieldAlign uint8    // alignment of struct field with this type
+	kind       uint8    // enumeration for C
+	alg        *typeAlg // algorithm table
+	gcdata     *byte    // garbage collection data
+	str        nameOff  // string form
+	ptrToThis  typeOff  // type for pointer to this type, may be zero
+}
+
+type eface struct {
+	typ  *rtype
+	word unsafe.Pointer
+}
+
+func (e eface) String() string {
+	return fmt.Sprintf(&quot;type: %#v\n\ndataptr: %v&quot;, *e.typ, e.word)
+}
+
+func getEface(i interface{}) eface {
+	return *(*eface)(unsafe.Pointer(&amp;i))
+}
+
+func main() {
+	var a int
+	var b int
+	var c string
+	var d float32
+	var e float64
+	var f rtype
+	var g eface
+
+	fmt.Printf(&quot;a int:\n%s\n\n&quot;, getEface(a))
+	fmt.Printf(&quot;b int:\n%s\n\n&quot;, getEface(b))
+	fmt.Printf(&quot;c string:\n%s\n\n&quot;, getEface(c))
+	fmt.Printf(&quot;d float32:\n%s\n\n&quot;, getEface(d))
+	fmt.Printf(&quot;e float64:\n%s\n\n&quot;, getEface(e))
+	fmt.Printf(&quot;f rtype:\n%s\n\n&quot;, getEface(f))
+	fmt.Printf(&quot;g eface:\n%s\n\n&quot;, getEface(g))
+}
+</code></pre>
+
+<p>The output of running the code:</p>
+
+<pre><code>(typehack(git master))λ&gt; go run inspectype.go
+a int:
+type: main.rtype{size:0x8, ptrdata:0x0, hash:0xf75371fa, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x82, alg:(*main.typeAlg)(0x4fb3d0), gcdata:(*uint8)(0x4b0eb8), str:843, ptrToThis:35392}
+
+dataptr: 0xc42000a2f0
+
+b int:
+type: main.rtype{size:0x8, ptrdata:0x0, hash:0xf75371fa, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x82, alg:(*main.typeAlg)(0x4fb3d0), gcdata:(*uint8)(0x4b0eb8), str:843, ptrToThis:35392}
+
+dataptr: 0xc42000a390
+
+c string:
+type: main.rtype{size:0x10, ptrdata:0x8, hash:0xe0ff5cb4, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x18, alg:(*main.typeAlg)(0x4fb3f0), gcdata:(*uint8)(0x4b0eb8), str:5274, ptrToThis:44480}
+
+dataptr: 0xc42000a400
+
+d float32:
+type: main.rtype{size:0x4, ptrdata:0x0, hash:0xb0c23ed3, tflag:0x7, align:0x4, fieldAlign:0x4, kind:0x8d, alg:(*main.typeAlg)(0x4fb420), gcdata:(*uint8)(0x4b0eb8), str:6791, ptrToThis:34880}
+
+dataptr: 0xc42000a478
+
+e float64:
+type: main.rtype{size:0x8, ptrdata:0x0, hash:0x2ea27ffb, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x8e, alg:(*main.typeAlg)(0x4fb430), gcdata:(*uint8)(0x4b0eb8), str:6802, ptrToThis:34944}
+
+dataptr: 0xc42000a4e8
+
+f rtype:
+type: main.rtype{size:0x30, ptrdata:0x28, hash:0x622c3ba0, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x19, alg:(*main.typeAlg)(0x482ca0), gcdata:(*uint8)(0x4b0ec9), str:11620, ptrToThis:35904}
+
+dataptr: 0xc420014270
+
+g eface:
+type: main.rtype{size:0x10, ptrdata:0x10, hash:0x4358c73f, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x19, alg:(*main.typeAlg)(0x4fb3e0), gcdata:(*uint8)(0x4b0eba), str:11606, ptrToThis:74272}
+
+dataptr: 0xc42000a5c0
+</code></pre>
+
+<p>Since this is already getting pretty extensive I won&rsquo;t dive in every single
+detail of the outputs. But we can observe some interesting things.</p>
+
+<p>The hack seems to have worked perfectly, since the size of all types
+makes sense. Alignment information also makes sense too.
+And also there is the <strong>kind</strong> information. Like I said on the start,
+type systems usually just use a number to differentiate on the types.</p>
+
+<p>But comparing two different structs shows an interesting characteristic
+from Go. Although <strong>rtype</strong> and <strong>eface</strong> are two different types, and
+casting between the two types won&rsquo;t work, they are of the same kind <strong>0x19</strong>.</p>
+
+<p>On the reflect package there is the <a href="https://golang.org/pkg/reflect/#Kind">Kind</a>
+type, which is a enumeration of all Go&rsquo;s base types. There is some information
+about that <a href="https://golang.org/ref/spec#Types">here</a>. Every named/unnamed type
+you define in Go will always have an underlying type, which will be one
+of the types on the kind enumeration (that shows up on our type struct).</p>
+
+<p>So in Go you can&rsquo;t create types in the same sense of the native types that
+comes with the language, you can&rsquo;t create new kinds, at least AFAIK.
+This is considerably confusing, because kind is a synonim of type :-),
+but it is one of the two hardest challenges on programming, giving names
+to things (the other ones is implementing caches :-)).</p>
+
+<p>But the types you create work well enough, the compiler will help you, and
+reflection will also work properly. Even with the same kind, different
+types will have different <strong>rtype</strong> pointers associated with them, even different
+size in the struct case, but it is an interesting detail that I tought it was
+worth mentioning.</p>
+
+<p>Well, now we can go back to hacking the type system.</p>
+
+<p>There is a lot of ways to manipulate this type information, but the
+more naive way that I can think of is to define a function that gets
+an interface{} variable representing the value that will be casted
+and another interface{} variable that will carry the type information
+from where you want to cast to. The return is a new interface{}
+that can be casted to the desired target type. Something like this:</p>
+
+<pre><code class="language-go">func Morph(value interface{}, desiredtype interface{}) interface{}
+</code></pre>
+
+<p>Well, in this case the lack of generics on Go obligates me
+to use an interface{} and push the cast to the client, or develop
+a function for every basic type, but types defined by the client
+would require the client writing its own functions.</p>
+
+<p>Let&rsquo;s just let the client do some heavy lifting on this
+case, <a href="https://www.jwz.org/doc/worse-is-better.html">Jersey&rsquo;s style</a>
+(not that &ldquo;The right thing&rdquo; also does not have its place).</p>
+
+<p>The final implementation can be found on <a href="https://github.com/katcipis/morfos">morfus</a>,
+the most small and stupid Go library ever :-).</p>
+
+<p>I say this because the final hack on the type system is so simple
+that it makes me want to cry, Go is indeed terribly simple, nothing
+to feed my ego here :-(. The whole magic:</p>
+
+<pre><code class="language-go">package morfos
+
+import &quot;unsafe&quot;
+
+type eface struct {
+	Type unsafe.Pointer
+	Word unsafe.Pointer
+}
+
+func geteface(i *interface{}) *eface {
+	return (*eface)(unsafe.Pointer(i))
+}
+
+// Morph will coerce the given value to the type stored on desiredtype
+// without copying or changing any data on value. The result will
+// be a merge of the data stored on value with the type stored on
+// desiredtype, basically a frankstein :-).
+//
+// The result value should be castable to the type of desiredtype.
+func Morph(value interface{}, desiredtype interface{}) interface{} {
+	valueeface := geteface(&amp;value)
+	typeeface := geteface(&amp;desiredtype)
+	valueeface.Type = typeeface.Type
+	return value
+}
+</code></pre>
+
+<p>My very first passing test:</p>
+
+<pre><code class="language-go">package morfos_test
+
+import (
+	&quot;testing&quot;
+
+	&quot;github.com/katcipis/morfos&quot;
+)
+
+func TestStructsSameSize(t *testing.T) {
+	type original struct {
+		x int
+		y int
+	}
+	type notoriginal struct {
+		z int
+		w int
+	}
+
+	orig := original{x: 100, y: 200}
+	_, ok := interface{}(orig).(notoriginal)
+	if ok {
+		t.Fatal(&quot;casting should be invalid&quot;)
+	}
+
+	morphed := morfos.Morph(orig, notoriginal{})
+	morphedNotOriginal, ok := morphed.(notoriginal)
+
+	if !ok {
+		t.Fatal(&quot;casting should be valid now&quot;)
+	}
+
+	if orig.x != morphedNotOriginal.z {
+		t.Fatalf(&quot;expected x[%d] == z[%d]&quot;, orig.x, morphedNotOriginal.z)
+	}
+
+	if orig.y != morphedNotOriginal.w {
+		t.Fatalf(&quot;expected y[%d] == w[%d]&quot;, orig.y, morphedNotOriginal.w)
+	}
+}
+</code></pre>
+
+<p>This test is &ldquo;safe&rdquo; because both structs have the same size,
+C programmers must be feeling butterflies on their bellies :-).</p>
+
+<p>Although the hack is small, there is a lot of fun we can have
+with it, but before we go on there is one single line of unsafeness
+that is usually unknow to Go newcomers:</p>
+
+<pre><code class="language-go">func geteface(i *interface{}) *eface {
+	return (*eface)(unsafe.Pointer(i))
+}
+</code></pre>
+
+<p>My feeling the first time I saw this was:</p>
+
+<p><img src="https://github.com/katcipis/katcipis.github.io/raw/master/_assets/hack-go-types/img/fly.jpg" alt="Go or C" /></p>
+
+<p>With this kind of casting, my hack could be written as:</p>
+
+<pre><code class="language-go">package main
+
+import (
+ 	&quot;fmt&quot;
+	&quot;unsafe&quot;
+)
+
+type a struct {
+	a int
+}
+
+type b struct {
+	b int
+}
+
+func main() {
+	x := a{a:100}
+	y := *(*b)(unsafe.Pointer(&amp;x))
+	
+	fmt.Printf(&quot;x %v\n&quot;, x)
+	fmt.Printf(&quot;y %v\n&quot;, y)
+}
+</code></pre>
+
+<p>And get this:</p>
+
+<pre><code>x {100}
+y {100}
+</code></pre>
+
+<p>It works, as can be read <a href="https://golang.org/pkg/unsafe/#Pointer">here</a>
+the unsafe.Pointer has special properties that allows it to be
+cast just like you do in C:</p>
+
+<pre><code>A Pointer can be converted to a pointer value of any type.
+</code></pre>
+
+<p>You may be thinking, what was the point of all this then ?
+Well, the objective was to hack the type system, which is to
+make the runtime casting facility behave as I want,
+my interest was to break this:</p>
+
+<pre><code class="language-go">        a, ok := b.(someType)
+</code></pre>
+
+<p>Make the &ldquo;safe&rdquo; cast behave unsafely, based on sheer curiosity on
+how this can actually be safe (take a look under the hood).
+And this has been achieved.</p>
+
+<p>So lets forget that there is a <strong>VERY</strong> simpler way to force casts in Go
+and have some fun with my useless hack (we should at least have some
+fun, right ?).</p>
+
+<p>In Go strings are immutable, or are they ?</p>
+
+<pre><code class="language-go">func TestMutatingString(t *testing.T) {
+
+	type stringStruct struct {
+		str unsafe.Pointer
+		len int
+	}
+
+	var rawstr [5]byte
+	rawstr[0] = 'h'
+	rawstr[1] = 'e'
+	rawstr[2] = 'l'
+	rawstr[3] = 'l'
+	rawstr[4] = 'o'
+
+	hi := stringStruct{
+		str: unsafe.Pointer(&amp;rawstr),
+		len: len(rawstr),
+	}
+
+	somestr := &quot;&quot;
+
+	morphed := morfos.Morph(hi, somestr)
+	mutableStr := morphed.(string)
+
+	if mutableStr != &quot;hello&quot; {
+		t.Fatalf(&quot;expected hello, got: %s&quot;, mutableStr)
+	}
+
+	rawstr[0] = 'h'
+	rawstr[1] = 'a'
+	rawstr[2] = 'c'
+	rawstr[3] = 'k'
+	rawstr[4] = 'd'
+
+	if mutableStr != &quot;hackd&quot; {
+		t.Fatalf(&quot;expected hackd, got: %s&quot;, mutableStr)
+	}
+}
+</code></pre>
+
+<p>To do this I exploited the fact that Go&rsquo;s strings are just structs
+with a pointer to the actual byte array and a len, the string does not
+need to be null terminated, thanks to the len field.</p>
+
+<p>As expected this test pass. Without reassigning the <strong>mutableStr</strong>
+variable at any moment I was able to make it represent a different
+string, by changing its internal byte array.</p>
+
+<p>Besides being fun, this hack is another example on how using the
+<strong>unsafe</strong> package will trully make your program unsafe. Seeing this
+on the code:</p>
+
+<pre><code class="language-go">        y := *(*b)(unsafe.Pointer(&amp;x))
+</code></pre>
+
+<p>Will make all kind of alarms bell on your head, but this:</p>
+
+<pre><code class="language-go">        val, ok := b.(someType)
+</code></pre>
+
+<p>Well, if <strong>ok</strong> is true it is safe to use <strong>val</strong>, or is it ? :-)</p>
+
+<h1 id="thanks">Thanks</h1>
+
+<p>Thanks to my friends/reviewers:</p>
+
+<ul>
+<li><a href="https://github.com/kamilash">Kamila Hinckel</a></li>
+<li><a href="https://github.com/patito">Paulo Benatto</a></li>
+<li><a href="https://github.com/tiago4orion">Tiago Natel</a></li>
+<li><a href="https://github.com/vitorarins">Vitor Arins</a></li>
+</ul>
+
+  </div>
+
+  <footer>
+    <ul class="stats">
+    
+        
+
+        
+        
+            <li>
+                
+                
+                    
+
+                    
+
+                    
+                        <i class="fa fa-sitemap">&nbsp;</i>
+                    
+
+                    
+                        Category
+                    
+                
+            </li>
+        
+    
+
+    
+    
+        <li><a href='/categories/go'>Go</a></li>
+    
+</ul>
+
+  </footer>
+
+</article>
+
+    <article class="post">
+        <div id="disqus_thread"></div>
+<script>
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "tiagokatcipis" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </article>
+
+
+<ul class="actions pagination">
+    
+        <li><a href="/blog/fun-nil-interfaces/"
+                class="button big previous">Having fun with Go&#39;s nil, interfaces and errors</a></li>
+    
+
+    
+        <li><a href="/blog/exploring-go-objects/"
+                class="button big next">Exploring Go&#39;s objects</a></li>
+    
+</ul>
+
+
+    </div>
+    
+<section id="sidebar">
+
+  
+  <section id="intro">
+    
+    
+      
+        <a href='/'><img src="/img/lambda.jpg" class="intro-circle" width="200px" alt="λ" /></a>
+      
+    
+    
+      <header>
+        <h2>(katcipis (λ (write gibberish)))</h2>
+        <p>Certainty is where creativity goes to die</p>
+      </header>
+    
+    
+      <ul class="icons">
+        
+          <li>
+            <a href="" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
+          </li>
+        
+        
+  <li><a href="//github.com/katcipis" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <li><a href="//linkedin.com/in/tiagokatcipis" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+  <li><a href="//plus.google.com/+tiagokatcipis@gmail.com" target="_blank" title="Google+" class="fa fa-google-plus"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <li><a href="//twitter.com/tiagokatcipis" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <li><a href="mailto:tiagokatcipis@gmail" title="Email" class="fa fa-envelope"></a></li>
+
+
+      </ul>
+    
+  </section>
+
+  
+  <section id="recent-posts">
+    <div class="mini-posts">
+      <header>
+        <h3>Recent Posts</h3>
+      </header>
+      <div class="posts-container">
+        
+
+        
+          
+        
+
+        
+          <article class="mini-post">
+            <header>
+              <h3>
+                <a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a>
+              </h3>
+              
+              <time class="published" datetime='2017-03-28'>
+                March 28, 2017
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/exploring-go-objects/" class="image featured">
+            <img src="/img/goexplorer.png" alt="">
+        </a>
+    
+
+
+          </article>
+        
+          <article class="mini-post">
+            <header>
+              <h3>
+                <a href="/blog/hack-go-types/">Hacking Go&#39;s type system</a>
+              </h3>
+              
+              <time class="published" datetime='2017-03-28'>
+                March 28, 2017
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/hack-go-types/" class="image featured">
+            <img src="/img/gohacking.jpg" alt="">
+        </a>
+    
+
+
+          </article>
+        
+          <article class="mini-post">
+            <header>
+              <h3>
+                <a href="/blog/fun-nil-interfaces/">Having fun with Go&#39;s nil, interfaces and errors</a>
+              </h3>
+              
+              <time class="published" datetime='2016-08-27'>
+                August 27, 2016
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/fun-nil-interfaces/" class="image featured">
+            <img src="/img/godebug.jpg" alt="">
+        </a>
+    
+
+
+          </article>
+        
+          <article class="mini-post">
+            <header>
+              <h3>
+                <a href="/blog/why-go/">Why Go ?</a>
+              </h3>
+              
+              <time class="published" datetime='2016-08-27'>
+                August 27, 2016
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/why-go/" class="image featured">
+            <img src="/img/gopher.jpg" alt="">
+        </a>
+    
+
+
+          </article>
+        
+      </div>
+
+      
+    </div>
+  </section>
+
+  
+  
+  
+  
+    <section id="categories">
+      <header>
+        <h3>
+          <a href="/categories/">Categories</a>
+        </h3>
+      </header>
+        
+          
+        
+
+        
+        <p>
+          <article>
+            <header>
+              
+                <a href="/categories/go/">Go</a>
+                <span style="float:right;">4</span>
+              
+            </header>
+          </article>
+        </p>
+        
+    </section>
+  
+
+  
+  
+    <section id="mini-bio">
+      <h3>About</h1>
+      <p>TODO</p>
+      <a href="/about/" class="button">Learn More</a>
+    </section>
+  
+
+  
+  <section id="footer">
+    
+      <ul class="icons">
+        
+          <li>
+            <a href="" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
+          </li>
+        
+        
+  <li><a href="//github.com/katcipis" target="_blank" title="GitHub" class="fa fa-github"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <li><a href="//linkedin.com/in/tiagokatcipis" target="_blank" title="LinkedIn" class="fa fa-linkedin"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+  <li><a href="//plus.google.com/+tiagokatcipis@gmail.com" target="_blank" title="Google+" class="fa fa-google-plus"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <li><a href="//twitter.com/tiagokatcipis" target="_blank" title="Twitter" class="fa fa-twitter"></a></li>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <li><a href="mailto:tiagokatcipis@gmail" title="Email" class="fa fa-envelope"></a></li>
+
+
+      </ul>
+    
+    <p class="copyright">
+      
+        &copy; 2017
+        
+          (katcipis (λ (write gibberish)))
+        
+      .
+      Powered by <a href="//gohugo.io" target="_blank">Hugo</a>
+    </p>
+  </section>
+</section>
+
+    </div>
+    <a id="back-to-top" href="#" class="fa fa-arrow-up fa-border fa-2x"></a>
+    
+
+    
+      
+    
+
+    
+    
+      <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/skel/3.0.1/skel.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.1.25/jquery.fancybox.min.js"></script>
+      <script src="/js/util.js"></script>
+      <script src="/js/main.js"></script>
+      <script src="/js/backToTop.js"></script>
+    
+
+    
+      
+        
+      
+    
+
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+  </body>
+</html>
+

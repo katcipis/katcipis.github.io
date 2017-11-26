@@ -22,6 +22,17 @@ Perhaps you are thinking &amp;ldquo;shut up, of course there are objects in Go&a
     </item>
     
     <item>
+      <title>Hacking Go&#39;s type system</title>
+      <link>https://katcipis.github.io/blog/hack-go-types/</link>
+      <pubDate>Tue, 28 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://katcipis.github.io/blog/hack-go-types/</guid>
+      <description>Are you in the mood for a stroll inside Go&amp;rsquo;s type system ? If you are already familiarized with it, this post can be funny for you, or just plain stupid.
+If you have no idea how types and interfaces are implemented on Go, you may learn something, I sure did :-)
+Since I worked with handwritten type systems in C, like the one found in glib GObjects, I&amp;rsquo;m always curious on how languages implement the concept of type safety on a machine that actually only has numbers.</description>
+    </item>
+    
+    <item>
       <title>Having fun with Go&#39;s nil, interfaces and errors</title>
       <link>https://katcipis.github.io/blog/fun-nil-interfaces/</link>
       <pubDate>Sat, 27 Aug 2016 00:00:00 +0000</pubDate>
