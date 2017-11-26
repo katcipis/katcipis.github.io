@@ -3,12 +3,12 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://katcipis.github.io/blog/exploring-go-objects/</loc>
-    <lastmod>2017-03-28T00:00:00+00:00</lastmod>
+    <loc>https://katcipis.github.io/blog/hack-go-types/</loc>
+    <lastmod>2017-04-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://katcipis.github.io/blog/hack-go-types/</loc>
+    <loc>https://katcipis.github.io/blog/exploring-go-objects/</loc>
     <lastmod>2017-03-28T00:00:00+00:00</lastmod>
   </url>
   
@@ -28,13 +28,13 @@
   
   <url>
     <loc>https://katcipis.github.io/</loc>
-    <lastmod>2017-03-28T00:00:00+00:00</lastmod>
+    <lastmod>2017-04-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://katcipis.github.io/blog/</loc>
-    <lastmod>2017-03-28T00:00:00+00:00</lastmod>
+    <lastmod>2017-04-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -45,7 +45,7 @@
   
   <url>
     <loc>https://katcipis.github.io/categories/go/</loc>
-    <lastmod>2017-03-28T00:00:00+00:00</lastmod>
+    <lastmod>2017-04-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

@@ -6,10 +6,21 @@
     <description>Recent content in Go on (katcipis (λ (write gibberish)))</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 28 Mar 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 21 Apr 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://katcipis.github.io/categories/go/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Hacking Go&#39;s type system</title>
+      <link>https://katcipis.github.io/blog/hack-go-types/</link>
+      <pubDate>Fri, 21 Apr 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://katcipis.github.io/blog/hack-go-types/</guid>
+      <description>Are you in the mood for a stroll inside Go&amp;rsquo;s type system ? If you are already familiarized with it, this post can be funny for you, or just plain stupid.
+If you have no idea how types and interfaces are implemented on Go, you may learn something, I sure did :-)
+Since I worked with handwritten type systems in C, like the one found in glib GObjects, I&amp;rsquo;m always curious on how languages implement the concept of type safety on a machine that actually only has numbers.</description>
+    </item>
     
     <item>
       <title>Exploring Go&#39;s objects</title>
@@ -19,17 +30,6 @@
       <guid>https://katcipis.github.io/blog/exploring-go-objects/</guid>
       <description>I started to understand Go&amp;rsquo;s object model easier when I accepted that there is no objects at all, there is just sets of functions that can operate on common state, with some sugar sprinkled on top.
 Perhaps you are thinking &amp;ldquo;shut up, of course there are objects in Go&amp;rdquo; or &amp;ldquo;sets of functions that operates on common state is the definition of an object&amp;rdquo;, well, you are probably right.</description>
-    </item>
-    
-    <item>
-      <title>Hacking Go&#39;s type system</title>
-      <link>https://katcipis.github.io/blog/hack-go-types/</link>
-      <pubDate>Tue, 28 Mar 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://katcipis.github.io/blog/hack-go-types/</guid>
-      <description>Are you in the mood for a stroll inside Go&amp;rsquo;s type system ? If you are already familiarized with it, this post can be funny for you, or just plain stupid.
-If you have no idea how types and interfaces are implemented on Go, you may learn something, I sure did :-)
-Since I worked with handwritten type systems in C, like the one found in glib GObjects, I&amp;rsquo;m always curious on how languages implement the concept of type safety on a machine that actually only has numbers.</description>
     </item>
     
     <item>

@@ -1,7 +1,7 @@
 +++
 author = "Tiago Katcipis"
 categories = ["Go"]
-date = "2017-03-28"
+date = "2017-04-21"
 description = "Have some fun hacking Go type system to make safe casting unsafe again =)"
 featured = "gohacking.jpg"
 featuredalt = "Go Hacking"
