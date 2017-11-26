@@ -6,10 +6,20 @@
     <description>Recent content in Go on (katcipis (λ (write gibberish)))</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 27 Aug 2016 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 28 Mar 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://katcipis.github.io/categories/go/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Exploring Go&#39;s objects</title>
+      <link>https://katcipis.github.io/blog/exploring-go-objects/</link>
+      <pubDate>Tue, 28 Mar 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://katcipis.github.io/blog/exploring-go-objects/</guid>
+      <description>I started to understand Go&amp;rsquo;s object model easier when I accepted that there is no objects at all, there is just sets of functions that can operate on common state, with some sugar sprinkled on top.
+Perhaps you are thinking &amp;ldquo;shut up, of course there are objects in Go&amp;rdquo; or &amp;ldquo;sets of functions that operates on common state is the definition of an object&amp;rdquo;, well, you are probably right.</description>
+    </item>
     
     <item>
       <title>Having fun with Go&#39;s nil, interfaces and errors</title>
