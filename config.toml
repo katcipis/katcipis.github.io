@@ -1,7 +1,7 @@
 baseurl = "https://katcipis.github.io/"
 publishDir = "./"
 languageCode = "en-us"
-title = "(katcipis (λ (write gibberish)))"
+title = "(def katcipis (λ (write gibberish)))"
 theme = "hugo-future-imperfect"
 preserveTaxonomyNames = true
 paginate = 3
