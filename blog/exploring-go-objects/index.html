@@ -590,107 +590,89 @@ since it looks like fun :-).</p>
 functions, so here goes a stupid example of what can be done with functions.</p>
 
 <p>Lets define a type that is actually a function:</p>
-
-<pre><code class="language-go">type Adder func(int, int) int
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Adder</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span></code></pre></div>
 <p>You can think about it as an interface (but it is not the same thing).
 Any function that matches the signature will be acceptable as being of
 the type <strong>Adder</strong>:</p>
-
-<pre><code class="language-go">// Same type as Adder
-func add(a int, b int) int {
-	return a + b
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Same type as Adder
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>
+}</code></pre></div>
 <p>An abstract adder that does not know how to add:</p>
-
-<pre><code class="language-go">func abstractedAdd(a Adder, b int, c int) int {
-	return a(b, c)
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">a</span> <span style="color:#a6e22e">Adder</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">c</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">c</span>)
+}</code></pre></div>
 <p>This really recalls the kind of thing you can do with interfaces.
 <strong>abstractedAdd</strong> does not know how to add, and it will accept any
 implementation of an Adder that respects the same protocol.</p>
 
 <p>Given this extremely useless and simple example,
 here is the full working code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
 
-import &quot;fmt&quot;
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Adder</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span>
 
-type Adder func(int, int) int
-
-// Same type as Adder
-func add(a int, b int) int {
-	return a + b
+<span style="color:#75715e">// Same type as Adder
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>
 }
 
-func abstractedAdd(a Adder, b int, c int) int {
-	return a(b, c)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">a</span> <span style="color:#a6e22e">Adder</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">c</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">c</span>)
 }
 
-func main() {
-	var a Adder
-	fmt.Printf(&quot;Adder: %v\n&quot;, a)
-	a = add
-	fmt.Printf(&quot;Adder initialized: %v\n&quot;, a)
-	fmt.Printf(&quot;%d + %d = %d\n&quot;, 1, 1, abstractedAdd(a, 1, 1))
-	fmt.Printf(&quot;%d + %d = %d\n&quot;, 1, 1, abstractedAdd(add, 1, 1))
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">Adder</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Adder: %v\n&#34;</span>, <span style="color:#a6e22e">a</span>)
+	<span style="color:#a6e22e">a</span> = <span style="color:#a6e22e">add</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Adder initialized: %v\n&#34;</span>, <span style="color:#a6e22e">a</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">a</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">add</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+}</code></pre></div>
 <p>With this example in mind we have the opportunity to start exploring
 Go&rsquo;s objects. Can a method satisfy the <strong>Adder</strong> type ? Depending
 on your background this may sound counter intuitive (something like,
 one is a method, but you need a function, etc)
 lets take a look at an adder object:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ObjectAdder</span> <span style="color:#66d9ef">struct</span>{}
 
-<pre><code class="language-go">type ObjectAdder struct{}
-
-func (o *ObjectAdder) Add(a int, b int) int {
-	return a + b
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>) <span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>
+}</code></pre></div>
 <p>Sound about right, adding it on our example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
 
-import &quot;fmt&quot;
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Adder</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span>
 
-type Adder func(int, int) int
-
-func add(a int, b int) int {
-	return a + b
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>
 }
 
-func abstractedAdd(a Adder, b int, c int) int {
-	return a(b, c)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">a</span> <span style="color:#a6e22e">Adder</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">c</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">c</span>)
 }
 
-type ObjectAdder struct{}
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ObjectAdder</span> <span style="color:#66d9ef">struct</span>{}
 
-func (o *ObjectAdder) Add(a int, b int) int {
-	return a + b
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>) <span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>
 }
 
-func main() {
-	var a Adder
-	fmt.Printf(&quot;Adder: %v\n&quot;, a)
-	a = add
-	fmt.Printf(&quot;Adder initialized: %v\n&quot;, a)
-	fmt.Printf(&quot;func: %d + %d = %d\n&quot;, 1, 1, abstractedAdd(a, 1, 1))
-	fmt.Printf(&quot;func: %d + %d = %d\n&quot;, 1, 1, abstractedAdd(add, 1, 1))
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">Adder</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Adder: %v\n&#34;</span>, <span style="color:#a6e22e">a</span>)
+	<span style="color:#a6e22e">a</span> = <span style="color:#a6e22e">add</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Adder initialized: %v\n&#34;</span>, <span style="color:#a6e22e">a</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;func: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">a</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;func: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">add</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
 
-	var o *ObjectAdder
-	fmt.Printf(&quot;object: %d + %d = %d\n&quot;, 1, 1, abstractedAdd(o.Add, 1, 1))
-}
-</code></pre>
-
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Add</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+}</code></pre></div>
 <p>Result:</p>
 
 <pre><code>Adder: &lt;nil&gt;
@@ -703,18 +685,12 @@ object: 1 + 1 = 2
 <p>Yep, it worked. Differently from interfaces, the function signature will not
 match any kind of method name, you just pass the method as a parameter, since
 the method is actually just a function, it could be something like:</p>
-
-<pre><code class="language-go">	var o *ObjectAdder
-	fmt.Printf(&quot;object: %d + %d = %d\n&quot;, 1, 1, abstractedAdd(o.Whatever, 1, 1))
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Whatever</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))</code></pre></div>
 <p>Should work just fine. Not convinced that the method is just a function ?
 Let&rsquo;s add this:</p>
-
-<pre><code class="language-go">	fmt.Printf(&quot;func add: %T\n&quot;, add)
-	fmt.Printf(&quot;object.Add: %T\n&quot;, o.Add)
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;func add: %T\n&#34;</span>, <span style="color:#a6e22e">add</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object.Add: %T\n&#34;</span>, <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Add</span>)</code></pre></div>
 <p>Result:</p>
 
 <pre><code>func add: func(int, int) int
@@ -739,20 +715,14 @@ is nothing special about it, it is just a parameter being
 passed to a function.</p>
 
 <p>Lets elaborate our example:</p>
-
-<pre><code class="language-go">	fmt.Printf(&quot;ObjectAdder.Add: %T\n&quot;, (*ObjectAdder).Add)
-	fmt.Printf(&quot;ObjectAdder.Add: %d + %d = %d\n&quot;, 1, 1, (*ObjectAdder).Add(nil, 1, 1))
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ObjectAdder.Add: %T\n&#34;</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>).<span style="color:#a6e22e">Add</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ObjectAdder.Add: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>).<span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">nil</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))</code></pre></div>
 <p>What I&rsquo;m doing here ? Just making it explicit what Go actually does when you
 declare something like:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ObjectAdder</span> <span style="color:#66d9ef">struct</span>{}
 
-<pre><code class="language-go">type ObjectAdder struct{}
-
-func (o *ObjectAdder) Add(a int, b int) int {
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>) <span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+}</code></pre></div>
 <p>It will add a function on the type <strong>*ObjectAdder</strong>.
 This function is accessible and can be used as any other value on the
 language (being called, passed as a parameter, etc).</p>
@@ -786,46 +756,43 @@ showed that. Passing a function or a method as an argument has no
 difference at all (I can&rsquo;t think on a reason to exist a difference).</p>
 
 <p>Here is the full code of the final example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
 
-import &quot;fmt&quot;
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Adder</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span>
 
-type Adder func(int, int) int
-
-// Same type as Adder
-func add(a int, b int) int {
-	return a + b
+<span style="color:#75715e">// Same type as Adder
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>
 }
 
-func abstractedAdd(a Adder, b int, c int) int {
-	return a(b, c)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">a</span> <span style="color:#a6e22e">Adder</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">c</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">c</span>)
 }
 
-type ObjectAdder struct{}
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ObjectAdder</span> <span style="color:#66d9ef">struct</span>{}
 
-func (o *ObjectAdder) Add(a int, b int) int {
-	return a + b
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>) <span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>
 }
 
-func main() {
-	var a Adder
-	fmt.Printf(&quot;Adder: %v\n&quot;, a)
-	a = add
-	fmt.Printf(&quot;Adder initialized: %v\n&quot;, a)
-	fmt.Printf(&quot;func: %d + %d = %d\n&quot;, 1, 1, abstractedAdd(a, 1, 1))
-	fmt.Printf(&quot;func: %d + %d = %d\n&quot;, 1, 1, abstractedAdd(add, 1, 1))
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">Adder</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Adder: %v\n&#34;</span>, <span style="color:#a6e22e">a</span>)
+	<span style="color:#a6e22e">a</span> = <span style="color:#a6e22e">add</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Adder initialized: %v\n&#34;</span>, <span style="color:#a6e22e">a</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;func: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">a</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;func: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">add</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
 
-	var o *ObjectAdder
-	fmt.Printf(&quot;func add: %T\n&quot;, add)
-	fmt.Printf(&quot;object.Add: %T\n&quot;, o.Add)
-	fmt.Printf(&quot;object: %d + %d = %d\n&quot;, 1, 1, abstractedAdd(o.Add, 1, 1))
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;func add: %T\n&#34;</span>, <span style="color:#a6e22e">add</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object.Add: %T\n&#34;</span>, <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Add</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Add</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
 
-	fmt.Printf(&quot;ObjectAdder.Add: %T\n&quot;, (*ObjectAdder).Add)
-	fmt.Printf(&quot;ObjectAdder.Add: %d + %d = %d\n&quot;, 1, 1, (*ObjectAdder).Add(nil, 1, 1))
-}
-</code></pre>
-
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ObjectAdder.Add: %T\n&#34;</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>).<span style="color:#a6e22e">Add</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ObjectAdder.Add: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>).<span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">nil</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+}</code></pre></div>
 <p>This example is completely stateless. Objects usually have state and
 side effects,can Go functions have state and side effects too ?</p>
 
@@ -833,46 +800,37 @@ side effects,can Go functions have state and side effects too ?</p>
 
 <p>To make the gap between functions and objects even smaller lets
 work with the oldest/simplest example, an iterator:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
 
-import &quot;fmt&quot;
-
-func iterator() func() int {
-	a := 0
-	return func() int {
-		a++
-		return a
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">iterator</span>() <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span> {
+		<span style="color:#a6e22e">a</span><span style="color:#f92672">++</span>
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
 	}
 }
 
-func main() {
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
 
-	iter := iterator()
+	<span style="color:#a6e22e">iter</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">iterator</span>()
 
-	fmt.Printf(&quot;iter 1: %d\n&quot;, iter())
-	fmt.Printf(&quot;iter 2: %d\n&quot;, iter())
-	fmt.Printf(&quot;iter 3: %d\n&quot;, iter())
-}
-</code></pre>
-
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 1: %d\n&#34;</span>, <span style="color:#a6e22e">iter</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 2: %d\n&#34;</span>, <span style="color:#a6e22e">iter</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 3: %d\n&#34;</span>, <span style="color:#a6e22e">iter</span>())
+}</code></pre></div>
 <p>If you run this you will see that it is a valid iterator.
 What we have here exactly ? We have a <strong>iterator</strong> function
 that acts as a constructor for another function, that will
 be returned, that is why the return type of <strong>iterator</strong> is:</p>
-
-<pre><code class="language-go">func() int
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span></code></pre></div>
 <p>What is usually referred as closure is this lexical construction:</p>
-
-<pre><code class="language-go">	a := 0
-	return func() int {
-		a++
-		return a
-	}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span> {
+		<span style="color:#a6e22e">a</span><span style="color:#f92672">++</span>
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
+	}</code></pre></div>
 <p>The function that we are instantiating access a variable that exists
 on the outer scope, this will associate the <strong>a</strong> variable to the
 newly created function, it has a reference to <strong>a</strong> and can manipulate it.</p>
@@ -884,33 +842,30 @@ since functions are a static construction in C).</p>
 <p>In Go, functions are instantiated all the time, here goes another version
 of this example that makes it explicit that we are actually instantiating
 functions:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
 
-import &quot;fmt&quot;
-
-func iterator() func() int {
-	a := 0
-	return func() int {
-		a++
-		return a
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">iterator</span>() <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span> {
+		<span style="color:#a6e22e">a</span><span style="color:#f92672">++</span>
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
 	}
 }
 
-func main() {
-	itera := iterator()
-	iterb := iterator()
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">itera</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">iterator</span>()
+	<span style="color:#a6e22e">iterb</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">iterator</span>()
 
-	fmt.Printf(&quot;itera 1: %d\n&quot;, itera())
-	fmt.Printf(&quot;itera 2: %d\n&quot;, itera())
-	fmt.Printf(&quot;itera 3: %d\n&quot;, itera())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;itera 1: %d\n&#34;</span>, <span style="color:#a6e22e">itera</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;itera 2: %d\n&#34;</span>, <span style="color:#a6e22e">itera</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;itera 3: %d\n&#34;</span>, <span style="color:#a6e22e">itera</span>())
 
-	fmt.Printf(&quot;iterb 1: %d\n&quot;, iterb())
-	fmt.Printf(&quot;iterb 2: %d\n&quot;, iterb())
-	fmt.Printf(&quot;iterb 3: %d\n&quot;, iterb())
-}
-</code></pre>
-
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iterb 1: %d\n&#34;</span>, <span style="color:#a6e22e">iterb</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iterb 2: %d\n&#34;</span>, <span style="color:#a6e22e">iterb</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iterb 3: %d\n&#34;</span>, <span style="color:#a6e22e">iterb</span>())
+}</code></pre></div>
 <p>We get:</p>
 
 <pre><code>itera 1: 1
@@ -931,35 +886,32 @@ this provides the absolute maximum level of encapsulation you can imagine.
 There is no way to access the state directly except through the function.</p>
 
 <p>Lets take a look on how this would look like using a Go object:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
 
-import &quot;fmt&quot;
-
-type iterator struct {
-	a int
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">iterator</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>
 }
 
-func (i *iterator) iter() int {
-	i.a++
-	return i.a
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">i</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">iterator</span>) <span style="color:#a6e22e">iter</span>() <span style="color:#66d9ef">int</span> {
+	<span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">a</span><span style="color:#f92672">++</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">a</span>
 }
 
-func newIter() *iterator {
-	return &amp;iterator{
-		a: 0,
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newIter</span>() <span style="color:#f92672">*</span><span style="color:#a6e22e">iterator</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">iterator</span>{
+		<span style="color:#a6e22e">a</span>: <span style="color:#ae81ff">0</span>,
 	}
 }
 
-func main() {
-	i := newIter()
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newIter</span>()
 
-	fmt.Printf(&quot;iter 1: %d\n&quot;, i.iter())
-	fmt.Printf(&quot;iter 2: %d\n&quot;, i.iter())
-	fmt.Printf(&quot;iter 3: %d\n&quot;, i.iter())
-}
-</code></pre>
-
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 1: %d\n&#34;</span>, <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">iter</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 2: %d\n&#34;</span>, <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">iter</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 3: %d\n&#34;</span>, <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">iter</span>())
+}</code></pre></div>
 <p>As you can see, for something very simple the object way seems
 a little more clumsy, at least it looks like it to me.
 I even gave the same lousy name <strong>a</strong> to the integer, that is
@@ -997,48 +949,42 @@ is able to change the state.</p>
 
 <p>To finish this argument, lets develop a set of functions that
 operates on shared state (that is pretty much the work an object does):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
 
-import &quot;fmt&quot;
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">stateChanger</span> <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span>
 
-type stateChanger func() int
-
-func new() (stateChanger, stateChanger) {
-	a := 0
-	return func() int {
-			a++
-			return a
+<span style="color:#66d9ef">func</span> new() (<span style="color:#a6e22e">stateChanger</span>, <span style="color:#a6e22e">stateChanger</span>) {
+	<span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span> {
+			<span style="color:#a6e22e">a</span><span style="color:#f92672">++</span>
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
 		},
-		func() int {
-			a--
-			return a
+		<span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span> {
+			<span style="color:#a6e22e">a</span><span style="color:#f92672">--</span>
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
 		}
 }
 
-func main() {
-	inc, dec := new()
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">inc</span>, <span style="color:#a6e22e">dec</span> <span style="color:#f92672">:=</span> new()
 
-	fmt.Printf(&quot;inc 1: %d\n&quot;, inc())
-	fmt.Printf(&quot;inc 2: %d\n&quot;, inc())
-	fmt.Printf(&quot;inc 3: %d\n&quot;, inc())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;inc 1: %d\n&#34;</span>, <span style="color:#a6e22e">inc</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;inc 2: %d\n&#34;</span>, <span style="color:#a6e22e">inc</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;inc 3: %d\n&#34;</span>, <span style="color:#a6e22e">inc</span>())
 
-	fmt.Printf(&quot;dec 1: %d\n&quot;, dec())
-	fmt.Printf(&quot;dec 2: %d\n&quot;, dec())
-	fmt.Printf(&quot;dec 3: %d\n&quot;, dec())
-}
-</code></pre>
-
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;dec 1: %d\n&#34;</span>, <span style="color:#a6e22e">dec</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;dec 2: %d\n&#34;</span>, <span style="color:#a6e22e">dec</span>())
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;dec 3: %d\n&#34;</span>, <span style="color:#a6e22e">dec</span>())
+}</code></pre></div>
 <p>The output:</p>
-
-<pre><code class="language-go">inc 1: 1
-inc 2: 2
-inc 3: 3
-dec 1: 2
-dec 2: 1
-dec 3: 0
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">inc</span> <span style="color:#ae81ff">1</span>: <span style="color:#ae81ff">1</span>
+<span style="color:#a6e22e">inc</span> <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">2</span>
+<span style="color:#a6e22e">inc</span> <span style="color:#ae81ff">3</span>: <span style="color:#ae81ff">3</span>
+<span style="color:#a6e22e">dec</span> <span style="color:#ae81ff">1</span>: <span style="color:#ae81ff">2</span>
+<span style="color:#a6e22e">dec</span> <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">1</span>
+<span style="color:#a6e22e">dec</span> <span style="color:#ae81ff">3</span>: <span style="color:#ae81ff">0</span></code></pre></div>
 <p>As can be seen clearly, both functions share the same common
 state and can manipulate it, just as you would do with an
 object with two methods.</p>
@@ -1175,17 +1121,14 @@ Python delivered on the time they where developed.</p>
 
 <p>Safe is important because the calculator example could be used to implement
 a form of this. We could do this:</p>
-
-<pre><code class="language-go">type Calculator struct {
-	Add func(int,int) int
-	Sub func(int,int) int
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Calculator</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Add</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>,<span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span>
+	<span style="color:#a6e22e">Sub</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>,<span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span>
 }
 
-func codeThatDependsOnCalculator(c Calculator) {
-        // etc
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">codeThatDependsOnCalculator</span>(<span style="color:#a6e22e">c</span> <span style="color:#a6e22e">Calculator</span>) {
+        <span style="color:#75715e">// etc
+</span><span style="color:#75715e"></span>}</code></pre></div>
 <p>This would allow for N different implementations of a <strong>Calculator</strong>
 to integrate with the code that depends on it, but it would not
 be safe. It is very easy to provide just half the implementation and

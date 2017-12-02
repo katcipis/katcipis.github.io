@@ -569,38 +569,32 @@ the correct behaviour depending on the combination).</p>
 
 <p>With nil I still don&rsquo;t get the benefit quite clearly. For example, a nil map behaves like
 an empty map:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
-func main() {
-    var a map[string]string
-    b,ok := a[&quot;whatever&quot;]
-    fmt.Println(b,ok)
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>
+    <span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;whatever&#34;</span>]
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span>)
+}</code></pre></div>
 <p>Hmm, it seems like a way to initialize a empty map, ok. But it is a read only map,
 if you try to add any data on it a panic will occur:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
-func main() {
-    var a map[string]string
-    b,ok := a[&quot;whatever&quot;]
-    fmt.Println(b,ok)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>
+    <span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;whatever&#34;</span>]
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span>)
     
-    a[&quot;hi&quot;] = &quot;a&quot;
-}
-</code></pre>
-
+    <span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;hi&#34;</span>] = <span style="color:#e6db74">&#34;a&#34;</span>
+}</code></pre></div>
 <p>Which makes me consider its usefulness, I used this on a lot of my tests, since I knew the
 map would be read only. But I&rsquo;m still not sure if it is a good choice, there is no way to communicate
 that a map is read only, and the minimal change on the behaviour of the code can cause
@@ -641,17 +635,14 @@ solution has been found some thorns where on the way.</p>
 <p>My first solution was to define an array of errors that behaves as one error,
 and I was feeling pretty hacker about it :-), with the exception that it exploded on my
 face. Here is an example of the idea, with some code omitted for brevity sake:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">errorsAggregate</span> []<span style="color:#66d9ef">error</span>
 
-<pre><code class="language-go">type errorsAggregate []error
-
-func (errors errorsAggregate) Error() string {
-    if errors == nil {
-        return &quot;errors is nil&quot;
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">errors</span> <span style="color:#a6e22e">errorsAggregate</span>) <span style="color:#a6e22e">Error</span>() <span style="color:#66d9ef">string</span> {
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;errors is nil&#34;</span>
     }
-    return &quot;concatenate all error messages inside the slice here&quot;
-}
-</code></pre>
-
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;concatenate all error messages inside the slice here&#34;</span>
+}</code></pre></div>
 <p>The idea was to use my errorsAggregate as any slice to append multiple errors.
 If no error at all has been appended on it, it would be nil, and I would be happy.</p>
 
@@ -668,36 +659,33 @@ very confused, specially with my previous tests still working.</p>
 
 <p>I had to isolate the problem since it was extremely bizarre, when I did this I came up
 with something like this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
 
-type errorsAggregate []error
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">errorsAggregate</span> []<span style="color:#66d9ef">error</span>
 
-func (errors errorsAggregate) Error() string {
-    if errors == nil {
-        return &quot;errors is nil&quot;
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">errors</span> <span style="color:#a6e22e">errorsAggregate</span>) <span style="color:#a6e22e">Error</span>() <span style="color:#66d9ef">string</span> {
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;errors is nil&#34;</span>
     }
-    return &quot;concatenate all error messages&quot;
+    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;concatenate all error messages&#34;</span>
 }
 
-func returnsErrors() error {
-    var errs errorsAggregate
-    fmt.Println(errs == nil)
-    return errs
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">returnsErrors</span>() <span style="color:#66d9ef">error</span> {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">errs</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errs</span>
 }
 
-func main() {
-    err := returnsErrors()
-    fmt.Println(err)
-    fmt.Println(err == nil)
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">returnsErrors</span>()
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+}</code></pre></div>
 <p>If you run it on the Go playground you will get this:</p>
 
 <pre><code>true
@@ -710,30 +698,24 @@ to print the error with Error() it evaluates as nil, but when
 I check err == nil on the error returned by <strong>returnsErrors</strong> the error is actually not nil ?</p>
 
 <p>And on top of that calling assert.Nil on err, like:</p>
-
-<pre><code class="language-go">err := returnsErrors()
-assert.Nil(t, err)
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">returnsErrors</span>()
+<span style="color:#a6e22e">assert</span>.<span style="color:#a6e22e">Nil</span>(<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">err</span>)</code></pre></div>
 <p>Was passing the test. How ??? It is not nil !!!</p>
 
 <p>Here is the answer, inside the testify assert package:</p>
-
-<pre><code class="language-go">func isNil(object interface{}) bool {
-    if object == nil {
-        return true
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">isNil</span>(<span style="color:#a6e22e">object</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">bool</span> {
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">object</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
     }
 
-    value := reflect.ValueOf(object)
-    kind := value.Kind()
-    if kind &gt;= reflect.Chan &amp;&amp; kind &lt;= reflect.Slice &amp;&amp; value.IsNil() {
-        return true
+    <span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">ValueOf</span>(<span style="color:#a6e22e">object</span>)
+    <span style="color:#a6e22e">kind</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">Kind</span>()
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">kind</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Chan</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">kind</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Slice</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">IsNil</span>() {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
     }
 
-    return false
-}
-</code></pre>
-
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+}</code></pre></div>
 <p>Why the hell are they doing that check on a range of kinds and chaining with a value.IsNil() ?
 The answer is on how interfaces behaves with nil. A pretty good source on that is this
 <a href="http://research.swtch.com/interfaces">Russ Cox post about interfaces</a>, I&rsquo;m going to
@@ -742,34 +724,28 @@ try to explain at least what was happening with me based on what I learned there
 <h1 id="what-is-a-nil-interface">What is a nil interface ?</h1>
 
 <p>Well, a nil interface would be this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
-func main() {
-    var a interface{}
-    fmt.Println(a == nil)
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">interface</span>{}
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+}</code></pre></div>
 <p>This is not:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
-func main() {
-    var b *string
-    var a interface{} = b
-    fmt.Println(a == nil)
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">interface</span>{} = <span style="color:#a6e22e">b</span>
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+}</code></pre></div>
 <p>Why ? It seems to me that it happens because how interfaces are implemented:</p>
 
 <p>When you assign the string to the interface{} variable, the interface{} is initialized
@@ -785,14 +761,11 @@ It is not actually nil, it has type information.</p>
 
 <p>When an explicit assignment is made, and you are aware of how interfaces are initialized, this starts
 to get a little intuitive. But on a function return this is more subtle (at least for me):</p>
-
-<pre><code class="language-go">func returnsErrors() error {
-    var errs errorsAggregate
-    fmt.Println(errs == nil)
-    return errs
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">returnsErrors</span>() <span style="color:#66d9ef">error</span> {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">errs</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errs</span>
+}</code></pre></div>
 <p>The error interface is being initialized with the errorsAggregate type information and its nil data pointer.
 Since error is not an empty interface it would be pointing to a itable matching errorsAggregate Error method
 with the error interface Error, and a nil data pointer. But the error is not nil. This subtle detail +
@@ -800,24 +773,21 @@ testity.assert behaviour created a very bizarre scenario for me.</p>
 
 <p>Although testify assert behaviour makes perfectly sense, since the function accepts a empty interface,
 this kind of code would pass as non nil:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
-func assertNil(a interface{}) {
-    fmt.Println(a == nil)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">assertNil</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">interface</span>{}) {
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
 }
 
-func main() {
-    var b *string
-    fmt.Println(b == nil)
-    assertNil(b)
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+    <span style="color:#a6e22e">assertNil</span>(<span style="color:#a6e22e">b</span>)
+}</code></pre></div>
 <p>It explains why it uses reflection on the interface{} and checks if the value of interface{}
 is actually nil, which on this case will be the string pointer.</p>
 
@@ -835,39 +805,36 @@ but that would be a topic for a entire other post.</p>
 
 <p>The final solution is basically the aggregator with a method that actually returns a nil error
 if it is empty:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-    &quot;fmt&quot;
-    &quot;errors&quot;
+<span style="color:#f92672">import</span> (
+    <span style="color:#e6db74">&#34;fmt&#34;</span>
+    <span style="color:#e6db74">&#34;errors&#34;</span>
 )
 
 
-type errorsAggregate []error
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">errorsAggregate</span> []<span style="color:#66d9ef">error</span>
 
-func (errs errorsAggregate) err() error {
-    if errs == nil {
-        return nil
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>) <span style="color:#a6e22e">err</span>() <span style="color:#66d9ef">error</span> {
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errs</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
     }
-    return errors.New(&quot;aggregate errors here&quot;)
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;aggregate errors here&#34;</span>)
 }
 
-func returnsErrors() error {
-    var errs errorsAggregate
-    //some code here
-    //like errs = append(errs, err)
-    //altough a method to protect for appending nil errors would be better
-    return errs.err()
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">returnsErrors</span>() <span style="color:#66d9ef">error</span> {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>
+    <span style="color:#75715e">//some code here
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">//like errs = append(errs, err)
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">//altough a method to protect for appending nil errors would be better
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errs</span>.<span style="color:#a6e22e">err</span>()
 }
 
-func main() {
-    err := returnsErrors()
-    fmt.Println(err)
-    fmt.Println(err == nil)
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">returnsErrors</span>()
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+}</code></pre></div>
 <p>I have this feeling that this is not the better solution out there, but it is doing
 its job properly right now.</p>
 

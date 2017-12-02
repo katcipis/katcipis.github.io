@@ -482,29 +482,23 @@ which is used to check if the type corresponds to the one you are casting.</p>
 
 <p>To begin the exploration I wanted to find how type assertions are
 made, so I wrote this ridiculous code:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
 
-import &quot;fmt&quot;
-
-func main() {
-	var a int
-	var b interface{} = a
-	c := b.(int)
-	fmt.Println(c)
-}
-</code></pre>
-
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">interface</span>{} = <span style="color:#a6e22e">a</span>
+	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#66d9ef">int</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">c</span>)
+}</code></pre></div>
 <p>Compiled it outputing its assembly:</p>
 
 <pre><code>go build -gcflags -S cast.go
 </code></pre>
 
 <p>Found that the assembly code corresponding to this:</p>
-
-<pre><code class="language-go">	c := b.(int)
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#66d9ef">int</span>)</code></pre></div>
 <p>Is (roughly) this:</p>
 
 <pre><code>	0x002a 00042 (cast.go:7)	LEAQ	type.int(SB), AX
@@ -523,49 +517,43 @@ func main() {
 <p>The <strong>runtime.convT2E</strong> call caught my attention, it was not hard to
 find it on the <a href="https://github.com/golang/go/blob/master/src/runtime/iface.go">iface.go</a>
 file on the golang source code (on the time of writing, Go 1.8.1):</p>
-
-<pre><code class="language-go">// The conv and assert functions below do very similar things.
-// The convXXX functions are guaranteed by the compiler to succeed.
-// The assertXXX functions may fail (either panicking or returning false,
-// depending on whether they are 1-result or 2-result).
-// The convXXX functions succeed on a nil input, whereas the assertXXX
-// functions fail on a nil input.
-
-func convT2E(t *_type, elem unsafe.Pointer) (e eface) {
-	if raceenabled {
-		raceReadObjectPC(t, elem, getcallerpc(unsafe.Pointer(&amp;t)), funcPC(convT2E))
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// The conv and assert functions below do very similar things.
+</span><span style="color:#75715e">// The convXXX functions are guaranteed by the compiler to succeed.
+</span><span style="color:#75715e">// The assertXXX functions may fail (either panicking or returning false,
+</span><span style="color:#75715e">// depending on whether they are 1-result or 2-result).
+</span><span style="color:#75715e">// The convXXX functions succeed on a nil input, whereas the assertXXX
+</span><span style="color:#75715e">// functions fail on a nil input.
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">convT2E</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span>, <span style="color:#a6e22e">elem</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>) (<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">eface</span>) {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">raceenabled</span> {
+		<span style="color:#a6e22e">raceReadObjectPC</span>(<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">elem</span>, <span style="color:#a6e22e">getcallerpc</span>(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">t</span>)), <span style="color:#a6e22e">funcPC</span>(<span style="color:#a6e22e">convT2E</span>))
 	}
-	if msanenabled {
-		msanread(elem, t.size)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">msanenabled</span> {
+		<span style="color:#a6e22e">msanread</span>(<span style="color:#a6e22e">elem</span>, <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">size</span>)
 	}
-	if isDirectIface(t) {
-		// This case is implemented directly by the compiler.
-		throw(&quot;direct convT2E&quot;)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">isDirectIface</span>(<span style="color:#a6e22e">t</span>) {
+		<span style="color:#75715e">// This case is implemented directly by the compiler.
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">throw</span>(<span style="color:#e6db74">&#34;direct convT2E&#34;</span>)
 	}
-	x := newobject(t)
-	// TODO: We allocate a zeroed object only to overwrite it with
-	// actual data. Figure out how to avoid zeroing. Also below in convT2I.
-	typedmemmove(t, x, elem)
-	e._type = t
-	e.data = x
-	return
-}
-</code></pre>
-
+	<span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">newobject</span>(<span style="color:#a6e22e">t</span>)
+	<span style="color:#75715e">// TODO: We allocate a zeroed object only to overwrite it with
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// actual data. Figure out how to avoid zeroing. Also below in convT2I.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">typedmemmove</span>(<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">elem</span>)
+	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">_type</span> = <span style="color:#a6e22e">t</span>
+	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">data</span> = <span style="color:#a6e22e">x</span>
+	<span style="color:#66d9ef">return</span>
+}</code></pre></div>
 <p>There is the eface type, that has a <strong>_type</strong> field. Checking out what
 would be a <strong>eface</strong> I found this:</p>
-
-<pre><code class="language-go">type iface struct {
-	tab  *itab
-	data unsafe.Pointer
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">iface</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">tab</span>  <span style="color:#f92672">*</span><span style="color:#a6e22e">itab</span>
+	<span style="color:#a6e22e">data</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
 }
 
-type eface struct {
-	_type *_type
-	data  unsafe.Pointer
-}
-</code></pre>
-
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">eface</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">_type</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span>
+	<span style="color:#a6e22e">data</span>  <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
+}</code></pre></div>
 <p>From what I read before on
 <a href="https://research.swtch.com/interfaces">Russ Cox post about interfaces</a>
 I would guess that the <strong>iface</strong> is used when you are using
@@ -587,33 +575,27 @@ on a generic way through your code and it seems to be the more promising
 way to hack types.</p>
 
 <p>The <strong>type</strong> is:</p>
-
-<pre><code class="language-go">type _type struct {
-	size       uintptr
-	ptrdata    uintptr // size of memory prefix holding all pointers
-	hash       uint32
-	tflag      tflag
-	align      uint8
-	fieldalign uint8
-	kind       uint8
-	alg        *typeAlg
-	// gcdata stores the GC type data for the garbage collector.
-	// If the KindGCProg bit is set in kind, gcdata is a GC program.
-	// Otherwise it is a ptrmask bitmap. See mbitmap.go for details.
-	gcdata    *byte
-	str       nameOff
-	ptrToThis typeOff
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">_type</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">size</span>       <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">ptrdata</span>    <span style="color:#66d9ef">uintptr</span> <span style="color:#75715e">// size of memory prefix holding all pointers
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">hash</span>       <span style="color:#66d9ef">uint32</span>
+	<span style="color:#a6e22e">tflag</span>      <span style="color:#a6e22e">tflag</span>
+	<span style="color:#a6e22e">align</span>      <span style="color:#66d9ef">uint8</span>
+	<span style="color:#a6e22e">fieldalign</span> <span style="color:#66d9ef">uint8</span>
+	<span style="color:#a6e22e">kind</span>       <span style="color:#66d9ef">uint8</span>
+	<span style="color:#a6e22e">alg</span>        <span style="color:#f92672">*</span><span style="color:#a6e22e">typeAlg</span>
+	<span style="color:#75715e">// gcdata stores the GC type data for the garbage collector.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// If the KindGCProg bit is set in kind, gcdata is a GC program.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Otherwise it is a ptrmask bitmap. See mbitmap.go for details.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">gcdata</span>    <span style="color:#f92672">*</span><span style="color:#66d9ef">byte</span>
+	<span style="color:#a6e22e">str</span>       <span style="color:#a6e22e">nameOff</span>
+	<span style="color:#a6e22e">ptrToThis</span> <span style="color:#a6e22e">typeOff</span>
+}</code></pre></div>
 <p>Lots of promissing fields to hack with, but actual type check is just
 a direct pointer comparison:</p>
-
-<pre><code class="language-go">	if e._type != t {
-		panic(&amp;TypeAssertionError{&quot;&quot;, e._type.string(), t.string(), &quot;&quot;})
-	}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">_type</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">t</span> {
+		panic(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TypeAssertionError</span>{<span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">_type</span>.string(), <span style="color:#a6e22e">t</span>.string(), <span style="color:#e6db74">&#34;&#34;</span>})
+	}</code></pre></div>
 <p>It seems easier to just find a way to get the eface struct and overwrite its
 <strong>type</strong> pointer with the one I desire. This smells like a job to the
 <a href="https://golang.org/pkg/unsafe/">unsafe</a> package.</p>
@@ -624,22 +606,16 @@ old school pointer manipulation, but I&rsquo;m not sure yet.</p>
 
 <p>One function that is a good candidate to give some directions
 on how to do it is <strong>reflect.TypeOf</strong>:</p>
-
-<pre><code class="language-go">func TypeOf(i interface{}) Type {
-	eface := *(*emptyInterface)(unsafe.Pointer(&amp;i))
-	return toType(eface.typ)
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#a6e22e">Type</span> {
+	<span style="color:#a6e22e">eface</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">emptyInterface</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">i</span>))
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">toType</span>(<span style="color:#a6e22e">eface</span>.<span style="color:#a6e22e">typ</span>)
+}</code></pre></div>
 <p>Yeah, just cast the pointer to a eface pointer:</p>
-
-<pre><code class="language-go">// emptyInterface is the header for an interface{} value.
-type emptyInterface struct {
-	typ  *rtype
-	word unsafe.Pointer
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// emptyInterface is the header for an interface{} value.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">emptyInterface</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">typ</span>  <span style="color:#f92672">*</span><span style="color:#a6e22e">rtype</span>
+	<span style="color:#a6e22e">word</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
+}</code></pre></div>
 <p>It seems that although the eface was private on the <strong>runtime</strong>
 package it is copied here on the <strong>reflect</strong> package. Well, if the
 reflect package can do it, so can I :-) (a little duplication is
@@ -652,167 +628,158 @@ and <a href="https://godoc.org/golang.org/x/tools/cmd/guru">go guru</a>
 for the invaluable help on analysing code and allowing me to
 check all the referers to a type it has been
 pretty easy to find this on <a href="https://github.com/golang/go/blob/master/src/runtime/symtab.go">runtime/symtab.go</a>:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// moduledata records information about the layout of the executable
+</span><span style="color:#75715e">// image. It is written by the linker. Any changes here must be
+</span><span style="color:#75715e">// matched changes to the code in cmd/internal/ld/symtab.go:symtab.
+</span><span style="color:#75715e">// moduledata is stored in read-only memory; none of the pointers here
+</span><span style="color:#75715e">// are visible to the garbage collector.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">moduledata</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">pclntable</span>    []<span style="color:#66d9ef">byte</span>
+	<span style="color:#a6e22e">ftab</span>         []<span style="color:#a6e22e">functab</span>
+	<span style="color:#a6e22e">filetab</span>      []<span style="color:#66d9ef">uint32</span>
+	<span style="color:#a6e22e">findfunctab</span>  <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">minpc</span>, <span style="color:#a6e22e">maxpc</span> <span style="color:#66d9ef">uintptr</span>
 
-<pre><code class="language-go">// moduledata records information about the layout of the executable
-// image. It is written by the linker. Any changes here must be
-// matched changes to the code in cmd/internal/ld/symtab.go:symtab.
-// moduledata is stored in read-only memory; none of the pointers here
-// are visible to the garbage collector.
-type moduledata struct {
-	pclntable    []byte
-	ftab         []functab
-	filetab      []uint32
-	findfunctab  uintptr
-	minpc, maxpc uintptr
+	<span style="color:#a6e22e">text</span>, <span style="color:#a6e22e">etext</span>           <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">noptrdata</span>, <span style="color:#a6e22e">enoptrdata</span> <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">edata</span>           <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">bss</span>, <span style="color:#a6e22e">ebss</span>             <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">noptrbss</span>, <span style="color:#a6e22e">enoptrbss</span>   <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">end</span>, <span style="color:#a6e22e">gcdata</span>, <span style="color:#a6e22e">gcbss</span>    <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">types</span>, <span style="color:#a6e22e">etypes</span>         <span style="color:#66d9ef">uintptr</span>
 
-	text, etext           uintptr
-	noptrdata, enoptrdata uintptr
-	data, edata           uintptr
-	bss, ebss             uintptr
-	noptrbss, enoptrbss   uintptr
-	end, gcdata, gcbss    uintptr
-	types, etypes         uintptr
+	<span style="color:#a6e22e">textsectmap</span> []<span style="color:#a6e22e">textsect</span>
+	<span style="color:#a6e22e">typelinks</span>   []<span style="color:#66d9ef">int32</span> <span style="color:#75715e">// offsets from types
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">itablinks</span>   []<span style="color:#f92672">*</span><span style="color:#a6e22e">itab</span>
 
-	textsectmap []textsect
-	typelinks   []int32 // offsets from types
-	itablinks   []*itab
+	<span style="color:#a6e22e">ptab</span> []<span style="color:#a6e22e">ptabEntry</span>
 
-	ptab []ptabEntry
+	<span style="color:#a6e22e">pluginpath</span> <span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">pkghashes</span>  []<span style="color:#a6e22e">modulehash</span>
 
-	pluginpath string
-	pkghashes  []modulehash
+	<span style="color:#a6e22e">modulename</span>   <span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">modulehashes</span> []<span style="color:#a6e22e">modulehash</span>
 
-	modulename   string
-	modulehashes []modulehash
+	<span style="color:#a6e22e">gcdatamask</span>, <span style="color:#a6e22e">gcbssmask</span> <span style="color:#a6e22e">bitvector</span>
 
-	gcdatamask, gcbssmask bitvector
-
-	typemap map[typeOff]*_type // offset to *_rtype in previous module
-
-	next *moduledata
-}
-</code></pre>
-
+	<span style="color:#a6e22e">typemap</span> <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">typeOff</span>]<span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span> <span style="color:#75715e">// offset to *_rtype in previous module
+</span><span style="color:#75715e"></span>
+	<span style="color:#a6e22e">next</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">moduledata</span>
+}</code></pre></div>
 <p>A good candidate is the <strong>typemap</strong> field, checking out how
 it is used I found this on runtime/type.go:</p>
-
-<pre><code class="language-go">// typelinksinit scans the types from extra modules and builds the
-// moduledata typemap used to de-duplicate type pointers.
-func typelinksinit() {
-	if firstmoduledata.next == nil {
-		return
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// typelinksinit scans the types from extra modules and builds the
+</span><span style="color:#75715e">// moduledata typemap used to de-duplicate type pointers.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">typelinksinit</span>() {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">firstmoduledata</span>.<span style="color:#a6e22e">next</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span>
 	}
-	typehash := make(map[uint32][]*_type, len(firstmoduledata.typelinks))
+	<span style="color:#a6e22e">typehash</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">uint32</span>][]<span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span>, len(<span style="color:#a6e22e">firstmoduledata</span>.<span style="color:#a6e22e">typelinks</span>))
 
-	modules := activeModules()
-	prev := modules[0]
-	for _, md := range modules[1:] {
-		// Collect types from the previous module into typehash.
-	collect:
-		for _, tl := range prev.typelinks {
-			var t *_type
-			if prev.typemap == nil {
-				t = (*_type)(unsafe.Pointer(prev.types + uintptr(tl)))
-			} else {
-				t = prev.typemap[typeOff(tl)]
+	<span style="color:#a6e22e">modules</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">activeModules</span>()
+	<span style="color:#a6e22e">prev</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">modules</span>[<span style="color:#ae81ff">0</span>]
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">md</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">modules</span>[<span style="color:#ae81ff">1</span>:] {
+		<span style="color:#75715e">// Collect types from the previous module into typehash.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">collect</span>:
+		<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">tl</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">prev</span>.<span style="color:#a6e22e">typelinks</span> {
+			<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span>
+			<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">prev</span>.<span style="color:#a6e22e">typemap</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+				<span style="color:#a6e22e">t</span> = (<span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">prev</span>.<span style="color:#a6e22e">types</span> <span style="color:#f92672">+</span> uintptr(<span style="color:#a6e22e">tl</span>)))
+			} <span style="color:#66d9ef">else</span> {
+				<span style="color:#a6e22e">t</span> = <span style="color:#a6e22e">prev</span>.<span style="color:#a6e22e">typemap</span>[<span style="color:#a6e22e">typeOff</span>(<span style="color:#a6e22e">tl</span>)]
 			}
-			// Add to typehash if not seen before.
-			tlist := typehash[t.hash]
-			for _, tcur := range tlist {
-				if tcur == t {
-					continue collect
+			<span style="color:#75715e">// Add to typehash if not seen before.
+</span><span style="color:#75715e"></span>			<span style="color:#a6e22e">tlist</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">typehash</span>[<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">hash</span>]
+			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">tcur</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">tlist</span> {
+				<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">tcur</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">t</span> {
+					<span style="color:#66d9ef">continue</span> <span style="color:#a6e22e">collect</span>
 				}
 			}
-			typehash[t.hash] = append(tlist, t)
+			<span style="color:#a6e22e">typehash</span>[<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">hash</span>] = append(<span style="color:#a6e22e">tlist</span>, <span style="color:#a6e22e">t</span>)
 		}
 
-		if md.typemap == nil {
-			// If any of this module's typelinks match a type from a
-			// prior module, prefer that prior type by adding the offset
-			// to this module's typemap.
-			tm := make(map[typeOff]*_type, len(md.typelinks))
-			pinnedTypemaps = append(pinnedTypemaps, tm)
-			md.typemap = tm
-			for _, tl := range md.typelinks {
-				t := (*_type)(unsafe.Pointer(md.types + uintptr(tl)))
-				for _, candidate := range typehash[t.hash] {
-					if typesEqual(t, candidate) {
-						t = candidate
-						break
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">md</span>.<span style="color:#a6e22e">typemap</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#75715e">// If any of this module&#39;s typelinks match a type from a
+</span><span style="color:#75715e"></span>			<span style="color:#75715e">// prior module, prefer that prior type by adding the offset
+</span><span style="color:#75715e"></span>			<span style="color:#75715e">// to this module&#39;s typemap.
+</span><span style="color:#75715e"></span>			<span style="color:#a6e22e">tm</span> <span style="color:#f92672">:=</span> make(<span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">typeOff</span>]<span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span>, len(<span style="color:#a6e22e">md</span>.<span style="color:#a6e22e">typelinks</span>))
+			<span style="color:#a6e22e">pinnedTypemaps</span> = append(<span style="color:#a6e22e">pinnedTypemaps</span>, <span style="color:#a6e22e">tm</span>)
+			<span style="color:#a6e22e">md</span>.<span style="color:#a6e22e">typemap</span> = <span style="color:#a6e22e">tm</span>
+			<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">tl</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">md</span>.<span style="color:#a6e22e">typelinks</span> {
+				<span style="color:#a6e22e">t</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">md</span>.<span style="color:#a6e22e">types</span> <span style="color:#f92672">+</span> uintptr(<span style="color:#a6e22e">tl</span>)))
+				<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">candidate</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">typehash</span>[<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">hash</span>] {
+					<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">typesEqual</span>(<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">candidate</span>) {
+						<span style="color:#a6e22e">t</span> = <span style="color:#a6e22e">candidate</span>
+						<span style="color:#66d9ef">break</span>
 					}
 				}
-				md.typemap[typeOff(tl)] = t
+				<span style="color:#a6e22e">md</span>.<span style="color:#a6e22e">typemap</span>[<span style="color:#a6e22e">typeOff</span>(<span style="color:#a6e22e">tl</span>)] = <span style="color:#a6e22e">t</span>
 			}
 		}
 
-		prev = md
+		<span style="color:#a6e22e">prev</span> = <span style="color:#a6e22e">md</span>
 	}
-}
-</code></pre>
-
+}</code></pre></div>
 <p>It seems that the typemap is initialized on the startup of the
 process, with help of information collected by the linker, on
 build time.</p>
 
 <p>The typelinksinit function is used on the schedinit function
 (from <a href="https://github.com/golang/go/blob/master/src/runtime/proc.go">runtime/proc.go</a>):</p>
-
-<pre><code class="language-go">// The bootstrap sequence is:
-//
-//	call osinit
-//	call schedinit
-//	make &amp; queue new G
-//	call runtime·mstart
-//
-// The new G calls runtime·main.
-func schedinit() {
-	// raceinit must be the first call to race detector.
-	// In particular, it must be done before mallocinit below calls racemapshadow.
-	_g_ := getg()
-	if raceenabled {
-		_g_.racectx, raceprocctx0 = raceinit()
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// The bootstrap sequence is:
+</span><span style="color:#75715e">//
+</span><span style="color:#75715e">//	call osinit
+</span><span style="color:#75715e">//	call schedinit
+</span><span style="color:#75715e">//	make &amp; queue new G
+</span><span style="color:#75715e">//	call runtime·mstart
+</span><span style="color:#75715e">//
+</span><span style="color:#75715e">// The new G calls runtime·main.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">schedinit</span>() {
+	<span style="color:#75715e">// raceinit must be the first call to race detector.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// In particular, it must be done before mallocinit below calls racemapshadow.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">_g_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">getg</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">raceenabled</span> {
+		<span style="color:#a6e22e">_g_</span>.<span style="color:#a6e22e">racectx</span>, <span style="color:#a6e22e">raceprocctx0</span> = <span style="color:#a6e22e">raceinit</span>()
 	}
 
-	sched.maxmcount = 10000
+	<span style="color:#a6e22e">sched</span>.<span style="color:#a6e22e">maxmcount</span> = <span style="color:#ae81ff">10000</span>
 
-	tracebackinit()
-	moduledataverify()
-	stackinit()
-	mallocinit()
-	mcommoninit(_g_.m)
-	alginit()       // maps must not be used before this call
-	modulesinit()   // provides activeModules
-	typelinksinit() // uses maps, activeModules
-	itabsinit()     // uses activeModules
+	<span style="color:#a6e22e">tracebackinit</span>()
+	<span style="color:#a6e22e">moduledataverify</span>()
+	<span style="color:#a6e22e">stackinit</span>()
+	<span style="color:#a6e22e">mallocinit</span>()
+	<span style="color:#a6e22e">mcommoninit</span>(<span style="color:#a6e22e">_g_</span>.<span style="color:#a6e22e">m</span>)
+	<span style="color:#a6e22e">alginit</span>()       <span style="color:#75715e">// maps must not be used before this call
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">modulesinit</span>()   <span style="color:#75715e">// provides activeModules
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">typelinksinit</span>() <span style="color:#75715e">// uses maps, activeModules
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">itabsinit</span>()     <span style="color:#75715e">// uses activeModules
+</span><span style="color:#75715e"></span>
+	<span style="color:#a6e22e">msigsave</span>(<span style="color:#a6e22e">_g_</span>.<span style="color:#a6e22e">m</span>)
+	<span style="color:#a6e22e">initSigmask</span> = <span style="color:#a6e22e">_g_</span>.<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">sigmask</span>
 
-	msigsave(_g_.m)
-	initSigmask = _g_.m.sigmask
+	<span style="color:#a6e22e">goargs</span>()
+	<span style="color:#a6e22e">goenvs</span>()
+	<span style="color:#a6e22e">parsedebugvars</span>()
+	<span style="color:#a6e22e">gcinit</span>()
 
-	goargs()
-	goenvs()
-	parsedebugvars()
-	gcinit()
-
-	sched.lastpoll = uint64(nanotime())
-	procs := ncpu
-	if n, ok := atoi32(gogetenv(&quot;GOMAXPROCS&quot;)); ok &amp;&amp; n &gt; 0 {
-		procs = n
+	<span style="color:#a6e22e">sched</span>.<span style="color:#a6e22e">lastpoll</span> = uint64(<span style="color:#a6e22e">nanotime</span>())
+	<span style="color:#a6e22e">procs</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ncpu</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">n</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">atoi32</span>(<span style="color:#a6e22e">gogetenv</span>(<span style="color:#e6db74">&#34;GOMAXPROCS&#34;</span>)); <span style="color:#a6e22e">ok</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">n</span> &gt; <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">procs</span> = <span style="color:#a6e22e">n</span>
 	}
-	if procs &gt; _MaxGomaxprocs {
-		procs = _MaxGomaxprocs
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">procs</span> &gt; <span style="color:#a6e22e">_MaxGomaxprocs</span> {
+		<span style="color:#a6e22e">procs</span> = <span style="color:#a6e22e">_MaxGomaxprocs</span>
 	}
-	if procresize(procs) != nil {
-		throw(&quot;unknown runnable goroutine during bootstrap&quot;)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">procresize</span>(<span style="color:#a6e22e">procs</span>) <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">throw</span>(<span style="color:#e6db74">&#34;unknown runnable goroutine during bootstrap&#34;</span>)
 	}
 
-	if buildVersion == &quot;&quot; {
-		// Condition should never trigger. This code just serves
-		// to ensure runtime·buildVersion is kept in the resulting binary.
-		buildVersion = &quot;unknown&quot;
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">buildVersion</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> {
+		<span style="color:#75715e">// Condition should never trigger. This code just serves
+</span><span style="color:#75715e"></span>		<span style="color:#75715e">// to ensure runtime·buildVersion is kept in the resulting binary.
+</span><span style="color:#75715e"></span>		<span style="color:#a6e22e">buildVersion</span> = <span style="color:#e6db74">&#34;unknown&#34;</span>
 	}
-}
-</code></pre>
-
+}</code></pre></div>
 <p>And schedinit, at least according to go guru, is not called anywhere.
 The output of -gcflags -S also has no reference to this initialization.</p>
 
@@ -864,78 +831,75 @@ called, that will initialize the types map.</p>
 <p>Sorry, got pretty far from the objective, lets go back to the type system
 hacking fun. Lets start the copying fun, just like the reflect package does,
 to inspect details on different types:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
-	&quot;fmt&quot;
-	&quot;unsafe&quot;
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;unsafe&#34;</span>
 )
 
-// tflag values must be kept in sync with copies in:
-//	cmd/compile/internal/gc/reflect.go
-//	cmd/link/internal/ld/decodesym.go
-//	runtime/type.go
-type tflag uint8
+<span style="color:#75715e">// tflag values must be kept in sync with copies in:
+</span><span style="color:#75715e">//	cmd/compile/internal/gc/reflect.go
+</span><span style="color:#75715e">//	cmd/link/internal/ld/decodesym.go
+</span><span style="color:#75715e">//	runtime/type.go
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">tflag</span> <span style="color:#66d9ef">uint8</span>
 
-type typeAlg struct {
-	// function for hashing objects of this type
-	// (ptr to object, seed) -&gt; hash
-	hash func(unsafe.Pointer, uintptr) uintptr
-	// function for comparing objects of this type
-	// (ptr to object A, ptr to object B) -&gt; ==?
-	equal func(unsafe.Pointer, unsafe.Pointer) bool
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">typeAlg</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#75715e">// function for hashing objects of this type
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// (ptr to object, seed) -&gt; hash
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>, <span style="color:#66d9ef">uintptr</span>) <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#75715e">// function for comparing objects of this type
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// (ptr to object A, ptr to object B) -&gt; ==?
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">equal</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>, <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>) <span style="color:#66d9ef">bool</span>
 }
 
-type nameOff int32 // offset to a name
-type typeOff int32 // offset to an *rtype
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">nameOff</span> <span style="color:#66d9ef">int32</span> <span style="color:#75715e">// offset to a name
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">typeOff</span> <span style="color:#66d9ef">int32</span> <span style="color:#75715e">// offset to an *rtype
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">rtype</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">size</span>       <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">ptrdata</span>    <span style="color:#66d9ef">uintptr</span>
+	<span style="color:#a6e22e">hash</span>       <span style="color:#66d9ef">uint32</span>   <span style="color:#75715e">// hash of type; avoids computation in hash tables
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">tflag</span>      <span style="color:#a6e22e">tflag</span>    <span style="color:#75715e">// extra type information flags
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">align</span>      <span style="color:#66d9ef">uint8</span>    <span style="color:#75715e">// alignment of variable with this type
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">fieldAlign</span> <span style="color:#66d9ef">uint8</span>    <span style="color:#75715e">// alignment of struct field with this type
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">kind</span>       <span style="color:#66d9ef">uint8</span>    <span style="color:#75715e">// enumeration for C
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">alg</span>        <span style="color:#f92672">*</span><span style="color:#a6e22e">typeAlg</span> <span style="color:#75715e">// algorithm table
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">gcdata</span>     <span style="color:#f92672">*</span><span style="color:#66d9ef">byte</span>    <span style="color:#75715e">// garbage collection data
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">str</span>        <span style="color:#a6e22e">nameOff</span>  <span style="color:#75715e">// string form
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">ptrToThis</span>  <span style="color:#a6e22e">typeOff</span>  <span style="color:#75715e">// type for pointer to this type, may be zero
+</span><span style="color:#75715e"></span>}
 
-type rtype struct {
-	size       uintptr
-	ptrdata    uintptr
-	hash       uint32   // hash of type; avoids computation in hash tables
-	tflag      tflag    // extra type information flags
-	align      uint8    // alignment of variable with this type
-	fieldAlign uint8    // alignment of struct field with this type
-	kind       uint8    // enumeration for C
-	alg        *typeAlg // algorithm table
-	gcdata     *byte    // garbage collection data
-	str        nameOff  // string form
-	ptrToThis  typeOff  // type for pointer to this type, may be zero
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">eface</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">typ</span>  <span style="color:#f92672">*</span><span style="color:#a6e22e">rtype</span>
+	<span style="color:#a6e22e">word</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
 }
 
-type eface struct {
-	typ  *rtype
-	word unsafe.Pointer
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">eface</span>) <span style="color:#a6e22e">String</span>() <span style="color:#66d9ef">string</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;type: %#v\n\ndataptr: %v&#34;</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">typ</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">word</span>)
 }
 
-func (e eface) String() string {
-	return fmt.Sprintf(&quot;type: %#v\n\ndataptr: %v&quot;, *e.typ, e.word)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#a6e22e">eface</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">eface</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">i</span>))
 }
 
-func getEface(i interface{}) eface {
-	return *(*eface)(unsafe.Pointer(&amp;i))
-}
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">c</span> <span style="color:#66d9ef">string</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">d</span> <span style="color:#66d9ef">float32</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">e</span> <span style="color:#66d9ef">float64</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">f</span> <span style="color:#a6e22e">rtype</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">g</span> <span style="color:#a6e22e">eface</span>
 
-func main() {
-	var a int
-	var b int
-	var c string
-	var d float32
-	var e float64
-	var f rtype
-	var g eface
-
-	fmt.Printf(&quot;a int:\n%s\n\n&quot;, getEface(a))
-	fmt.Printf(&quot;b int:\n%s\n\n&quot;, getEface(b))
-	fmt.Printf(&quot;c string:\n%s\n\n&quot;, getEface(c))
-	fmt.Printf(&quot;d float32:\n%s\n\n&quot;, getEface(d))
-	fmt.Printf(&quot;e float64:\n%s\n\n&quot;, getEface(e))
-	fmt.Printf(&quot;f rtype:\n%s\n\n&quot;, getEface(f))
-	fmt.Printf(&quot;g eface:\n%s\n\n&quot;, getEface(g))
-}
-</code></pre>
-
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;a int:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">a</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;b int:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">b</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;c string:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">c</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;d float32:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">d</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;e float64:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">e</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;f rtype:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">f</span>))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;g eface:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">g</span>))
+}</code></pre></div>
 <p>The output of running the code:</p>
 
 <pre><code>(typehack(git master))λ&gt; go run inspectype.go
@@ -1013,10 +977,7 @@ an interface{} variable representing the value that will be casted
 and another interface{} variable that will carry the type information
 from where you want to cast to. The return is a new interface{}
 that can be casted to the desired target type. Something like this:</p>
-
-<pre><code class="language-go">func Morph(value interface{}, desiredtype interface{}) interface{}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Morph</span>(<span style="color:#a6e22e">value</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">desiredtype</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">interface</span>{}</code></pre></div>
 <p>Well, in this case the lack of generics on Go obligates me
 to use an interface{} and push the cast to the client, or develop
 a function for every basic type, but types defined by the client
@@ -1032,119 +993,107 @@ the most small and stupid Go library ever :-).</p>
 <p>I say this because the final hack on the type system is so simple
 that it makes me want to cry, Go is indeed terribly simple, nothing
 to feed my ego here :-(. The whole magic:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">morfos</span>
 
-<pre><code class="language-go">package morfos
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;unsafe&#34;</span>
 
-import &quot;unsafe&quot;
-
-type eface struct {
-	Type unsafe.Pointer
-	Word unsafe.Pointer
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">eface</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Type</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
+	<span style="color:#a6e22e">Word</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
 }
 
-func geteface(i *interface{}) *eface {
-	return (*eface)(unsafe.Pointer(i))
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">geteface</span>(<span style="color:#a6e22e">i</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#f92672">*</span><span style="color:#a6e22e">eface</span> {
+	<span style="color:#66d9ef">return</span> (<span style="color:#f92672">*</span><span style="color:#a6e22e">eface</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">i</span>))
 }
 
-// Morph will coerce the given value to the type stored on desiredtype
-// without copying or changing any data on value. The result will
-// be a merge of the data stored on value with the type stored on
-// desiredtype, basically a frankstein :-).
-//
-// The result value should be castable to the type of desiredtype.
-func Morph(value interface{}, desiredtype interface{}) interface{} {
-	valueeface := geteface(&amp;value)
-	typeeface := geteface(&amp;desiredtype)
-	valueeface.Type = typeeface.Type
-	return value
-}
-</code></pre>
-
+<span style="color:#75715e">// Morph will coerce the given value to the type stored on desiredtype
+</span><span style="color:#75715e">// without copying or changing any data on value. The result will
+</span><span style="color:#75715e">// be a merge of the data stored on value with the type stored on
+</span><span style="color:#75715e">// desiredtype, basically a frankstein :-).
+</span><span style="color:#75715e">//
+</span><span style="color:#75715e">// The result value should be castable to the type of desiredtype.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Morph</span>(<span style="color:#a6e22e">value</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">desiredtype</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">interface</span>{} {
+	<span style="color:#a6e22e">valueeface</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">geteface</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">value</span>)
+	<span style="color:#a6e22e">typeeface</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">geteface</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">desiredtype</span>)
+	<span style="color:#a6e22e">valueeface</span>.<span style="color:#a6e22e">Type</span> = <span style="color:#a6e22e">typeeface</span>.<span style="color:#a6e22e">Type</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">value</span>
+}</code></pre></div>
 <p>My very first passing test:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">morfos_test</span>
 
-<pre><code class="language-go">package morfos_test
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;testing&#34;</span>
 
-import (
-	&quot;testing&quot;
-
-	&quot;github.com/katcipis/morfos&quot;
+	<span style="color:#e6db74">&#34;github.com/katcipis/morfos&#34;</span>
 )
 
-func TestStructsSameSize(t *testing.T) {
-	type original struct {
-		x int
-		y int
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestStructsSameSize</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+	<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">original</span> <span style="color:#66d9ef">struct</span> {
+		<span style="color:#a6e22e">x</span> <span style="color:#66d9ef">int</span>
+		<span style="color:#a6e22e">y</span> <span style="color:#66d9ef">int</span>
 	}
-	type notoriginal struct {
-		z int
-		w int
-	}
-
-	orig := original{x: 100, y: 200}
-	_, ok := interface{}(orig).(notoriginal)
-	if ok {
-		t.Fatal(&quot;casting should be invalid&quot;)
+	<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">notoriginal</span> <span style="color:#66d9ef">struct</span> {
+		<span style="color:#a6e22e">z</span> <span style="color:#66d9ef">int</span>
+		<span style="color:#a6e22e">w</span> <span style="color:#66d9ef">int</span>
 	}
 
-	morphed := morfos.Morph(orig, notoriginal{})
-	morphedNotOriginal, ok := morphed.(notoriginal)
-
-	if !ok {
-		t.Fatal(&quot;casting should be valid now&quot;)
+	<span style="color:#a6e22e">orig</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">original</span>{<span style="color:#a6e22e">x</span>: <span style="color:#ae81ff">100</span>, <span style="color:#a6e22e">y</span>: <span style="color:#ae81ff">200</span>}
+	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">interface</span>{}(<span style="color:#a6e22e">orig</span>).(<span style="color:#a6e22e">notoriginal</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">ok</span> {
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#e6db74">&#34;casting should be invalid&#34;</span>)
 	}
 
-	if orig.x != morphedNotOriginal.z {
-		t.Fatalf(&quot;expected x[%d] == z[%d]&quot;, orig.x, morphedNotOriginal.z)
+	<span style="color:#a6e22e">morphed</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">morfos</span>.<span style="color:#a6e22e">Morph</span>(<span style="color:#a6e22e">orig</span>, <span style="color:#a6e22e">notoriginal</span>{})
+	<span style="color:#a6e22e">morphedNotOriginal</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">morphed</span>.(<span style="color:#a6e22e">notoriginal</span>)
+
+	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">ok</span> {
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#e6db74">&#34;casting should be valid now&#34;</span>)
 	}
 
-	if orig.y != morphedNotOriginal.w {
-		t.Fatalf(&quot;expected y[%d] == w[%d]&quot;, orig.y, morphedNotOriginal.w)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">orig</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">morphedNotOriginal</span>.<span style="color:#a6e22e">z</span> {
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;expected x[%d] == z[%d]&#34;</span>, <span style="color:#a6e22e">orig</span>.<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">morphedNotOriginal</span>.<span style="color:#a6e22e">z</span>)
 	}
-}
-</code></pre>
 
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">orig</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">morphedNotOriginal</span>.<span style="color:#a6e22e">w</span> {
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;expected y[%d] == w[%d]&#34;</span>, <span style="color:#a6e22e">orig</span>.<span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">morphedNotOriginal</span>.<span style="color:#a6e22e">w</span>)
+	}
+}</code></pre></div>
 <p>This test is &ldquo;safe&rdquo; because both structs have the same size,
 C programmers must be feeling butterflies on their bellies :-).</p>
 
 <p>Although the hack is small, there is a lot of fun we can have
 with it, but before we go on there is one single line of unsafeness
 that is usually unknow to Go newcomers:</p>
-
-<pre><code class="language-go">func geteface(i *interface{}) *eface {
-	return (*eface)(unsafe.Pointer(i))
-}
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">geteface</span>(<span style="color:#a6e22e">i</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#f92672">*</span><span style="color:#a6e22e">eface</span> {
+	<span style="color:#66d9ef">return</span> (<span style="color:#f92672">*</span><span style="color:#a6e22e">eface</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">i</span>))
+}</code></pre></div>
 <p>My feeling the first time I saw this was:</p>
 
 <p><img src="https://github.com/katcipis/katcipis.github.io/raw/master/_assets/hack-go-types/img/fly.jpg" alt="Go or C" /></p>
 
 <p>With this kind of casting, my hack could be written as:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
-
-import (
- 	&quot;fmt&quot;
-	&quot;unsafe&quot;
+<span style="color:#f92672">import</span> (
+ 	<span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;unsafe&#34;</span>
 )
 
-type a struct {
-	a int
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>
 }
 
-type b struct {
-	b int
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>
 }
 
-func main() {
-	x := a{a:100}
-	y := *(*b)(unsafe.Pointer(&amp;x))
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>{<span style="color:#a6e22e">a</span>:<span style="color:#ae81ff">100</span>}
+	<span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">b</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">x</span>))
 	
-	fmt.Printf(&quot;x %v\n&quot;, x)
-	fmt.Printf(&quot;y %v\n&quot;, y)
-}
-</code></pre>
-
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;x %v\n&#34;</span>, <span style="color:#a6e22e">x</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;y %v\n&#34;</span>, <span style="color:#a6e22e">y</span>)
+}</code></pre></div>
 <p>And get this:</p>
 
 <pre><code>x {100}
@@ -1162,10 +1111,7 @@ cast just like you do in C:</p>
 Well, the objective was to hack the type system, which is to
 make the runtime casting facility behave as I want,
 my interest was to break this:</p>
-
-<pre><code class="language-go">        a, ok := b.(someType)
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#a6e22e">someType</span>)</code></pre></div>
 <p>Make the &ldquo;safe&rdquo; cast behave unsafely, based on sheer curiosity on
 how this can actually be safe (take a look under the hood).
 And this has been achieved.</p>
@@ -1175,47 +1121,44 @@ and have some fun with my useless hack (we should at least have some
 fun, right ?).</p>
 
 <p>In Go strings are immutable, or are they ?</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestMutatingString</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
 
-<pre><code class="language-go">func TestMutatingString(t *testing.T) {
-
-	type stringStruct struct {
-		str unsafe.Pointer
-		len int
+	<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">stringStruct</span> <span style="color:#66d9ef">struct</span> {
+		<span style="color:#a6e22e">str</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
+		<span style="color:#a6e22e">len</span> <span style="color:#66d9ef">int</span>
 	}
 
-	var rawstr [5]byte
-	rawstr[0] = 'h'
-	rawstr[1] = 'e'
-	rawstr[2] = 'l'
-	rawstr[3] = 'l'
-	rawstr[4] = 'o'
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">rawstr</span> [<span style="color:#ae81ff">5</span>]<span style="color:#66d9ef">byte</span>
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#e6db74">&#39;h&#39;</span>
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">1</span>] = <span style="color:#e6db74">&#39;e&#39;</span>
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">2</span>] = <span style="color:#e6db74">&#39;l&#39;</span>
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">3</span>] = <span style="color:#e6db74">&#39;l&#39;</span>
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">4</span>] = <span style="color:#e6db74">&#39;o&#39;</span>
 
-	hi := stringStruct{
-		str: unsafe.Pointer(&amp;rawstr),
-		len: len(rawstr),
+	<span style="color:#a6e22e">hi</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">stringStruct</span>{
+		<span style="color:#a6e22e">str</span>: <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">rawstr</span>),
+		<span style="color:#a6e22e">len</span>: len(<span style="color:#a6e22e">rawstr</span>),
 	}
 
-	somestr := &quot;&quot;
+	<span style="color:#a6e22e">somestr</span> <span style="color:#f92672">:=</span> <span style="color:#e6db74">&#34;&#34;</span>
 
-	morphed := morfos.Morph(hi, somestr)
-	mutableStr := morphed.(string)
+	<span style="color:#a6e22e">morphed</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">morfos</span>.<span style="color:#a6e22e">Morph</span>(<span style="color:#a6e22e">hi</span>, <span style="color:#a6e22e">somestr</span>)
+	<span style="color:#a6e22e">mutableStr</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">morphed</span>.(<span style="color:#66d9ef">string</span>)
 
-	if mutableStr != &quot;hello&quot; {
-		t.Fatalf(&quot;expected hello, got: %s&quot;, mutableStr)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">mutableStr</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;hello&#34;</span> {
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;expected hello, got: %s&#34;</span>, <span style="color:#a6e22e">mutableStr</span>)
 	}
 
-	rawstr[0] = 'h'
-	rawstr[1] = 'a'
-	rawstr[2] = 'c'
-	rawstr[3] = 'k'
-	rawstr[4] = 'd'
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#e6db74">&#39;h&#39;</span>
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">1</span>] = <span style="color:#e6db74">&#39;a&#39;</span>
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">2</span>] = <span style="color:#e6db74">&#39;c&#39;</span>
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">3</span>] = <span style="color:#e6db74">&#39;k&#39;</span>
+	<span style="color:#a6e22e">rawstr</span>[<span style="color:#ae81ff">4</span>] = <span style="color:#e6db74">&#39;d&#39;</span>
 
-	if mutableStr != &quot;hackd&quot; {
-		t.Fatalf(&quot;expected hackd, got: %s&quot;, mutableStr)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">mutableStr</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;hackd&#34;</span> {
+		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;expected hackd, got: %s&#34;</span>, <span style="color:#a6e22e">mutableStr</span>)
 	}
-}
-</code></pre>
-
+}</code></pre></div>
 <p>To do this I exploited the fact that Go&rsquo;s strings are just structs
 with a pointer to the actual byte array and a len, the string does not
 need to be null terminated, thanks to the len field.</p>
@@ -1227,15 +1170,9 @@ string, by changing its internal byte array.</p>
 <p>Besides being fun, this hack is another example on how using the
 <strong>unsafe</strong> package will trully make your program unsafe. Seeing this
 on the code:</p>
-
-<pre><code class="language-go">        y := *(*b)(unsafe.Pointer(&amp;x))
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">b</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">x</span>))</code></pre></div>
 <p>Will make all kind of alarms bell on your head, but this:</p>
-
-<pre><code class="language-go">        val, ok := b.(someType)
-</code></pre>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#a6e22e">someType</span>)</code></pre></div>
 <p>Well, if <strong>ok</strong> is true it is safe to use <strong>val</strong>, or is it ? :-)</p>
 
 <h1 id="thanks">Thanks</h1>
