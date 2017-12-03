@@ -1,7 +1,7 @@
 baseurl = "https://katcipis.github.io/"
 publishDir = "./"
 languageCode = "en-us"
-title = "(def katcipis (λ (write gibberish)))"
+title = "(define katcipis (λ (write gibberish)))"
 theme = "hugo-future-imperfect"
 preserveTaxonomyNames = true
 paginate = 3
@@ -61,7 +61,7 @@ pygmentsCodeFences = true
   # These are optional params related to the sidebar. They are recommended, but not
   # required for proper functionality. HTML is supported within the params.
 [params.intro]
-  header    = "(katcipis (λ (write gibberish)))"
+  header    = "(define katcipis (λ (write gibberish)))"
 
   paragraph = "Certainty is where creativity goes to die"
 
