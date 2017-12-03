@@ -6,10 +6,20 @@
     <description>Recent content in Go on (def katcipis (λ (write gibberish)))</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 21 Apr 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 03 Dec 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://katcipis.github.io/categories/go/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Object Orientation in Go</title>
+      <link>https://katcipis.github.io/blog/object-orientation-go/</link>
+      <pubDate>Sun, 03 Dec 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://katcipis.github.io/blog/object-orientation-go/</guid>
+      <description>Walk with me through my journey on how Go approaches object orientation and how in the end it seems much more object oriented than most &amp;ldquo;traditional&amp;rdquo; object oriented languages.
+What do I mean with &amp;ldquo;more object oriented than most traditional object oriented languages&amp;rdquo; ? I promise that I will try to back up my conclusions with more support than &amp;ldquo;I just think this is what objects should be about&amp;rdquo;, so bear with me while I try to explain this long this post.</description>
+    </item>
     
     <item>
       <title>Hacking Go&#39;s type system</title>
