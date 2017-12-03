@@ -433,10 +433,11 @@ initially intended to without having to change it.
 
 It may seem misleading that Go and Java have
 interfaces since the only thing they have in common is their name.
-In Java interfaces create a **is a** relationship, in Go it does not,
-it simply defines a protocol to integrate an object with multiple others
-that may implement that protocol and this is more object oriented than
-anything that I know and extremely powerful.
+In Java interfaces create a **is a** relationship, in Go it does not.
+It simply defines a protocol that can be used to integrate objects
+that don't know each other directly (they don't even have to know the
+interface explicitly).This seems more object oriented than
+anything that I know so far (not that I know too much of course =)).
 
 # Acknowledgments
 
