@@ -12,15 +12,10 @@ type = "post"
 
 +++
 
-Walk with me through my journey on how Go approaches
+Here I try to share my journey understanding how Go approaches
 object orientation and how in the end it seems much
 more object oriented than most "traditional" object
 oriented languages.
-
-What do I mean with "more object oriented than most traditional
-object oriented languages" ? I promise that I will try to back up my conclusions
-with more support than "I just think this is what objects
-should be about", so bear with me while I try to explain this long this post.
 
 On a [previous post](https://katcipis.github.io/blog/exploring-go-objects/)
 I explored the idea of expressing everything just with functions, and that
@@ -37,8 +32,7 @@ attached to it (what we call methods) and that is it.
 This is referred as polymorphism, but as I walk away from the traditional
 notion of object orientation being about the objects and its form (type)
 I find that thinking about protocols instead of polymorphism is more aligned
-with what should be the focus when you are designing software
-(more on that later).
+with what should be the focus when you are designing software (more on that later).
 
 # How to define a protocol ?
 
