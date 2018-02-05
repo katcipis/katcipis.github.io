@@ -210,7 +210,8 @@ on how resources are organized on the service and also from details of
 which states some interactions where possible or not, the protocol embedded
 that on the answers. This does not solve all problems on earth, but it was
 the first time that I was actually feeling good about this
-REST stuff, life was good.
+REST stuff, life was good (who doesn't like opaque stuff ?
+opaque URL's rlz !).
 
 After some time I even started to feel stupid on how I did not get
 the HATEOAS idea before. What is great about navigating in the internet
@@ -223,7 +224,8 @@ has State Transfer on it, how can we give so little attention to that
 and focus on representing collections of stuff ? The theory behind the
 [bike shedding phenomenon](https://en.wiktionary.org/wiki/bikeshedding)
 is that because it is easier and it is easy
-to discuss eternally easy stuff.
+to discuss easy stuff (easy does not mean unimportant, but it means
+not spending almost all your time just on that).
 
 But the eternal bike shedding on REST methods was not over yet.
 And there was still the pain of ostracizing verbs, an URL is a
@@ -232,7 +234,61 @@ fuck you and your API if it is a verb.
 
 # What the hell is a resource ?
 
-# What about the methods ?
+The path that took me to a better understanding (or less crappy, at
+least for me) involves not just resources, but also the dispute
+on HTTP methods. More exactly the PUT method (also the PATCH one).
+
+For me trying to handle everything JUST with http methods seemed
+again like working just with databases, the API felt anemic, like
+I have so little logic that just changing fields on JSON documents
+is enough to solve all my problems.
+
+One post that introduced me to some interesting ideas was the
+[REST API Design - Resource Modeling](https://www.thoughtworks.com/insights/blog/rest-api-design-resource-modeling).
+As far as I got it, it introduced the idea that everything that
+can be turned on a resource if this makes sense to be done
+on the domain of the problem that you are solving. It also
+shared my view that thinking only on CRUD generate an anemic API,
+if the API is anemic the client needs to get fattier:
+
+```
+Essentially, the low level CRUD oriented approach puts the business
+logic in the client code creating tight coupling between the client
+(API consumer) and services (API) it shouldn't care about,
+and it loses the user intent by decomposing it in the client.
+
+Anytime the business logic changes,
+all your API consumers have to change the code and redeploy the system.
+```
+
+And it introduces an example of creating a resource to model something
+that is actually a process:
+
+```
+TODO: quote
+```
+
+This does seem at first as a way to introduce hacks instead of
+good design, but almost all good ideas can be used as crappy hacks.
+Also the anemic feeling on APIs start to dissipate when you
+open yourself to the idea.
+
+Later I encountered the concept of [reification](https://en.wikipedia.org/wiki/Reification),
+I was doing it for some time since it is what we do when we are programming,
+but I didn't have a name for it and never stopped to think on it
+as a valid design goal on a system.
+
+For example, compilers use this idea to make it easier to be ported to
+multiple platforms. What would be the reification ? The intermediary code.
+It is treated and tested on the compiler as real code, it is a valid
+testable product of the compilation process, but it does not exist, there
+is no machine on the world that can run it, it is a pure design creation
+made to make the system easier to port and test.
+
+So it can be your passport to an horrible API or to wonderful abstractions
+and a more testable API (I first heard about this for testing on this
+[great podcast](http://www.se-radio.net/2010/09/episode-167-the-history-of-junit-and-the-future-of-testing-with-kent-beck/)
+where Kent Beck talks about testing).
 
 # RESTing from REST
 
