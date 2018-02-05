@@ -218,15 +218,21 @@ is the fact that you do not need to know anything about the site you
 are visiting, only the initial entry point. After that you can understand
 what you can do (the docs, on sites usually text intended to humans =P)
 and have links that you can click to express your desire to change state
-(or not if you just want to load a different resource).
+(or not if you just want to load a different resource). The name REST
+has State Transfer on it, how can we give so little attention to that
+and focus on representing collections of stuff ? The theory behind the
+[bike shedding phenomenon](https://en.wiktionary.org/wiki/bikeshedding)
+is that because it is easier and it is easy
+to discuss eternally easy stuff.
 
 But the eternal bike shedding on REST methods was not over yet.
 And there was still the pain of ostracizing verbs, an URL is a
 Uniform Resource Location, RESOURCE, so it can't be a verb...
-fuck you if it is a verb.
+fuck you and your API if it is a verb.
 
 # What the hell is a resource ?
 
+# What about the methods ?
 
 # RESTing from REST
 
