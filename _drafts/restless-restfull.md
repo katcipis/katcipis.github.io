@@ -238,7 +238,7 @@ The path that took me to a better understanding (or less crappy, at
 least for me) involves not just resources, but also the dispute
 on HTTP methods. More exactly the PUT method (also the PATCH one).
 
-For me trying to handle everything JUST with http methods seemed
+For me trying to handle everything JUST with HTTP methods seemed
 again like working just with databases, the API felt anemic, like
 I have so little logic that just changing fields on JSON documents
 is enough to solve all my problems.
@@ -262,16 +262,13 @@ all your API consumers have to change the code and redeploy the system.
 ```
 
 And it introduces an example of creating a resource to model something
-that is actually a process:
-
-```
-TODO: quote
-```
+that is actually a process (see the "Nouns versus Verbs" part).
 
 This does seem at first as a way to introduce hacks instead of
-good design, but almost all good ideas can be used as crappy hacks.
+good design (specially if you are feeling RESTy), but almost all
+good ideas can be used as crappy hacks.
 Also the anemic feeling on APIs start to dissipate when you
-open yourself to the idea.
+open yourself to this idea, so I embraced it.
 
 Later I encountered the concept of [reification](https://en.wikipedia.org/wiki/Reification),
 I was doing it for some time since it is what we do when we are programming,
@@ -289,6 +286,162 @@ So it can be your passport to an horrible API or to wonderful abstractions
 and a more testable API (I first heard about this for testing on this
 [great podcast](http://www.se-radio.net/2010/09/episode-167-the-history-of-junit-and-the-future-of-testing-with-kent-beck/)
 where Kent Beck talks about testing).
+
+# But what about the methods ?
+
+OK I got all excited with the state transfer thing and totally forgot
+that not being uniform on how you use a set of operations (methods) can
+be really hurtful to a distributed system.
+
+On a system where there are IDL's you usually don't have this problem
+since each interface has its own set of operations that is documented,
+there is less restrictions (also more space to inconsistencies in naming
+and other things, tradeoffs, no free lunch, etc).
+
+So REST and its more known implementation on top of HTTP has a fixed
+set of methods with a specific semantic for each one.
+
+Before going deeper on the semantics of the methods, you must ask yourself,
+why it is so important to use the correct semantic of each method ?
+
+The first that always came to my mind is that consistency makes your API
+easier to understand, you can use intuition to infer how to do stuff instead
+of always reading docs. Being able to use intuition to do something on an API
+is a sign of a great API to me. But when we are thinking about distributed
+systems there are other important things to consider.
+
+The most important one, that always bites us in the ass, is side effects.
+Our inability to properly handle side effects is what makes functional
+programming so attractive, we suck at it.
+
+So how does HTTP specifies state changes ? Lets take a look on the
+[spec](https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html):
+
+```
+In particular, the convention has been established that the GET and HEAD
+methods SHOULD NOT have the significance of taking an action
+other than retrieval.
+
+These methods ought to be considered "safe". This allows user agents
+to represent other methods, such as POST, PUT and DELETE, in a special way,
+so that the user is made aware of the fact that a possibly unsafe
+action is being requested.
+
+Naturally, it is not possible to ensure that the server does not
+generate side-effects as a result of performing a GET request; in fact,
+some dynamic resources consider that a feature. The important distinction
+here is that the user did not request the side-effects,
+so therefore cannot be held accountable for them.
+```
+
+The advantage of being explicit about state changes is a more obvious one.
+If the system is built properly and some code is only performing GET's you
+can be sure that it is not the culprit for some state change (it also has
+applications on caching, which is pretty important to scale in some contexts).
+
+There are more subtle ones, like idempotent methods:
+
+```
+Methods can also have the property of "idempotence" in that
+(aside from error or expiration issues) the side-effects of
+N > 0 identical requests is the same as for a single request.
+
+The methods GET, HEAD, PUT and DELETE share this property.
+Also, the methods OPTIONS and TRACE SHOULD NOT have side effects,
+and so are inherently idempotent.
+
+However, it is possible that a sequence of several requests
+is non- idempotent, even if all of the methods executed in
+that sequence are idempotent. (A sequence is idempotent if
+a single execution of the entire sequence always yields a
+result that is not changed by a reexecution of all,
+or part, of that sequence.) For example,
+a sequence is non-idempotent if its result depends on a
+value that is later modified in the same sequence.
+
+A sequence that never has side effects is idempotent,
+by definition (provided that no concurrent operations
+are being executed on the same set of resources).
+```
+
+If you never heard about idempotent methods this can be a little hard
+to digest, and can also generate a feeling of "why should I care ?".
+
+In a distributed system making idempotent operations explicit is
+important for failure recovery. If an operation is idempotent
+and its answer timeouts (perhaps a node went down, who knows ?)
+you can safely retransmit it, if the previous one was actually
+executed this will generate no problem's at all since the operation
+is idempotent. If this does not seem that important to you yet
+checkout this
+[awesome post on cockroachdb passing the jepsen test](https://www.cockroachlabs.com/blog/cockroachdb-beta-passes-jepsen-testing/).
+
+Quoting:
+
+```
+The sets test (described in section 2.7) revealed a bug
+when it was refactored to use a single auto-committed INSERT
+statement instead of a multi-statement BEGIN/INSERT/COMMIT transaction
+(using a table with no primary key).
+
+Single statements can be retried by the server after certain
+errors (multi-statement transactions generally cannot,
+because the results of previous statements have already been
+returned to the client).
+
+In this case, the statement was attempted once, timed
+out due to a network failure, then retried,
+and both attempts eventually succeeded
+(this was possible because the table had an
+auto-generated primary key, so the two insertion
+attempts were not using the same PK values).
+```
+
+Distributed systems are hard, being sure of what can be retried and what
+can't is essential. So right now we have 3 categories of operations:
+
+* Side Effect Free
+* Idempotent (with side effects)
+* Non-Idempotent  (with side effects)
+
+To give a more simple example, deleting a resource using the **DELETE**
+method is safe for retransmission since deleting something twice
+ends up on the same final state, that thing has been deleted.
+
+It is important to not mix leaving the system at the same state
+and giving the same answer. The first delete will return OK and the second
+one will fail, the operation is still idempotent because the final state
+of the system is the same (the resource has been deleted).
+
+Another interesting property of operations is commutativity, since they
+enable parallelization, but AFAIK there is nothing on REST about that.
+
+We saw some examples of side effects free operations and idempotent ones,
+this leaves us with the non-idempotent one, the beloved **POST** method.
+
+What should be the semantics of **POST** ? This is one of the biggest
+sources of bike shedding on RESTfullness because of the addiction
+to creating resources, that does not map well with some sorts of processes
+(yeah, REST can not map well to stuff,
+it is real, it happens, more on that later).
+
+An example from a RESTful guideline:
+
+```
+POST requests are idiomatically used to create
+single resources on a collection resource endpoint,
+```
+
+Which leads to:
+
+```
+POST request should only be applied to collection resources,
+and normally not on single resource, as this has an undefined semantic
+```
+
+TODO: Again we go back to thinking only on CRUD stuff, collections and
+processes get fucked =/.
+
 
 # RESTing from REST
 
