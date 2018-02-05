@@ -153,9 +153,79 @@ the CRUD stuff.
 
 # State Machines Everywhere
 
-TODO:
+As I read the book it explained much better the
+[Richardson Maturity Model](https://martinfowler.com/articles/richardsonMaturityModel.html).
+Specially because it did that with much more detail and explaining it
+like a series of tradeoffs instead of a quest for glory.
 
-HATEOAS
+The Richardson Maturity Model already starts to give a hint on what is
+wrong with most talks about REST, the maturity part will make you feel
+immature when your problem do not fit the abstraction. RPC for example
+is portraited as a swamp, perhaps it is if you use HTTP to transport it
+and use XML, but when you are young it is pretty hard to understand
+the difference and it is pretty easy to develop the notion that RPC is bad
+(specially with some bad implementations of RPC and remote objects).
+
+Perhaps the notion of maturity is intended to be used inside a REST API,
+but most people that advocate RESTFullness takes it as a maturity of any API.
+
+When you start to grown up you start to see that there are no demons,
+so RPC is not a demon and REST is not the glorious light that will
+vanquish it, but more on that later, lets focus on the REST learning
+(have I mentioned how I'm slow to learn ?).
+
+Anyway, I was finally getting the idea behind [HATEOAS](https://en.wikipedia.org/wiki/HATEOAS)
+(which is also known as the worse acronym ever created) and was excited
+because for the first time there was something on all the REST talk
+that was actually useful.
+
+OK I'm exaggerating, it is not that the CRUD and status code talk does
+not have some usefulness, but compared to the idea of designing cool
+state machines that helps enforce decoupling of clients and servers is
+so exciting that it got me frustrated how people talk so little about this.
+Actually usually there is not talk at all about this aspect of REST.
+
+An example that was the tooling for writing docs ate the time (CIRCA 2010-2011),
+they where pretty beautiful (like swagger) but they had 0 support to the
+idea of designing a state machine with links driving the next possible states.
+That frustrated the hell out of me (of course I can be only lousy at looking stuff
+on the internet,perhaps there was something, but I didn't found it).
+
+The best that I found as inspiration was the
+[JSON HAL](http://stateless.co/hal_specification.html) specification that I used
+as a inspiration for an API that I was developing at the time.
+
+Inspiration because I did not used it. It was simply too much for an API that
+was going to be used internally by less than a hundred clients, a lot of it
+seems focused on internet scale stuff and I was not building
+internet scale stuff.
+
+But the idea of expressing the state machine in-band on the protocol
+of the API is applicable on any scale. The alternative would be to
+document a series of URL templates (creates more coupling) and document
+in which states some of the URL's would be available and when it was not.
+
+Using the HATEOAS idea I was able to decouple clients from internal details
+on how resources are organized on the service and also from details of
+which states some interactions where possible or not, the protocol embedded
+that on the answers. This does not solve all problems on earth, but it was
+the first time that I was actually feeling good about this
+REST stuff, life was good.
+
+After some time I even started to feel stupid on how I did not get
+the HATEOAS idea before. What is great about navigating in the internet
+is the fact that you do not need to know anything about the site you
+are visiting, only the initial entry point. After that you can understand
+what you can do (the docs, on sites usually text intended to humans =P)
+and have links that you can click to express your desire to change state
+(or not if you just want to load a different resource).
+
+But the eternal bike shedding on REST methods was not over yet.
+And there was still the pain of ostracizing verbs, an URL is a
+Uniform Resource Location, RESOURCE, so it can't be a verb...
+fuck you if it is a verb.
+
+# What the hell is a resource ?
 
 
 # RESTing from REST
