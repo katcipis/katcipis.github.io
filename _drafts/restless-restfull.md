@@ -116,3 +116,54 @@ it. I was still all alone on how to model processes.
 Now things get interesting. At least for me, you must be already dozing off =P.
 
 # Who ate my process ?
+
+On the land of substantives and resources there seems to have little
+space for processes, they tend to be verbs since they do stuff with
+your data to produce some other data, or just change the state
+of a system (OMG state ? but isn't REST stateless ? it took me some
+time to understand that, but it is basically because I'm stupid, and
+very little material makes this really clear too).
+
+I felt stuck on discussions on how to use status codes and which
+HTTP methods to use. Again, not that this is necessarily bad, but
+it crossed the point of being useful and started to feel like
+bike shedding, specially when compared with the tremendous difficulty
+that I was feeling on how to actually solve a problem being "RESTFull".
+I was very used to solve problems with data + algorithms and it seemed
+that I was being presented only with the data part of the idea + the
+bike shedding on how to properly use methods and status codes. It is
+important to do CRUD stuff consistently, but to be honest it is boring
+as hell discussing CRUD stuff.
+
+I remember something like linkedin using 9XX status codes, twitter using
+only POST and GET and no other methods and some sacred quest for the
+true RESTFull way to do stuff (create your own status codes ?
+use all methods ?).
+
+One example that I remember vaguely (bad memory + 8 years) is how to
+model on a REST API transferring a call on a PBX API. I do not even
+remember how we solved, I just remember that I was frustrated, specially
+because all that talk about methods and substantives was not helping me
+at all on how to design it properly.
+
+In the midst of this suffering a friend of mine recommended the
+[REST in Practice](http://www.amazon.com/gp/product/0596805829) which helped
+me a lot to understand something that seemed much more interesting than
+the CRUD stuff.
+
+# State Machines Everywhere
+
+TODO:
+
+HATEOAS
+
+
+# RESTing from REST
+
+Perhaps, in the end, this is just the normal process of learning something.
+Or I'm just stupid. But things started to go sideways for me when I stopped
+to think on the problem that I was solving and started thinking on how
+to be RESTFull. When the problem did not fitted my poor model of what is
+RESTFull (whatever that actually is) I was kinda depressed, felt shame about
+my API, lost a lot of time trying to make it RESTFull and even made it
+worse for the sake of being RESTFull.
