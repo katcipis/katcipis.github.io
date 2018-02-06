@@ -85,7 +85,7 @@ GET
 ```
 
 Using verbs on URL names mean you got everything wrong and was a bad bad
-developer, you where not thinking on the RESTFull way and should feel
+developer, you where not thinking on the RESTful way and should feel
 bad about yourself. There was a **LOT** of focus on the CRUD thing too,
 on how the HTTP methods should be used correctly. Not that these are
 bad ideas, it is a good idea to have a uniform system where the intentions
@@ -128,7 +128,7 @@ I felt stuck on discussions on how to use status codes and which
 HTTP methods to use. Again, not that this is necessarily bad, but
 it crossed the point of being useful and started to feel like
 bike shedding, specially when compared with the tremendous difficulty
-that I was feeling on how to actually solve a problem being "RESTFull".
+that I was feeling on how to actually solve a problem being "RESTful".
 I was very used to solve problems with data + algorithms and it seemed
 that I was being presented only with the data part of the idea + the
 bike shedding on how to properly use methods and status codes. It is
@@ -137,7 +137,7 @@ as hell discussing CRUD stuff.
 
 I remember something like linkedin using 9XX status codes, twitter using
 only POST and GET and no other methods and some sacred quest for the
-true RESTFull way to do stuff (create your own status codes ?
+true RESTful way to do stuff (create your own status codes ?
 use all methods ?).
 
 One example that I remember vaguely (bad memory + 8 years) is how to
@@ -167,7 +167,7 @@ the difference and it is pretty easy to develop the notion that RPC is bad
 (specially with some bad implementations of RPC and remote objects).
 
 Perhaps the notion of maturity is intended to be used inside a REST API,
-but most people that advocate RESTFullness takes it as a maturity of any API.
+but most people that advocate RESTfulness takes it as a maturity of any API.
 
 When you start to grown up you start to see that there are no demons,
 so RPC is not a demon and REST is not the glorious light that will
@@ -448,7 +448,9 @@ processes get fucked =/.
 Perhaps, in the end, this is just the normal process of learning something.
 Or I'm just stupid. But things started to go sideways for me when I stopped
 to think on the problem that I was solving and started thinking on how
-to be RESTFull. When the problem did not fitted my poor model of what is
-RESTFull (whatever that actually is) I was kinda depressed, felt shame about
-my API, lost a lot of time trying to make it RESTFull and even made it
-worse for the sake of being RESTFull.
+to be RESTful.
+
+When the problem did not fitted my poor model of what is
+RESTful (whatever that actually is) I was kinda depressed, felt shame about
+my API, lost a lot of time trying to make it RESTful and even made it
+worse for the sake of being RESTful.
