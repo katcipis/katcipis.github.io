@@ -7,14 +7,14 @@ what sidetracked me.
 
 As I evolve my ideas over time do not confuse that with
 me being sure of anything, I'm still not sure of shit
-until now, the only thing I'm sure is that going back
-is not a good idea, but where would be forward is another
-history.
+until now, the only thing I'm sure is that repeating
+the same mistakes is not a good idea,
+but how to make new ones is another history.
 
 I decided to write this because I think it is a very important
 topic (duh, obviously or I would be an idiot for wasting time no ? =P).
 Not REST of RESTfull, but defining good API's on a distributed system.
-Having good abstractions and a good environment are essencial to
+Having good abstractions and a good environment are essential to
 build a truly scalable distributed system. Not only scalable on
 the sense of supporting millions of users, but cognitively scalable,
 a system that very limited humans beings can understand. An example
@@ -49,10 +49,10 @@ opportunity to take an internship on an awesome company.
 Since I don't seem to run out of luck in life, I had the opportunity
 to work with a lot of new projects, developing from scratch, defining
 protocols, etc. Of course I was not doing it alone, I was just the curious
-talkative intern, there where much wiser people guiding me.
+talkative intern, there were much wiser people guiding me.
 
-Some of the projects where restricted to internal proprietary protocols,
-others where using RTMP (thank God that is over), but we faced some opportunity
+Some of the projects were restricted to internal proprietary protocols,
+others were using RTMP (thank God that is over), but we faced some opportunity
 to do what all the other cool kids where doing, shiny new REST API's.
 At that time it as so well established that WS-\* stuff and SOAP where pure
 evil that I didn't even bother to look that up too much and delve directly
@@ -66,7 +66,7 @@ you can't understand yet, this fits with the
 
 Searching for guidance on this aspect we found several guidelines
 that helped us build our own. At this stage there was just
-some web searching. The guidelines where sound, that usual stuff
+some web searching. The guidelines were sound, that usual stuff
 of handling collections of stuff and individual stuff on a
 hierarchical way using URL's, the traditional dogs example:
 
@@ -293,7 +293,8 @@ OK I got all excited with the state transfer thing and totally forgot
 that not being uniform on how you use a set of operations (methods) can
 be really hurtful to a distributed system.
 
-On a system where there are IDL's you usually don't have this problem
+On a system where there are IDL's (Interface Description Languages)
+you usually don't have this problem
 since each interface has its own set of operations that is documented,
 there is less restrictions (also more space to inconsistencies in naming
 and other things, tradeoffs, no free lunch, etc).
@@ -420,7 +421,7 @@ We saw some examples of side effects free operations and idempotent ones,
 this leaves us with the non-idempotent one, the beloved **POST** method.
 
 What should be the semantics of **POST** ? This is one of the biggest
-sources of bike shedding on RESTfullness because of the addiction
+sources of bike shedding on RESTfulness because of the addiction
 to creating resources, that does not map well with some sorts of processes
 (yeah, REST can not map well to stuff,
 it is real, it happens, more on that later).
@@ -439,8 +440,280 @@ POST request should only be applied to collection resources,
 and normally not on single resource, as this has an undefined semantic
 ```
 
-TODO: Again we go back to thinking only on CRUD stuff, collections and
-processes get fucked =/.
+Undefined semantic ? Creating resources ? OK lets take a look at the
+[spec](https://tools.ietf.org/html/rfc2616#section-9), this time I will
+copy the entire method specification, because this is important.
+
+```
+9.5 POST
+
+   The POST method is used to request that the origin server accept the
+   entity enclosed in the request as a new subordinate of the resource
+   identified by the Request-URI in the Request-Line. POST is designed
+   to allow a uniform method to cover the following functions:
+
+      - Annotation of existing resources;
+
+      - Posting a message to a bulletin board, newsgroup, mailing list,
+        or similar group of articles;
+
+      - Providing a block of data, such as the result of submitting a
+        form, to a data-handling process;
+
+      - Extending a database through an append operation.
+
+   The actual function performed by the POST method is determined by the
+   server and is usually dependent on the Request-URI. The posted entity
+   is subordinate to that URI in the same way that a file is subordinate
+   to a directory containing it, a news article is subordinate to a
+   newsgroup to which it is posted, or a record is subordinate to a
+   database.
+
+   The action performed by the POST method might not result in a
+   resource that can be identified by a URI. In this case, either 200
+   (OK) or 204 (No Content) is the appropriate response status,
+   depending on whether or not the response includes an entity that
+   describes the result.
+
+   If a resource has been created on the origin server, the response
+   SHOULD be 201 (Created) and contain an entity which describes the
+   status of the request and refers to the new resource, and a Location
+   header (see section 14.30).
+
+   Responses to this method are not cacheable, unless the response
+   includes appropriate Cache-Control or Expires header fields. However,
+   the 303 (See Other) response can be used to direct the user agent to
+   retrieve a cacheable resource.
+
+   POST requests MUST obey the message transmission requirements set out
+   in section 8.2.
+
+   See section 15.1.3 for security considerations.
+```
+
+Focus on:
+
+```
+   The actual function performed by the POST method is determined by the
+   server and is usually dependent on the Request-URI.
+```
+
+And:
+
+```
+   If a resource has been created on the origin server, the response
+   SHOULD be 201 (Created) and contain an entity which describes the
+   status of the request and refers to the new resource, and a Location
+   header (see section 14.30).
+```
+
+So no, there is nothing undefined and wrong with a *POST* method
+that does not create a new resource, it MAY create resources but there
+are a lot of examples on the spec itself where they simply do not.
+
+The important thing to convey by using a *POST* method to a URL is that
+side effects will be produced by the request and that is it. There is
+nothing wrong, or hacky, on modelling a process as a resource and
+using a POST method for it to do its job when the process will
+result on state changes on the system but will produce no resources
+at all.
+
+On this case I got strong feelings of *guidelines considered harmful*,
+if people do not actually study the specs, the origin of it and just
+follow these context sensitive derivatives they are prone to feel
+bad for doing something that is perfectly fine and even be busted by
+the RESTful police:
+
+TODO: restful police gif
+
+Or even worse, they will turn the API on a monster to try to
+fit it on a misconception of what would be "RESTFul" (which usually
+resembles a hierarchical database or a local file system).
+
+# RESTful strikes back
+
+There was I living my life, doing some crappy API's but not feeling
+bad about it, people where using it and they worked. Since not a lot
+of people asked question about how to use I suppose it was not that
+hard although they would not be "RESTful" since sometimes POST
+was used not to create stuff and I used to model processes (verbs)
+on URL's where appropriate.
+
+There was CRUD too, no problem with that, when it fits. If you do have
+collections of stuff and it is pretty clear how you add new ones to
+the collection and remove them, go for it, it is great too.
+
+Then, on a cloudy day on a meeting there was some discussion on
+being RESTful and a lot of old feelings resurfaced.
+
+What the fuck is REST anyway ? Sorry for the fuck part, but if
+what is REST or RESTful is subjective, then discussing it is
+pointless, it can be anything you want, even something that
+will impair your capacity to think and build API's that
+fit well to your problem.
+
+I was on a phase on my life where it has started to be obvious
+that the best way to solve these things is to go directly at
+the source. Specially since people like to be religious with
+this stuff, having access to the source of their beliefs gives
+you a lot of power. So I started reading the
+[Architectural Styles and the Design of Network-based Software Architectures](https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm)
+dissertation. AFAIK is the origin of the acronym REST.
+
+Since I was a little biased against RESTful stuff I was surprised
+at how awesome and different from everything you read about REST
+the dissertation was.
+
+The best part of it is the one that does not talk about REST, it actually
+builds a framework on how to compare different architectural styles
+to see which one fits better to your system. You can even create
+your own architectural style by composing existing architectural
+constraints, it was considerably enlightening to me and I highly
+recommend the read to anyone on the business of developing
+REST API's.
+
+How to properly architecture software starts on the dedication
+of the dissertation, it has an awesome quote from a book that
+is focused on architecture but it is very appliable on software
+architecture:
+
+```
+Almost everybody feels at peace with nature: listening to the
+ocean waves against the shore, by a still lake, in a field of grass,
+on a windblown heath.
+
+One day, when we have learned the timeless way again,
+we shall feel the same about our towns, and we shall feel as much at
+peace in them, as we do today walking by the ocean, or stretched out in
+the long grass of a meadow.
+
+-- Christopher Alexander, The Timeless Way of Building (1979)
+```
+
+This quote is a source of inspiration on what software architecture should
+be about. It is the problem that you are solving, the people that are
+going to use that architecture everyday (will live inside of it).
+
+Software has two audiences, other developers that have to evolve the
+system and clients that just use the system. The definition of a successful
+architecture is when both are extremely pleased, and being pleased comes
+through simplicity, just like nature, it simply fits and feels good.
+
+It is a social phenomenon, deeply influenced by human cognition. Because
+what is easy to understand and feels confortable is related to cognition.
+
+Of course that the architecture also has to support the problem being
+solved, no one likes a building that is confortable but may collapse
+on your head. That is why architecting is so hard, you have a lot
+of variables that will push your design on different directions,
+the decisions of the tradeoffs will be your responsibility.
+
+Uniformity is important, so discussing good practices and trying to
+enforce uniformity may be good, but uniformity has tradeoffs too, so
+you need to know when to give it up, the dissertation is also very clear
+on this.
+
+The dissertation is pretty big, but totally worth it, I can't quote
+everything I find interesting from it here because it would make
+this post even bigger than already it is (if you are curious
+you can see [my notes here](TODO), buy you will be best served
+reading the dissertation).
+
+I will focus just on things that can help you break free from
+the tiranny of RESTFulness with a series of quotes from the
+dissertation. Since it is the source of REST it should be
+a reliable source of guidance (if you like REST at least).
+
+What should guide design decisions on your architecture ?
+
+```
+A good architecture is not created in a vacuum. All design decisions at the
+architectural level should be made within the context of the functional,
+behavioral, and social requirements of the system being designed, which is a 
+principle that applies equally to both software architecture and the traditional
+field of building architecture.
+
+The guideline that "form follows function" comes from hundreds of years of
+experience with failed building projects, but is often ignored by software
+practitioners.
+```
+
+Elaborating more on how usually function ends up following form, or the
+desires of the architect he mentions a
+[Monty Python sketch](https://www.youtube.com/watch?v=DyL5mAqFJds):
+
+```
+The funny bit within the Monty Python sketch, cited above, is the absurd
+notion that an architect, when faced with the goal of designing an urban
+block of flats (apartments), would present a building design with all the
+components of a modern slaughterhouse.
+
+It might very well be the best slaughterhouse design ever conceived,
+but that would be of little comfort to the prospective tenants as they
+are whisked along hallways containing rotating knives.
+```
+
+If I got a penny for each slaughterhouse I designed just because
+I liked the idea and it seemed right to me to do it that way
+(or because everyone else is doing slaughterhouses), I would
+be rich by now.
+
+And them the ultimate irony:
+
+```
+The hyperbole of The Architects Sketch may seem ridiculous,
+but consider how often we see software projects begin with adoption of
+the latest fad in architectural design, and only later discover whether or
+not the system requirements call for such an architecture.
+
+Design-by-buzzword is a common occurrence. At least some of this behavior
+within the software industry is due to a lack of understanding of why a
+given set of architectural constraints is useful. 
+```
+
+He just describes exactly what sadly happened to REST, instead
+of being considered as another architectural style, among others,
+with it's own tradeoffs, it has become the latest fad in architectural
+design. Design-by-buzzword, there is no way to put it better. Need more
+convincing ? Another pearl from the dissertation:
+
+```
+Some architectural styles are often portrayed as "silver bullet" solutions for
+all forms of software. However, a good designer should select a style that
+matches the needs of the particular problem being solved [119].
+
+Choosing the right architectural style for a network-based application requires
+an understanding of the problem domain [67] and thereby the communication
+needs of the application, an awareness of the variety of architectural styles
+and the particular concerns they address, and the ability to anticipate the
+sensitivity of each interaction style to the characteristics of
+network-based communication
+```
+
+Again...oh the irony =/. Want a good example of tradeoffs made on REST ?
+
+```
+The trade-off, though, is that a uniform interface degrades efficiency,
+since information is transferred in a standardized form rather than one
+which is specific to an application's needs.
+
+The REST interface is designed to be efficient for large-grain hypermedia
+data transfer, optimizing for the common case of the Web, but resulting in
+an interface that is not optimal for other forms of architectural interaction.
+```
+
+I said that we would come back to uniformity. It is great,
+but it has tradeoffs.  REST ideas are heavilly based on
+large-grain data transfer, does this fit with
+what you need ? What are others alternatives ?
+
+Sadly this RESTful mindset seems to hinder the ability to discuss
+alternatives to REST. I certainly stopped from doing it for a great
+time because I was too focused on perfecting REST to solve
+everything. Ironic that was the REST dissertation that
+helped me see my mistake.
+
+TODO: add content on cases of the web where REST falls short
 
 
 # RESTing from REST
@@ -450,7 +723,7 @@ Or I'm just stupid. But things started to go sideways for me when I stopped
 to think on the problem that I was solving and started thinking on how
 to be RESTful.
 
-When the problem did not fitted my poor model of what is
+When the problem did not fitted my poor model of what was
 RESTful (whatever that actually is) I was kinda depressed, felt shame about
 my API, lost a lot of time trying to make it RESTful and even made it
 worse for the sake of being RESTful.
