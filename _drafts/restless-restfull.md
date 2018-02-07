@@ -108,6 +108,9 @@ links, there will be tradeoff's with each approach, etc. There is a good space
 for discussion on this area, and it is good discussion, depending on the
 kind of system you are developing different sets of tradeoff's must be made.
 
+A great article that helped me understand the solution space better is
+[A Relational Model of Data for Large Shared Data Banks](https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf).
+
 But even though this is an interesting space of discussion I was growing
 frustrated. Why ? Well because I was not developing a database with a REST API.
 It was not just a set of static data, or static data with relationships between
@@ -708,13 +711,10 @@ large-grain data transfer, does this fit with
 what you need ? What are others alternatives ?
 
 Sadly this RESTful mindset seems to hinder the ability to discuss
-alternatives to REST. I certainly stopped from doing it for a great
-time because I was too focused on perfecting REST to solve
+alternatives to REST. I certainly stopped me from doing it for a
+great time because I was too focused on perfecting REST to solve
 everything. Ironic that was the REST dissertation that
 helped me see my mistake.
-
-TODO: add content on cases of the web where REST falls short
-
 
 # RESTing from REST
 
@@ -723,7 +723,54 @@ Or I'm just stupid. But things started to go sideways for me when I stopped
 to think on the problem that I was solving and started thinking on how
 to be RESTful.
 
-When the problem did not fitted my poor model of what was
+When the problem did not fitted my model of what was
 RESTful (whatever that actually is) I was kinda depressed, felt shame about
 my API, lost a lot of time trying to make it RESTful and even made it
 worse for the sake of being RESTful.
+
+Another problem that I observe is how much time we spend discussing
+REST and not studying other architectures for distributed systems.
+The REST dissertations lays down a way to compare architectural styles
+and provide incentives on thinking on your problem and defining your
+own set of architectural constraints.
+
+For the web the demand for standardization is much bigger than from
+internal services to solve a smaller/different problem than the
+web. On the dissertation one of the focus of REST and the design
+of the web was massive anarchic scalability, there is a great
+deal of focus on decoupling.
+
+Any experienced developer knows that even decoupling has a price,
+always understand the price you are paying and why, the web pays
+it because it is the web, you are not the web.
+
+There are systems that need to export API's
+on the web, these are excellent cases for REST, or at least to use
+a ubiquitous protocol as HTTP, you need to focus on integration
+with third parties. But even those usually have inner systems that
+are not exported to the web, they are great candidates to
+focus on what solves the problem best, not standards.
+
+In some sense this reminds me of discussions on using a lot
+of different programming languages, you can create a mess if
+you never master a language properly and develop each service
+on a different one but you also lose a lot of insights and
+growth if you got stuck always with the same one. Architectural
+styles seems to be something like that to me, you don't need to
+create a mess but standardizing everything does not seem to be a
+good way to do things either.
+
+What would be these different architectural styles ? One that I
+recently have been studying is the one used on Plan9 and Inferno,
+some good articles:
+
+* [Plan9 from Bell Labs](http://doc.cat-v.org/plan_9/4th_edition/papers/9)
+* [The Styx Architecture for Distributed Systems](http://doc.cat-v.org/inferno/4th_edition/styx)
+* [The Organization of Networks in Plan 9](http://doc.cat-v.org/plan_9/4th_edition/papers/net/)
+* [The use of namespaces in Plan 9](http://doc.cat-v.org/plan_9/4th_edition/papers/names)
+
+In the end the idea is not that REST is bad, RESTFul is bad, guidelines
+are bad. What is bad is to stop to think about what you are doing and
+to stop searching for different answer that may fit your problems better.
+You can't do that if you believe that REST fits any kind of problem and
+all API's should be done this way.
