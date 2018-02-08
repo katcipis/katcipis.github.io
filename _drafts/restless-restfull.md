@@ -93,7 +93,7 @@ are clear. No one wants to use the **DELETE** method to get some data, etc.
 But I started to get frustrated on how almost all material that I was reading
 focused way too much on URL's naming and HTTP verbs.
 
-They always explain the collection of resources thing, and them how to related
+They always explain the collection of resources thing, and them how to relate
 resources, like the dog has an owner, how to express that ? Again, not that it
 is a bad idea to think on how to properly handle this kind of relationship, but to
 be honest it was not one of my biggest problems at the time. Actually if
@@ -159,7 +159,7 @@ the CRUD stuff.
 As I read the book it explained much better the
 [Richardson Maturity Model](https://martinfowler.com/articles/richardsonMaturityModel.html).
 Specially because it did that with much more detail and explaining it
-like a series of tradeoffs instead of a quest for glory.
+like a series of trade-offs instead of a quest for glory.
 
 The Richardson Maturity Model already starts to give a hint on what is
 wrong with most talks about REST, the maturity part will make you feel
@@ -300,7 +300,7 @@ On a system where there are IDL's (Interface Description Languages)
 you usually don't have this problem
 since each interface has its own set of operations that is documented,
 there is less restrictions (also more space to inconsistencies in naming
-and other things, tradeoffs, no free lunch, etc).
+and other things, trade-offs, no free lunch, etc).
 
 So REST and its more known implementation on top of HTTP has a fixed
 set of methods with a specific semantic for each one.
@@ -609,18 +609,19 @@ Of course that the architecture also has to support the problem being
 solved, no one likes a building that is confortable but may collapse
 on your head. That is why architecting is so hard, you have a lot
 of variables that will push your design on different directions,
-the decisions of the tradeoffs will be your responsibility.
+the decisions of the trade-offs will be your responsibility.
 
 Uniformity is important, so discussing good practices and trying to
-enforce uniformity may be good, but uniformity has tradeoffs too, so
+enforce uniformity may be good, but uniformity has trade-offs too, so
 you need to know when to give it up, the dissertation is also very clear
 on this.
 
 The dissertation is pretty big, but totally worth it, I can't quote
 everything I find interesting from it here because it would make
 this post even bigger than already it is (if you are curious
-you can see [my notes here](TODO), buy you will be best served
-reading the dissertation).
+you can see
+[my notes here](https://github.com/katcipis/sophia/blob/master/notes/articles/fielding-dissertation-rest.md),
+but you will be best served reading the dissertation).
 
 I will focus just on things that can help you break free from
 the tiranny of RESTFulness with a series of quotes from the
@@ -676,7 +677,7 @@ given set of architectural constraints is useful.
 
 He just describes exactly what sadly happened to REST, instead
 of being considered as another architectural style, among others,
-with it's own tradeoffs, it has become the latest fad in architectural
+with it's own trade-offs, it has become the latest fad in architectural
 design. Design-by-buzzword, there is no way to put it better. Need more
 convincing ? Another pearl from the dissertation:
 
@@ -693,7 +694,7 @@ sensitivity of each interaction style to the characteristics of
 network-based communication
 ```
 
-Again...oh the irony =/. Want a good example of tradeoffs made on REST ?
+Again...oh the irony =/. Want a good example of trade-offs made on REST ?
 
 ```
 The trade-off, though, is that a uniform interface degrades efficiency,
@@ -706,7 +707,7 @@ an interface that is not optimal for other forms of architectural interaction.
 ```
 
 I said that we would come back to uniformity. It is great,
-but it has tradeoffs.  REST ideas are heavilly based on
+but it has trade-offs.  REST ideas are heavilly based on
 large-grain data transfer, does this fit with
 what you need ? What are others alternatives ?
 
