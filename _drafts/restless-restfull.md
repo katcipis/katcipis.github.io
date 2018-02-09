@@ -771,7 +771,7 @@ some good articles:
 * [The use of namespaces in Plan 9](http://doc.cat-v.org/plan_9/4th_edition/papers/names)
 
 In the end the idea is not that REST is bad, RESTFul is bad, guidelines
-are bad. What is bad is to stop to think about what you are doing and
+are bad. What is bad is to stop thinking about what you are doing and
 to stop searching for different answer that may fit your problems better.
 You can't do that if you believe that REST fits any kind of problem and
 all API's should be done this way.
