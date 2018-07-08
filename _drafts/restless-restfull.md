@@ -34,8 +34,8 @@ but on the industry the bottleneck is people by far.
 
 Why talk about cognition before talking about REST ? Well it is another
 spoiler alert, but REST is an architecture for a system with massive scalability
-(the internet), almost all companies that you will work will not work on that
-scale, the closes you would get would be Google. So there is a great deal
+(the internet). Almost every company out there will not work on that
+scale. The closest you will find will be Google. So there is a great deal
 of chance that when you are contemplating REST you are not thinking about
 scaling to billions of requests but thinking on how to make your
 system easy to understand, to make intentions clear.
@@ -54,7 +54,7 @@ talkative intern, there were much wiser people guiding me.
 Some of the projects were restricted to internal proprietary protocols,
 others were using RTMP (thank God that is over), but we faced some opportunity
 to do what all the other cool kids where doing, shiny new REST API's.
-At that time it as so well established that WS-\* stuff and SOAP where pure
+At that time it was so well established that WS-\* stuff and SOAP were pure
 evil that I didn't even bother to look that up too much and delve directly
 on REST and its blazing glory.
 
@@ -662,7 +662,7 @@ I liked the idea and it seemed right to me to do it that way
 (or because everyone else is doing slaughterhouses), I would
 be rich by now.
 
-And them the ultimate irony:
+And then the ultimate irony:
 
 ```
 The hyperbole of The Architects Sketch may seem ridiculous,
@@ -677,7 +677,7 @@ given set of architectural constraints is useful.
 
 He just describes exactly what sadly happened to REST, instead
 of being considered as another architectural style, among others,
-with it's own trade-offs, it has become the latest fad in architectural
+with its own trade-offs, it has become the latest fad in architectural
 design. Design-by-buzzword, there is no way to put it better. Need more
 convincing ? Another pearl from the dissertation:
 
@@ -721,10 +721,10 @@ helped me see my mistake.
 
 Perhaps, in the end, this is just the normal process of learning something.
 Or I'm just stupid. But things started to go sideways for me when I stopped
-to think on the problem that I was solving and started thinking on how
-to be RESTful.
+thinking about the problem I was trying to solve and kept thinking about how to
+be RESTful.
 
-When the problem did not fitted my model of what was
+When the problem did not fit my model of what was
 RESTful (whatever that actually is) I was kinda depressed, felt shame about
 my API, lost a lot of time trying to make it RESTful and even made it
 worse for the sake of being RESTful.
@@ -747,7 +747,7 @@ it because it is the web, you are not the web.
 
 There are systems that need to export API's
 on the web, these are excellent cases for REST, or at least to use
-a ubiquitous protocol as HTTP, you need to focus on integration
+an ubiquitous protocol as HTTP, you need to focus on integration
 with third parties. But even those usually have inner systems that
 are not exported to the web, they are great candidates to
 focus on what solves the problem best, not standards.
@@ -775,3 +775,12 @@ are bad. What is bad is to stop thinking about what you are doing and
 to stop searching for different answer that may fit your problems better.
 You can't do that if you believe that REST fits any kind of problem and
 all API's should be done this way.
+
+# Acknowlegements
+
+Thanks for the following people for their help improving this text:
+
+* [Iury Fukuda](https://github.com/iuryfukuda)
+* [Manoel Vilela](https://github.com/ryukinix)
+* [Tiago Natel](https://github.com/tiago4orion)
+* [Vitor Arins](https://github.com/vitorarins)
