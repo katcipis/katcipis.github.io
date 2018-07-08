@@ -159,7 +159,7 @@ true RESTful way to do stuff (create your own status codes ?
 use all methods ?).
 
 One example that I remember vaguely (bad memory + 8 years) is how to
-model on a REST API transferring a call on a PBX API. I do not even
+model on a REST API the transfer of a call on a PBX API. I do not even
 remember how we solved, I just remember that I was frustrated, specially
 because all that talk about methods and substantives was not helping me
 at all on how to design it properly.
@@ -185,7 +185,8 @@ the difference and it is pretty easy to develop the notion that RPC is bad
 (specially with some bad implementations of RPC and remote objects).
 
 Perhaps the notion of maturity is intended to be used inside a REST API,
-but most people that advocate RESTfulness takes it as a maturity of any API.
+but most people that advocate RESTfulness takes it as a maturity of any API
+(and no one wants to have an immature API).
 
 When you start to grown up you start to see that there are no demons,
 so RPC is not a demon and REST is not the glorious light that will
@@ -203,10 +204,10 @@ state machines that helps enforce decoupling of clients and servers is
 so exciting that it got me frustrated how people talk so little about this.
 Actually usually there is not talk at all about this aspect of REST.
 
-An example that was the tooling for writing docs ate the time (CIRCA 2010-2011),
+An example of that was the tooling for writing docs ate the time (CIRCA 2010-2011),
 they where pretty beautiful (like swagger) but they had 0 support to the
 idea of designing a state machine with links driving the next possible states.
-That frustrated the hell out of me (of course I can be only lousy at looking stuff
+That frustrated the hell out of me (of course it may be that I'm lousy at looking stuff
 on the internet,perhaps there was something, but I didn't found it).
 
 The best that I found as inspiration was the
