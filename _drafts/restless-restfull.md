@@ -258,18 +258,18 @@ The path that took me to a better understanding (or less crappy, at
 least for me) involves not just resources, but also the dispute
 on HTTP methods. More exactly the PUT method (also the PATCH one).
 
-For me trying to handle everything JUST with HTTP methods seemed
+For me, trying to handle everything JUST with HTTP methods seemed
 again like working just with databases, the API felt anemic, like
 I have so little logic that just changing fields on JSON documents
 is enough to solve all my problems.
 
 One post that introduced me to some interesting ideas was the
 [REST API Design - Resource Modeling](https://www.thoughtworks.com/insights/blog/rest-api-design-resource-modeling).
-As far as I got it, it introduced the idea that everything that
+As far as I got it, it introduced the idea that everything
 can be turned on a resource if this makes sense to be done
 on the domain of the problem that you are solving. It also
 shared my view that thinking only on CRUD generate an anemic API,
-if the API is anemic the client needs to get fattier:
+if the API is anemic the client needs to get more complex:
 
 ```
 Essentially, the low level CRUD oriented approach puts the business
@@ -422,15 +422,15 @@ Distributed systems are hard, being sure of what can be retried and what
 can't is essential. So right now we have 3 categories of operations:
 
 * Side Effect Free
-* Idempotent (with side effects)
-* Non-Idempotent  (with side effects)
+* Idempotent (with side effects, can be retransmited safely)
+* Non-Idempotent  (with side effects, can't be retransmited safely)
 
 To give a more simple example, deleting a resource using the **DELETE**
 method is safe for retransmission since deleting something twice
 ends up on the same final state, that thing has been deleted.
 
-It is important to not mix leaving the system at the same state
-and giving the same answer. The first delete will return OK and the second
+It is important to not mistake leaving the system at the same state
+with it giving the same answer. The first delete will return OK and the second
 one will fail, the operation is still idempotent because the final state
 of the system is the same (the resource has been deleted).
 
@@ -538,7 +538,8 @@ using a POST method for it to do its job when the process will
 result on state changes on the system but will produce no resources
 at all.
 
-On this case I got strong feelings of **guidelines considered harmful**.
+This is the moment where I started to get strong feelings of
+**guidelines considered harmful**.
 If people do not actually study the specs and just
 follow these context sensitive derivatives they are prone to feel
 bad for doing something that is perfectly fine, or worse, be busted by
@@ -554,8 +555,9 @@ resembles a hierarchical database or a local file system).
 
 There was I living my life, doing some crappy API's but not feeling
 bad about it, people where using it and they worked. Since not a lot
-of people asked question about how to use I suppose it was not that
-hard although they would not be "RESTful" since sometimes POST
+of people asked questions on how to use them I suppose it was not that
+hard to understand and integrate with them, although they would
+not be "RESTful" since sometimes POST
 was used not to create stuff and I used to model processes (verbs)
 on URL's where appropriate.
 
@@ -645,7 +647,8 @@ the tiranny of RESTFulness with a series of quotes from the
 dissertation. Since it is the source of REST it should be
 a reliable source of guidance (if you like REST at least).
 
-What should guide design decisions on your architecture ?
+What should guide design decisions on your architecture ? (Already quoted this
+at the beggining of the post, but now I try to make a different point)
 
 ```
 A good architecture is not created in a vacuum. All design decisions at the
@@ -730,7 +733,7 @@ what you need ? What are others alternatives ?
 
 Sadly this RESTful mindset seems to hinder the ability to discuss
 alternatives to REST. I certainly stopped me from doing it for a
-great time because I was too focused on perfecting REST to solve
+good time because I was too focused on perfecting REST to solve
 everything. Ironic that was the REST dissertation that
 helped me see my mistake.
 
@@ -747,7 +750,7 @@ my API, lost a lot of time trying to make it RESTful and even made it
 worse for the sake of being RESTful.
 
 Another problem that I observe is how much time we spend discussing
-REST and not studying other architectures for distributed systems.
+REST and not studying other architectural styles for distributed systems.
 The REST dissertations lays down a way to compare architectural styles
 and provide incentives on thinking on your problem and defining your
 own set of architectural constraints.
