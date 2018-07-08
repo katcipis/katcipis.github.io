@@ -24,13 +24,13 @@ where he uses the term "intellectual manageability".
 
 For me this is one of the holy grails of computing,
 a great deal of our pain is caused by our feeble brains
-and it difficulty on handling details. And to help ourselves
+and it difficulty on handling details. And to make things worse,
 people that are usually attracted to computing do not have a
-lot of skills with human psychology and cognition,
-they like computers and math (nothing wrong with that),
+lot of skills with human psychology and cognition.
+They like computers and math (nothing wrong with that),
 but the problem is related to human cognition, that is the bottleneck
-on most systems not the computers (of course sometimes it is the computers,
-but on the industry the bottleneck is people by far).
+on most systems, not the computers. Of course sometimes it is the computers,
+but on the industry the bottleneck is people by far.
 
 Why talk about cognition before talking about REST ? Well it is another
 spoiler alert, but REST is an architecture for a system with massive scalability
