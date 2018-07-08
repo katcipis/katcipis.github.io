@@ -210,7 +210,7 @@ idea of designing a state machine with links driving the next possible states.
 That frustrated the hell out of me (of course it may be that I'm lousy at looking stuff
 on the internet,perhaps there was something, but I didn't found it).
 
-The best that I found as inspiration was the
+The best that I found was the
 [JSON HAL](http://stateless.co/hal_specification.html) specification that I used
 as a inspiration for an API that I was developing at the time.
 
@@ -236,15 +236,16 @@ After some time I even started to feel stupid on how I did not get
 the HATEOAS idea before. What is great about navigating in the internet
 is the fact that you do not need to know anything about the site you
 are visiting, only the initial entry point. After that you can understand
-what you can do (the docs, on sites usually text intended to humans =P)
-and have links that you can click to express your desire to change state
-(or not if you just want to load a different resource). The name REST
-has State Transfer on it, how can we give so little attention to that
+what you can do and have links that you can click to express your desire
+to change state
+(or not if you just want to load a different resource).
+
+The name REST has State Transfer on it, how can we give so little attention to that
 and focus on representing collections of stuff ? The theory behind the
 [bike shedding phenomenon](https://en.wiktionary.org/wiki/bikeshedding)
-is that because it is easier and it is easy
-to discuss easy stuff (easy does not mean unimportant, but it means
-not spending almost all your time just on that).
+explains that we do this because it is easy to stay forever discussing
+things that we understand better (and are simpler) instead of tackling
+the real harder problem.
 
 But the eternal bike shedding on REST methods was not over yet.
 And there was still the pain of ostracizing verbs, an URL is a
