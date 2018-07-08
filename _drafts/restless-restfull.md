@@ -521,15 +521,15 @@ using a POST method for it to do its job when the process will
 result on state changes on the system but will produce no resources
 at all.
 
-On this case I got strong feelings of *guidelines considered harmful*,
-if people do not actually study the specs, the origin of it and just
+On this case I got strong feelings of **guidelines considered harmful**.
+If people do not actually study the specs and just
 follow these context sensitive derivatives they are prone to feel
-bad for doing something that is perfectly fine and even be busted by
+bad for doing something that is perfectly fine, or worse, be busted by
 the RESTful police:
 
-TODO: restful police gif
+![vegan police](img/veganpolice.gif)
 
-Or even worse, they will turn the API on a monster to try to
+Which may result on turning the API on a monster trying to
 fit it on a misconception of what would be "RESTFul" (which usually
 resembles a hierarchical database or a local file system).
 
