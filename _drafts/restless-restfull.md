@@ -50,6 +50,9 @@ behavioral, and social requirements of the system being designed, which is a
 principle that applies equally to both software architecture and the traditional
 field of building architecture.
 ```
+Of course I could be wrong, but it seems that "social requirements" of the system
+involves people that are going to use the system and the ones that are going to develop
+it too, and since it is a social aspect it involves our cognition.
 
 But enough with spoilers and start with ancient history.
 
@@ -143,11 +146,12 @@ HTTP methods to use. Again, not that this is necessarily bad, but
 it crossed the point of being useful and started to feel like
 bike shedding, specially when compared with the tremendous difficulty
 that I was feeling on how to actually solve a problem being "RESTful".
+
 I was very used to solve problems with data + algorithms and it seemed
 that I was being presented only with the data part of the idea + the
 bike shedding on how to properly use methods and status codes. It is
 important to do CRUD stuff consistently, but to be honest it is boring
-as hell discussing CRUD stuff.
+as hell to discuss CRUD stuff.
 
 I remember something like linkedin using 9XX status codes, twitter using
 only POST and GET and no other methods and some sacred quest for the
