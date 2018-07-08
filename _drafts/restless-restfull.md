@@ -5,7 +5,7 @@ REST and RESTfullness (whatever that is, spoiler alert, I'm
 not going to define what it is), what worked for me and
 what sidetracked me.
 
-As I evolve my ideas over time do not confuse that with
+As I evolve my ideas do not confuse that with
 me being sure of anything, I'm still not sure of shit
 until now, the only thing I'm sure is that repeating
 the same mistakes is not a good idea,
@@ -13,7 +13,7 @@ but how to make new ones is another history.
 
 I decided to write this because I think it is a very important
 topic (duh, obviously or I would be an idiot for wasting time no ? =P).
-Not REST of RESTfull, but defining good API's on a distributed system.
+
 Having good abstractions and a good environment are essential to
 build a truly scalable distributed system. Not only scalable on
 the sense of supporting millions of users, but cognitively scalable,
@@ -24,7 +24,7 @@ where he uses the term "intellectual manageability".
 
 For me this is one of the holy grails of computing,
 a great deal of our pain is caused by our feeble brains
-and it difficulty on handling details. And to make things worse,
+and its difficulty on handling details. And to make things worse,
 people that are usually attracted to computing do not have a
 lot of skills with human psychology and cognition.
 They like computers and math (nothing wrong with that),
@@ -39,6 +39,17 @@ scale. The closest you will find will be Google. So there is a great deal
 of chance that when you are contemplating REST you are not thinking about
 scaling to billions of requests but thinking on how to make your
 system easy to understand, to make intentions clear.
+
+But you don't have to believe me, here is a quote from
+[Architectural Styles and the Design of Network-based Software Architectures](https://www.ics.uci.edu/%7Efielding/pubs/dissertation/top.htm):
+
+```
+A good architecture is not created in a vacuum. All design decisions at the
+architectural level should be made within the context of the functional,
+behavioral, and social requirements of the system being designed, which is a 
+principle that applies equally to both software architecture and the traditional
+field of building architecture.
+```
 
 But enough with spoilers and start with ancient history.
 
