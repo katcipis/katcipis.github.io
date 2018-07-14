@@ -1,7 +1,21 @@
-# The RESTless struggle for RESTfullness
++++
+author = "Tiago Katcipis"
+categories = ["Distributed Systems"]
+date = "2018-14-07"
+description = "The RESTless struggle for RESTfulness"
+featured = "crusaders.jpg"
+featuredalt = "Crusaders spreading the word of RESTFulness"
+featuredpath = "img"
+linktitle = "The RESTless struggle for RESTfulness"
+title = "The RESTless struggle for RESTfulness"
+type = "post"
+
++++
+
+# The RESTless struggle for RESTfulness
 
 This post will be about my history trying to understand
-REST and RESTfullness (whatever that is, spoiler alert, I'm
+REST and RESTfulness (whatever that is, spoiler alert, I'm
 not going to define what it is), what worked for me and
 what sidetracked me.
 
