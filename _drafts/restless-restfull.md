@@ -5,7 +5,7 @@ REST and RESTfullness (whatever that is, spoiler alert, I'm
 not going to define what it is), what worked for me and
 what sidetracked me.
 
-As I evolve my ideas over time do not confuse that with
+As I evolve my ideas do not confuse that with
 me being sure of anything, I'm still not sure of shit
 until now, the only thing I'm sure is that repeating
 the same mistakes is not a good idea,
@@ -13,7 +13,7 @@ but how to make new ones is another history.
 
 I decided to write this because I think it is a very important
 topic (duh, obviously or I would be an idiot for wasting time no ? =P).
-Not REST of RESTfull, but defining good API's on a distributed system.
+
 Having good abstractions and a good environment are essential to
 build a truly scalable distributed system. Not only scalable on
 the sense of supporting millions of users, but cognitively scalable,
@@ -24,21 +24,35 @@ where he uses the term "intellectual manageability".
 
 For me this is one of the holy grails of computing,
 a great deal of our pain is caused by our feeble brains
-and it difficulty on handling details. And to help ourselves
+and its difficulty on handling details. And to make things worse,
 people that are usually attracted to computing do not have a
-lot of skills with human psychology and cognition,
-they like computers and math (nothing wrong with that),
+lot of skills with human psychology and cognition.
+They like computers and math (nothing wrong with that),
 but the problem is related to human cognition, that is the bottleneck
-on most systems not the computers (of course sometimes it is the computers,
-but on the industry the bottleneck is people by far).
+on most systems, not the computers. Of course sometimes it is the computers,
+but on the industry the bottleneck is people by far.
 
 Why talk about cognition before talking about REST ? Well it is another
 spoiler alert, but REST is an architecture for a system with massive scalability
-(the internet), almost all companies that you will work will not work on that
-scale, the closes you would get would be Google. So there is a great deal
+(the internet). Almost every company out there will not work on that
+scale. The closest you will find will be Google. So there is a great deal
 of chance that when you are contemplating REST you are not thinking about
 scaling to billions of requests but thinking on how to make your
 system easy to understand, to make intentions clear.
+
+But you don't have to believe me, here is a quote from
+[Architectural Styles and the Design of Network-based Software Architectures](https://www.ics.uci.edu/%7Efielding/pubs/dissertation/top.htm):
+
+```
+A good architecture is not created in a vacuum. All design decisions at the
+architectural level should be made within the context of the functional,
+behavioral, and social requirements of the system being designed, which is a 
+principle that applies equally to both software architecture and the traditional
+field of building architecture.
+```
+Of course I could be wrong, but it seems that "social requirements" of the system
+involves people that are going to use the system and the ones that are going to develop
+it too, and since it is a social aspect it involves our cognition.
 
 But enough with spoilers and start with ancient history.
 
@@ -54,7 +68,7 @@ talkative intern, there were much wiser people guiding me.
 Some of the projects were restricted to internal proprietary protocols,
 others were using RTMP (thank God that is over), but we faced some opportunity
 to do what all the other cool kids where doing, shiny new REST API's.
-At that time it as so well established that WS-\* stuff and SOAP where pure
+At that time it was so well established that WS-\* stuff and SOAP were pure
 evil that I didn't even bother to look that up too much and delve directly
 on REST and its blazing glory.
 
@@ -132,11 +146,12 @@ HTTP methods to use. Again, not that this is necessarily bad, but
 it crossed the point of being useful and started to feel like
 bike shedding, specially when compared with the tremendous difficulty
 that I was feeling on how to actually solve a problem being "RESTful".
+
 I was very used to solve problems with data + algorithms and it seemed
 that I was being presented only with the data part of the idea + the
 bike shedding on how to properly use methods and status codes. It is
 important to do CRUD stuff consistently, but to be honest it is boring
-as hell discussing CRUD stuff.
+as hell to discuss CRUD stuff.
 
 I remember something like linkedin using 9XX status codes, twitter using
 only POST and GET and no other methods and some sacred quest for the
@@ -144,7 +159,7 @@ true RESTful way to do stuff (create your own status codes ?
 use all methods ?).
 
 One example that I remember vaguely (bad memory + 8 years) is how to
-model on a REST API transferring a call on a PBX API. I do not even
+model on a REST API the transfer of a call on a PBX API. I do not even
 remember how we solved, I just remember that I was frustrated, specially
 because all that talk about methods and substantives was not helping me
 at all on how to design it properly.
@@ -170,7 +185,8 @@ the difference and it is pretty easy to develop the notion that RPC is bad
 (specially with some bad implementations of RPC and remote objects).
 
 Perhaps the notion of maturity is intended to be used inside a REST API,
-but most people that advocate RESTfulness takes it as a maturity of any API.
+but most people that advocate RESTfulness takes it as a maturity of any API
+(and no one wants to have an immature API).
 
 When you start to grown up you start to see that there are no demons,
 so RPC is not a demon and REST is not the glorious light that will
@@ -188,13 +204,13 @@ state machines that helps enforce decoupling of clients and servers is
 so exciting that it got me frustrated how people talk so little about this.
 Actually usually there is not talk at all about this aspect of REST.
 
-An example that was the tooling for writing docs ate the time (CIRCA 2010-2011),
+An example of that was the tooling for writing docs at the time (CIRCA 2010-2011),
 they where pretty beautiful (like swagger) but they had 0 support to the
 idea of designing a state machine with links driving the next possible states.
-That frustrated the hell out of me (of course I can be only lousy at looking stuff
+That frustrated the hell out of me (of course it may be that I'm lousy at looking stuff
 on the internet,perhaps there was something, but I didn't found it).
 
-The best that I found as inspiration was the
+The best that I found was the
 [JSON HAL](http://stateless.co/hal_specification.html) specification that I used
 as a inspiration for an API that I was developing at the time.
 
@@ -220,15 +236,16 @@ After some time I even started to feel stupid on how I did not get
 the HATEOAS idea before. What is great about navigating in the internet
 is the fact that you do not need to know anything about the site you
 are visiting, only the initial entry point. After that you can understand
-what you can do (the docs, on sites usually text intended to humans =P)
-and have links that you can click to express your desire to change state
-(or not if you just want to load a different resource). The name REST
-has State Transfer on it, how can we give so little attention to that
+what you can do and have links that you can click to express your desire
+to change state
+(or not if you just want to load a different resource).
+
+The name REST has State Transfer on it, how can we give so little attention to that
 and focus on representing collections of stuff ? The theory behind the
 [bike shedding phenomenon](https://en.wiktionary.org/wiki/bikeshedding)
-is that because it is easier and it is easy
-to discuss easy stuff (easy does not mean unimportant, but it means
-not spending almost all your time just on that).
+explains that we do this because it is easy to stay forever discussing
+things that we understand better (and are simpler) instead of tackling
+the real harder problem.
 
 But the eternal bike shedding on REST methods was not over yet.
 And there was still the pain of ostracizing verbs, an URL is a
@@ -241,18 +258,18 @@ The path that took me to a better understanding (or less crappy, at
 least for me) involves not just resources, but also the dispute
 on HTTP methods. More exactly the PUT method (also the PATCH one).
 
-For me trying to handle everything JUST with HTTP methods seemed
+For me, trying to handle everything JUST with HTTP methods seemed
 again like working just with databases, the API felt anemic, like
 I have so little logic that just changing fields on JSON documents
 is enough to solve all my problems.
 
 One post that introduced me to some interesting ideas was the
 [REST API Design - Resource Modeling](https://www.thoughtworks.com/insights/blog/rest-api-design-resource-modeling).
-As far as I got it, it introduced the idea that everything that
+As far as I got it, it introduced the idea that everything
 can be turned on a resource if this makes sense to be done
 on the domain of the problem that you are solving. It also
 shared my view that thinking only on CRUD generate an anemic API,
-if the API is anemic the client needs to get fattier:
+if the API is anemic the client needs to get more complex:
 
 ```
 Essentially, the low level CRUD oriented approach puts the business
@@ -405,15 +422,15 @@ Distributed systems are hard, being sure of what can be retried and what
 can't is essential. So right now we have 3 categories of operations:
 
 * Side Effect Free
-* Idempotent (with side effects)
-* Non-Idempotent  (with side effects)
+* Idempotent (with side effects, can be retransmited safely)
+* Non-Idempotent  (with side effects, can't be retransmited safely)
 
 To give a more simple example, deleting a resource using the **DELETE**
 method is safe for retransmission since deleting something twice
 ends up on the same final state, that thing has been deleted.
 
-It is important to not mix leaving the system at the same state
-and giving the same answer. The first delete will return OK and the second
+It is important to not mistake leaving the system at the same state
+with it giving the same answer. The first delete will return OK and the second
 one will fail, the operation is still idempotent because the final state
 of the system is the same (the resource has been deleted).
 
@@ -521,24 +538,26 @@ using a POST method for it to do its job when the process will
 result on state changes on the system but will produce no resources
 at all.
 
-On this case I got strong feelings of *guidelines considered harmful*,
-if people do not actually study the specs, the origin of it and just
+This is the moment where I started to get strong feelings of
+**guidelines considered harmful**.
+If people do not actually study the specs and just
 follow these context sensitive derivatives they are prone to feel
-bad for doing something that is perfectly fine and even be busted by
+bad for doing something that is perfectly fine, or worse, be busted by
 the RESTful police:
 
-TODO: restful police gif
+![vegan police](img/veganpolice.gif)
 
-Or even worse, they will turn the API on a monster to try to
+Which may result on turning the API on a monster trying to
 fit it on a misconception of what would be "RESTFul" (which usually
 resembles a hierarchical database or a local file system).
 
 # RESTful strikes back
 
 There was I living my life, doing some crappy API's but not feeling
-bad about it, people where using it and they worked. Since not a lot
-of people asked question about how to use I suppose it was not that
-hard although they would not be "RESTful" since sometimes POST
+bad about it, people were using it and they worked. Since not a lot
+of people asked questions on how to use them I suppose it was not that
+hard to understand and integrate with them, although they would
+not be "RESTful" since sometimes POST
 was used not to create stuff and I used to model processes (verbs)
 on URL's where appropriate.
 
@@ -628,7 +647,8 @@ the tiranny of RESTFulness with a series of quotes from the
 dissertation. Since it is the source of REST it should be
 a reliable source of guidance (if you like REST at least).
 
-What should guide design decisions on your architecture ?
+What should guide design decisions on your architecture ? (Already quoted this
+at the beggining of the post, but now I try to make a different point)
 
 ```
 A good architecture is not created in a vacuum. All design decisions at the
@@ -662,7 +682,7 @@ I liked the idea and it seemed right to me to do it that way
 (or because everyone else is doing slaughterhouses), I would
 be rich by now.
 
-And them the ultimate irony:
+And then the ultimate irony:
 
 ```
 The hyperbole of The Architects Sketch may seem ridiculous,
@@ -677,7 +697,7 @@ given set of architectural constraints is useful.
 
 He just describes exactly what sadly happened to REST, instead
 of being considered as another architectural style, among others,
-with it's own trade-offs, it has become the latest fad in architectural
+with its own trade-offs, it has become the latest fad in architectural
 design. Design-by-buzzword, there is no way to put it better. Need more
 convincing ? Another pearl from the dissertation:
 
@@ -713,7 +733,7 @@ what you need ? What are others alternatives ?
 
 Sadly this RESTful mindset seems to hinder the ability to discuss
 alternatives to REST. I certainly stopped me from doing it for a
-great time because I was too focused on perfecting REST to solve
+good time because I was too focused on perfecting REST to solve
 everything. Ironic that was the REST dissertation that
 helped me see my mistake.
 
@@ -721,16 +741,16 @@ helped me see my mistake.
 
 Perhaps, in the end, this is just the normal process of learning something.
 Or I'm just stupid. But things started to go sideways for me when I stopped
-to think on the problem that I was solving and started thinking on how
-to be RESTful.
+thinking about the problem I was trying to solve and kept thinking about how to
+be RESTful.
 
-When the problem did not fitted my model of what was
+When the problem did not fit my model of what was
 RESTful (whatever that actually is) I was kinda depressed, felt shame about
 my API, lost a lot of time trying to make it RESTful and even made it
 worse for the sake of being RESTful.
 
 Another problem that I observe is how much time we spend discussing
-REST and not studying other architectures for distributed systems.
+REST and not studying other architectural styles for distributed systems.
 The REST dissertations lays down a way to compare architectural styles
 and provide incentives on thinking on your problem and defining your
 own set of architectural constraints.
@@ -747,7 +767,7 @@ it because it is the web, you are not the web.
 
 There are systems that need to export API's
 on the web, these are excellent cases for REST, or at least to use
-a ubiquitous protocol as HTTP, you need to focus on integration
+an ubiquitous protocol as HTTP, you need to focus on integration
 with third parties. But even those usually have inner systems that
 are not exported to the web, they are great candidates to
 focus on what solves the problem best, not standards.
@@ -775,3 +795,12 @@ are bad. What is bad is to stop thinking about what you are doing and
 to stop searching for different answer that may fit your problems better.
 You can't do that if you believe that REST fits any kind of problem and
 all API's should be done this way.
+
+# Acknowlegements
+
+Thanks for the following people for their help improving this text:
+
+* [Iury Fukuda](https://github.com/iuryfukuda)
+* [Manoel Vilela](https://github.com/ryukinix)
+* [Tiago Natel](https://github.com/tiago4orion)
+* [Vitor Arins](https://github.com/vitorarins)
