@@ -204,7 +204,7 @@ state machines that helps enforce decoupling of clients and servers is
 so exciting that it got me frustrated how people talk so little about this.
 Actually usually there is not talk at all about this aspect of REST.
 
-An example of that was the tooling for writing docs ate the time (CIRCA 2010-2011),
+An example of that was the tooling for writing docs at the time (CIRCA 2010-2011),
 they where pretty beautiful (like swagger) but they had 0 support to the
 idea of designing a state machine with links driving the next possible states.
 That frustrated the hell out of me (of course it may be that I'm lousy at looking stuff
@@ -554,7 +554,7 @@ resembles a hierarchical database or a local file system).
 # RESTful strikes back
 
 There was I living my life, doing some crappy API's but not feeling
-bad about it, people where using it and they worked. Since not a lot
+bad about it, people were using it and they worked. Since not a lot
 of people asked questions on how to use them I suppose it was not that
 hard to understand and integrate with them, although they would
 not be "RESTful" since sometimes POST
