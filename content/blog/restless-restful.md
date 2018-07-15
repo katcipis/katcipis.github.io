@@ -559,7 +559,7 @@ follow these context sensitive derivatives they are prone to feel
 bad for doing something that is perfectly fine, or worse, be busted by
 the RESTful police:
 
-![vegan police](img/veganpolice.gif)
+![vegan police](https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/img/veganpolice.gif)
 
 Which may result on turning the API on a monster trying to
 fit it on a misconception of what would be "RESTFul" (which usually
