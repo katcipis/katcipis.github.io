@@ -1,7 +1,7 @@
 +++
 author = "Tiago Katcipis"
 categories = ["Distributed Systems"]
-date = "2018-14-07"
+date = "2018-07-15"
 description = "The RESTless struggle for RESTfulness"
 featured = "crusaders.jpg"
 featuredalt = "Crusaders spreading the word of RESTFulness"

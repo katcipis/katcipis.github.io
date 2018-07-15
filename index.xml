@@ -6,10 +6,20 @@
     <description>Recent content on (define katcipis (λ (write gibberish)))</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 03 Dec 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 15 Jul 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://katcipis.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>The RESTless struggle for RESTfulness</title>
+      <link>https://katcipis.github.io/blog/restless-restful/</link>
+      <pubDate>Sun, 15 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://katcipis.github.io/blog/restless-restful/</guid>
+      <description>The RESTless struggle for RESTfulness This post will be about my history trying to understand REST and RESTfulness (whatever that is, spoiler alert, I&amp;rsquo;m not going to define what it is), what worked for me and what sidetracked me.
+As I evolve my ideas do not confuse that with me being sure of anything, I&amp;rsquo;m still not sure of shit until now, the only thing I&amp;rsquo;m sure is that repeating the same mistakes is not a good idea, but how to make new ones is another history.</description>
+    </item>
     
     <item>
       <title>Object Orientation in Go</title>
@@ -60,16 +70,6 @@ A few weeks ago I have watched the Understanding Nil presentation, it is great w
       <guid>https://katcipis.github.io/blog/why-go/</guid>
       <description>For me it makes no sense to talk about why a decision has been made without any context. So I will try to give some context on what was happening when we decided to give Go a shot.
 We started to work at Neoway with the Go language for a year and a half right now, and on this post I will try to pass on some of the experience of learning Go.</description>
-    </item>
-    
-    <item>
-      <title>The RESTless struggle for RESTfulness</title>
-      <link>https://katcipis.github.io/blog/restless-restful/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://katcipis.github.io/blog/restless-restful/</guid>
-      <description>The RESTless struggle for RESTfulness This post will be about my history trying to understand REST and RESTfulness (whatever that is, spoiler alert, I&amp;rsquo;m not going to define what it is), what worked for me and what sidetracked me.
-As I evolve my ideas do not confuse that with me being sure of anything, I&amp;rsquo;m still not sure of shit until now, the only thing I&amp;rsquo;m sure is that repeating the same mistakes is not a good idea, but how to make new ones is another history.</description>
     </item>
     
   </channel>

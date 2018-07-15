@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://katcipis.github.io/blog/restless-restful/</loc>
+    <lastmod>2018-07-15T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://katcipis.github.io/blog/object-orientation-go/</loc>
     <lastmod>2017-12-03T00:00:00+00:00</lastmod>
   </url>
@@ -33,13 +38,13 @@
   
   <url>
     <loc>https://katcipis.github.io/</loc>
-    <lastmod>2017-12-03T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-15T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://katcipis.github.io/blog/</loc>
-    <lastmod>2017-12-03T00:00:00+00:00</lastmod>
+    <lastmod>2018-07-15T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -50,6 +55,7 @@
   
   <url>
     <loc>https://katcipis.github.io/categories/distributed-systems/</loc>
+    <lastmod>2018-07-15T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -62,10 +68,6 @@
   <url>
     <loc>https://katcipis.github.io/tags/</loc>
     <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://katcipis.github.io/blog/restless-restful/</loc>
   </url>
   
 </urlset>
