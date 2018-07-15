@@ -1,7 +1,7 @@
 build:V:
 	hugo
 
-publish:
+publish: build
 	git add blog categories tags
 	git commit -a -m "publish site"
 	git push origin
