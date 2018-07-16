@@ -2,7 +2,7 @@
 author = "Tiago Katcipis"
 categories = ["Distributed Systems"]
 date = "2018-07-15"
-description = "The RESTless struggle for RESTfulness"
+description = "The Holy Crusade for RESTFulness"
 featured = "crusaders.jpg"
 featuredalt = "Crusaders spreading the word of RESTFulness"
 featuredpath = "img"
