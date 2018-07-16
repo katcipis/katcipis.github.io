@@ -6,8 +6,8 @@ description = "My Personal Crusade for the Holy Grail: REST"
 featured = "crusaders.jpg"
 featuredalt = "Crusaders spreading the word of RESTFul APIs"
 featuredpath = "img"
-linktitle = "The RESTless struggle for RESTfulness"
-title = "The RESTless struggle for RESTfulness"
+linktitle = "The RESTless struggle for RESTful"
+title = "The RESTless struggle for RESTful"
 type = "post"
 
 +++
