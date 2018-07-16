@@ -61,11 +61,11 @@ pygmentsCodeFences = true
   # These are optional params related to the sidebar. They are recommended, but not
   # required for proper functionality. HTML is supported within the params.
 [params.intro]
-  header    = "(define katcipis (λ (write gibberish)))"
+  header    = "(define katcipis (λ () (write gibberish)))"
 
   paragraph = "Certainty is where creativity goes to die"
 
-  about     = "TODO"
+  about     = "A programmer trying to figure out how to write better programs"
 
   # This appears at the top of the sidebar above params.intro.header.
   # A width of less than 100px is recommended from a design perspective.
