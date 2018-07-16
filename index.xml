@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>(define katcipis (λ (write gibberish)))</title>
+    <title>(define katcipis (λ () (write gibberish)))</title>
     <link>https://katcipis.github.io/</link>
-    <description>Recent content on (define katcipis (λ (write gibberish)))</description>
+    <description>Recent content on (define katcipis (λ () (write gibberish)))</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 15 Jul 2018 00:00:00 +0000</lastBuildDate>
