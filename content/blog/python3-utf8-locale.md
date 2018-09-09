@@ -284,6 +284,77 @@ how Go handled printing, from the [docs](https://golang.org/pkg/fmt/):
 %s the uninterpreted bytes of the string or slice
 ```
 
+Just to be sure lets ask to the only source of truth =)
+(in this case the file fmt/print.go on the standard library).
+
+First the Println function is just a small indirection to Fprintln
+writing to **os.Stdout**, and Fprintln looks like this:
+
+```go
+func Fprintln(w io.Writer, a ...interface{}) (n int, err error) {
+	p := newPrinter()
+	p.doPrintln(a)
+	n, err = w.Write(p.buf)
+	p.free()
+	return
+}
+```
+
+The **p.buf** is an array of bytes, so far so good, but what about
+**p.doPrintln** ? Digging on it I was able to find this:
+
+```go
+// Some types can be done without reflection.
+	switch f := arg.(type) {
+	// OTHER TYPES OMITTED FOR BREVITY
+	case string:
+		p.fmtString(f, verb)
+	case []byte:
+		p.fmtBytes(f, verb, "[]byte")
+	case reflect.Value:
+		// Handle extractable values with special methods
+		// since printValue does not handle them at depth 0.
+		if f.IsValid() && f.CanInterface() {
+			p.arg = f.Interface()
+			if p.handleMethods(verb) {
+				return
+			}
+		}
+		p.printValue(f, verb, 0)
+	default:
+		// If the type is not simple, it might have methods.
+		if !p.handleMethods(verb) {
+			// Need to use reflection, since the type had no
+			// interface methods that could be used for formatting.
+			p.printValue(reflect.ValueOf(f), verb, 0)
+		}
+	}
+```
+
+And p.fmtString/p.fmtBytes will lead to:
+
+```go
+// Use simple []byte instead of bytes.Buffer to avoid large dependency.
+type buffer []byte
+
+func (b *buffer) Write(p []byte) {
+	*b = append(*b, p...)
+}
+
+func (b *buffer) WriteString(s string) {
+	*b = append(*b, s...)
+}
+
+func (b *buffer) WriteByte(c byte) {
+	*b = append(*b, c)
+}
+```
+
+Indeed strings are handled exactly the same way as byte arrays.
+At least if printed without width parameters and other modifiers
+on the format description, a simple "%v" or "%s" or a fmt.Println
+will end up on the method above.
+
 Which makes sense to me since I'm just writing to a file (stdout)
 and the contents can be anything and are subject to interpretation
 by the process reading the stdout (not the operational system).
