@@ -233,12 +233,78 @@ is related to print itself, print is writing to os.stdout, why should I be const
 I can write in files ? Having problems with system calls like open would make sense, limiting
 what I can write in a file or which encoding I must use to do it does not.
 
-But I'm pretty far from being an expert on the subject, actually this was the first time
-that I had a problem like that. For example, reading [this](https://unix.stackexchange.com/questions/2089/what-charset-encoding-is-used-for-filenames-and-paths-on-linux)
-it seems that Glib goes with utf-8 as default while QT uses the locale. But still I don't get it
-because everyone is talking about filenames and paths but my problem was print to stdout
-(which does not seem related to filenames and paths).
+The best that I can imagine is that if the encoding is unknown perhaps the
+terminal would not support utf-8, hence print defaults to ascii. But if the
+terminal gets something that it does not recognize it can just do what
+terminals do today when they can't recognize characters =P, and it does not
+seem to relate to operational system like other issues mentioned:
 
-Anyway I hope this helps other people that go through a similar problem when using Python 3
-with a container without locale configuration (which is the default ubuntu 18.04 image).
+```
+If the OS uses ISO-8859-1, forcing Python (filesystem) encoding to
+UTF-8 would produce invalid filenames, display mojibake and more
+generally produce data incompatible with other applicatons (who rely
+on the C locale, and so the ASCII encoding).
 
+> - there may be other cases where ASCII actually *is* the filesystem encoding (in which case they're going to have trouble anyway), or the real filesystem encoding is something other than UTF-8
+
+As I wrote before, os.getfilesystemencoding() is *not* the filesystem
+encoding. It's the "OS" encoding used to decode any kind of data
+coming for the OS and used to encode back Python data to the OS. Just
+some examples:
+
+- DNS hostnames
+- Environment variables
+- Command line arguments
+- Filenames
+- user/group entries in the grp/pwd modules
+- almost all functions of the os module, they return various type of
+information (ttyname, ctermid, current working directory, login, ...)
+```
+
+AFAIK the operational system does not expect anything in particular from any
+process stdout, and if I pipe two process the contract is just between them
+(any encoding can be piped), hence the only option is that displaying
+[mojibake](https://en.wikipedia.org/wiki/Mojibake) would be terrible.
+
+It is like being stuck between a rock and a hard place. If print defaults to
+utf-8 it would be inconsistent with other operational systems related functions.
+But by being ascii by default it is inconsistent with the rest of Python 3
+that assumes utf-8 as the default encoding for source code (it is the default
+encoding of the **str** constructor too).
+
+But I'm pretty far from being an expert on the subject, actually this
+was the first time that I had a problem like that. For example, reading
+[this](https://unix.stackexchange.com/questions/2089/what-charset-encoding-is-used-for-filenames-and-paths-on-linux)
+it seems that Glib goes with utf-8 as default while QT uses the locale.
+
+I have been working for a few year with Go too, so I got curious on
+how Go handled printing, from the [docs](https://golang.org/pkg/fmt/):
+
+```
+%s the uninterpreted bytes of the string or slice
+```
+
+Which makes sense to me since I'm just writing to a file (stdout)
+and the contents can be anything and are subject to interpretation
+by the process reading the stdout (not the operational system).
+
+For example, I could have two processes with a pipe between them:
+
+```
+a | b
+```
+
+Where both establishes a contract of a text based procotol using utf-8
+as encoding independent from any environment. A standard library print not
+getting on my way of developing something like this seems like
+a good design choice.
+
+If you want to have interoperability with other tools that uses
+locale, you can code it, but the standard implementation does not impose
+anything by default. Of course there are other problems involving OS encoding,
+but for print I'm happier with Go's choice (at least for now,
+perhaps there are more tradeoffs to understand in the future).
+
+Anyway I hope this post helps other people that go through a similar
+problem when using Python 3 with a container without locale configuration
+(which is the default ubuntu 18.04 image).
