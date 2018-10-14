@@ -132,7 +132,7 @@ that this is so very basic that I got a little confused with what was
 going on, specially because on my host (and in every other hosts that
 I have worked with) this always worked for Python 3, I was like:
 
-![wat](https://raw.githubusercontent.com/katcipis/memes/master/wat2.jpg)
+![uno](https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/img/unostring.jpg)
 
 I started stack-overflowing around and found some useful hints,
 but almost all the problems that I found where related to the source code
