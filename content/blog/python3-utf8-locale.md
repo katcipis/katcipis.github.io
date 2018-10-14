@@ -2,7 +2,7 @@
 author = "Tiago Katcipis"
 categories = ["Python"]
 date = "2018-10-14"
-description = "Python 3, UTF-8 and Locale"
+description = "Having some fun with Python 3 and locale configuration"
 featured = "confused-snake.jpg"
 featuredalt = "???"
 featuredpath = "img"
