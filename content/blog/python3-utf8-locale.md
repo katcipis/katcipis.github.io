@@ -184,7 +184,7 @@ Hmm, lets review the consistency of the behavior being shown:
 
 * The default encoding for source code is utf-8
 * The sys default encoding is also utf-8
-* The default locale if none is configured is None
+* The default locale is None
 * The function print uses ascii =D
 
 Yeah, even if this was well documented (perhaps I just missed
