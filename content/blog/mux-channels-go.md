@@ -182,3 +182,9 @@ will come from that channel).
 TODO: Explain how multiplexing channels can help you
 scale a one worker goroutine simple code to a very similar
 code that can run N workers.
+
+# Simplicity is complicated
+
+TODO: the overall design and code is simple, but some complexity
+is hidden inside the muxer. Make some comments using
+[Simplicity is Complicated](https://www.youtube.com/watch?v=rFejpH_tAHM).
