@@ -200,7 +200,75 @@ sample code that we will be working from now on
 (it is as simple/stupid as possible):
 
 ```go
+package main
+
+import (
+	"fmt"
+)
+
+type Task int
+
+type Result int
+
+func startTaskGenerator(start int, end int) <-chan Task {
+	tasks := make(chan Task)
+	go func() {
+		for i := start; i <= end; i++ {
+			tasks <- Task(i)
+		}
+		close(tasks)
+	}()
+	return tasks
+}
+
+func startTaskExecutor(tasks <-chan Task) <-chan Result {
+	results := make(chan Result)
+	go func() {
+		for task := range tasks {
+			results <- Result(int(task) * int(task))
+		}
+		close(results)
+	}()
+	return results
+}
+
+func resultAggregator(results <-chan Result) {
+	sumSquares := 0
+	totalResults := 0
+	for res := range results {
+		fmt.Printf("received result %v\n", res)
+		sumSquares += int(res)
+		totalResults += 1
+	}
+	fmt.Printf("total os squares received: %d\n", totalResults)
+	fmt.Printf("sum of squares: %d", sumSquares)
+}
+
+func main() {
+	tasks := startTaskGenerator(1, 100)
+	results := startTaskExecutor(tasks)
+	resultAggregator(results)
+}
 ```
+
+Usually all of these steps, task generation, execution and
+result aggregation, are more complex, so having as little
+as complexity as possible from the concurrency control is a
+big win. At least in my opinion it does not get much
+simpler than that. Leveraging Go channel's close and iteration
+behavior understanding the logic and how the computation
+ends is pretty simple.
+
+When just 3 goroutines is enough
+for your problem this is bliss, it forms a very simple pipeline,
+the problem is that sometimes the task execution takes more time
+than the other phases in this pipeline, which brings us back
+to the fan-out.
+
+I wanted to start with a simpler version
+of the problem because the beauty of multiplexing channels
+stems from keeping this same simplicity but for a more complex
+problem, the fan-out.
 
 # Sharing read channels is fun, sharing write channels is not
 
