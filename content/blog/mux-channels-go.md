@@ -335,11 +335,76 @@ For example, lets play with the idea of having a shared
 write channel and not closing the channel:
 
 ```go
+package main
+
+import (
+	"fmt"
+)
+
+type Task int
+
+type Result int
+
+func startTaskGenerator(start int, end int) <-chan Task {
+	tasks := make(chan Task)
+	go func() {
+		for i := start; i <= end; i++ {
+			tasks <- Task(i)
+		}
+		close(tasks)
+	}()
+	return tasks
+}
+
+func startTaskExecutor(tasks <-chan Task, results chan<- Result) {
+	go func() {
+		for task := range tasks {
+			results <- Result(int(task) * int(task))
+		}
+	}()
+}
+
+func resultAggregator(results <-chan Result) {
+	sumSquares := 0
+	totalResults := 0
+	for res := range results {
+		fmt.Printf("received result %v\n", res)
+		sumSquares += int(res)
+		totalResults += 1
+	}
+	fmt.Printf("total os squares received: %d\n", totalResults)
+	fmt.Printf("sum of squares: %d", sumSquares)
+}
+
+func main() {
+	tasks := startTaskGenerator(1, 100)
+	results := make(chan Result)
+	for i := 0; i < 30; i++ {
+		startTaskExecutor(tasks, results)
+	}
+	resultAggregator(results)
+}
 ```
 
-This first code hangs forever, because we avoided the problem
-of notifying the resultAggregator that there will be no more
-results. Now lets try to make this code work properly:
+Which will result in:
+
+```
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+main.resultAggregator(0x4320c0, 0x4320c0)
+	/tmp/sandbox287862370/prog.go:33 +0x100
+main.main()
+	/tmp/sandbox287862370/prog.go:48 +0xa0
+```
+
+Because we avoided the problem of notifying the resultAggregator that
+there will be no more results.
+
+Now lets try to make this code work properly, the
+space for solutions here is considerable, lets try an approach
+where the resultAggregator remains unchanged, which can only
+be achieved by closing the results channel:
 
 ```go
 ```
