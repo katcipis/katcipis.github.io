@@ -407,7 +407,70 @@ where the resultAggregator remains unchanged, which can only
 be achieved by closing the results channel:
 
 ```go
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+type Task int
+
+type Result int
+
+func startTaskGenerator(start int, end int) <-chan Task {
+	tasks := make(chan Task)
+	go func() {
+		for i := start; i <= end; i++ {
+			tasks <- Task(i)
+		}
+		close(tasks)
+	}()
+	return tasks
+}
+
+func startTaskExecutor(tasks <-chan Task, results chan<- Result, wg *sync.WaitGroup) {
+	go func() {
+		for task := range tasks {
+			results <- Result(int(task) * int(task))
+		}
+		wg.Done()
+	}()
+}
+
+func startResultsCloser(results chan<-Result, wg *sync.WaitGroup) {
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+}
+
+func resultAggregator(results <-chan Result) {
+	sumSquares := 0
+	totalResults := 0
+	for res := range results {
+		fmt.Printf("received result %v\n", res)
+		sumSquares += int(res)
+		totalResults += 1
+	}
+	fmt.Printf("total os squares received: %d\n", totalResults)
+	fmt.Printf("sum of squares: %d", sumSquares)
+}
+
+func main() {
+	tasks := startTaskGenerator(1, 100)
+	results := make(chan Result)
+	wg := &sync.WaitGroup{}
+	for i := 0; i < 30; i++ {
+		wg.Add(1)
+		startTaskExecutor(tasks, results, wg)
+	}
+	startResultsCloser(results, wg)
+	resultAggregator(results)
+}
 ```
+
+// TODO: Analyze this working version
 
 
 # Enters multiplexing
