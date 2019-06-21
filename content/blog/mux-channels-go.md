@@ -255,13 +255,13 @@ Usually all of these steps, task generation, execution and
 result aggregation, are more complex, so having as little
 as complexity as possible from the concurrency control is a
 big win. At least in my opinion it does not get much
-simpler than that. Leveraging Go channel's close and iteration
-behavior understanding the logic and how the computation
-ends is pretty simple.
+simpler than that. Understanding the logic and how the computation
+ends is pretty simple when we leverage the close function
+and channel iteration.
 
 When just 3 goroutines is enough
-for your problem this is bliss, it forms a very simple pipeline,
-the problem is that sometimes the task execution takes more time
+for your problem this is bliss, it forms a very simple pipeline.
+The problem is that sometimes the task execution takes more time
 than the other phases in this pipeline, which brings us back
 to the fan-out.
 
@@ -269,6 +269,40 @@ I wanted to start with a simpler version
 of the problem because the beauty of multiplexing channels
 stems from keeping this same simplicity but for a more complex
 problem, the fan-out.
+
+Let's say that now we want 30 concurrent task executors.
+With the previous design that is not quite possible because we would
+have something like this:
+
+```go
+func main() {
+	tasks := startTaskGenerator(1, 100)
+	for i := 0; i < 30; i++ {
+	        results := startTaskExecutor(tasks)
+	        // how to handle N result channels ?
+	}
+	resultAggregator(results)
+}
+```
+
+Which usually evolves to something like this:
+
+```go
+func main() {
+	tasks := startTaskGenerator(1, 100)
+	results := make(chan Result)
+	for i := 0; i < 30; i++ {
+	        startTaskExecutor(tasks, results)
+	}
+	resultAggregator(results)
+}
+```
+
+Which has nothing essentially wrong with it, but will
+not work without some further redesign on the
+startTaskExecutor function and the overall concurrency control.
+
+Why is that ?
 
 # Sharing read channels is fun, sharing write channels is not
 
