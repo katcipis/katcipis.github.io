@@ -306,23 +306,44 @@ Why is that ?
 
 # Sharing read channels is fun, sharing write channels is not
 
-TODO: Talk a little about sharing read channels
+Sharing read channels is very simple, all our N executors
+will read from the same channel, competing to get tasks,
+and when the taskGenerator finishes it will close the
+channel notifying all the executors, so far so good.
 
-The problem with sharing write channels is that
-you have to be very careful when you close a channel
-that has multiple go routines writing on it, you
-will need to use some signalization mechanism to know
+The disadvantage of this design is that sharing write
+channels is not as fun as sharing read ones. Why ?
+because you have to be very careful when you close a channel
+that has multiple go routines writing on it. Reading
+from a closed channel is valid and a idiomatic way to
+understand that some computation is over (no more tasks),
+writing to a closed channel is a programming error
+and results in a panic.
+
+You will need to use some signalization mechanism to know
 that all workers have finished and no more writes
 will happen and then you can close it. Not implementing
 this properly can result in very sad non-deterministic
 panics.
 
-Even if you try to avoid the closing the channel problem
-you are left with the problem of knowing that all workers
-finished and also now with the problem of signalling go routines
-that are reading from that channel (closing it would be
-the more idiomatic way to signal that no more data
-will come from that channel).
+If you try to avoid closing the channel altogether,
+you are left with the problem of notifying the
+resultAggregator that the computation is over so it
+can properly finalize itself.
+
+For example, lets play with the idea of having a shared
+write channel and not closing the channel:
+
+```go
+```
+
+This first code hangs forever, because we avoided the problem
+of notifying the resultAggregator that there will be no more
+results. Now lets try to make this code work properly:
+
+```go
+```
+
 
 # Enters multiplexing
 
