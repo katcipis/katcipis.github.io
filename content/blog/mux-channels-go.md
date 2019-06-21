@@ -4,7 +4,7 @@ categories = ["Go"]
 date = "2019-06-07"
 description = "Multiplexing Channels in Go"
 featured = "todo.png"
-featuredalt = "Go Explorer"
+featuredalt = "Go Channel Multiplexer"
 featuredpath = "img"
 linktitle = "Multiplexing Channels in Go"
 title = "Multiplexing Channels in Go"
@@ -14,7 +14,8 @@ type = "post"
 
 Here I will provide some context on how the
 concept of multiplexing (or joining) channels
-got into my life.
+got into my life and present an implementation
+of that idea.
 
 I have a feeling that this may be something well know
 by people who have experience with concurrent algorithms,
@@ -28,7 +29,7 @@ The first time that I read about the idea of multiplexing channels
 in Go was in Russ Cox blog post
 [My Go Resolutions for 2017](https://research.swtch.com/go2017),
 it was a very brief mention in the section regarding generics in Go
-(no, there is no way I'm not going to touch that =P):
+(no, there is no way I'm not going to touch that subject here =P):
 
 ```
 Personally, I would like to be able to write general channel-processing functions like:
@@ -42,8 +43,8 @@ func Dup(c <-chan T) (c1, c2 <-chan T)
 ```
 
 The first thing that caught my attention is that generics is usually
-exemplified with data structures, but in this case the example were
-generic algorithms, so it stayed in the back of my mind but I was
+exemplified with data structures, but in this case the example was a
+generic algorithm, so it stayed in the back of my mind but I was
 not able to come up with no apparent application to the idea
 (to be honest I did not even tried too hard, I just kinda thought it
 was a cool example of a possible generic algorithm).
@@ -57,8 +58,7 @@ Limbo (it would be as C is to Linux, or even Plan9). There is no amount
 of words to express how awesome the whole ecosystem of the Inferno
 operational system is and I barely scratched the surface of the ideas,
 but when I was reading about concurrency in Limbo and thinking on how
-similar it is to Go channels I stumbled again with multiplexing (or
-joining).
+similar it is to Go I stumbled again with multiplexing (or joining).
 
 From [The Limbo Programming Language](http://www.vitanuova.com/inferno/papers/limbo.html):
 
@@ -85,14 +85,14 @@ joining/multiplexing of channels. This idea seemed important enough to be
 supported by the language itself. I connected this with what I have
 read previously about joining channels (duh) and started to get
 strong feelings that this could be something useful when I needed
-to add concurrency to my Go code.
+to add concurrency to Go code.
 
 # Implementing a channel multiplexer
 
 I went ahead and did the only thing that usually helps me understand
 something, trying to build it, this is not always possible (sadly =(),
 but in this case it seemed simple enough. I also wanted to give the idea of
-implementing a generic one a spin.
+implementing a generic algorithm in Go a spin.
 
 You can checkout the code
 [here](https://github.com/madlambda/spells/tree/master/muxer)
@@ -153,9 +153,54 @@ workers to solve some problem.
 
 # Fan Out / Fan in
 
-TODO: Explain the fan out / fan in pattern with a diagram
-TODO: How to implement this kind of concurrent system ?
-TODO: Elaborate on how you can go wild in concurrent systems design
+The solution space for concurrent algorithms design is pretty vast,
+but one way to solve some problem concurrently is to set a fixed set
+of long lived goroutines, that will act as workers, and distribute tasks
+to them. Usually in a scenario like that you have three concepts in play:
+
+* Task generation
+* Task execution
+* Results aggregation
+
+This is a way to model concurrency that reminds me a lot of
+[Map Reduce](https://en.wikipedia.org/wiki/MapReduce), you can
+design the tasks to be completely independent of each other but
+in the end you need to aggregate the results before producing
+a meaningful result (in my case at work it was some metrics
+extracted from the results).
+
+This would look at something like this:
+
+TODO: Fan out / Fan in diagram
+
+As I mentioned earlier, the design space is vast, you can even work with
+a shared map and use some locking mechanism around it, but for the
+sake of brevity I will focus on how to model this problem
+using only channels and communication.
+
+Enriching the diagram to use channels gives a hint that it is
+a good idea to use channels and communication to solve
+the problem, it fits very well:
+
+TODO: Diagram now annotated with channels/Go specific stuff
+
+The fan-out part is usually easy, specially if generating
+a task is fast when compared to executing the task, in this
+case (with me it usually is) you can have a single
+task generator goroutine writing to a channel and multiple
+workers reading from it, Go is designed to make it easier
+to have a single writer and multiple readers, and it provides
+a way embedded on channels to indicate that processing is over,
+which makes signalling that there are no more tasks to
+execute trivial.
+
+To understand how easy is to model things when there is
+a single writer on channels let me introduce the
+sample code that we will be working from now on
+(it is as simple/stupid as possible):
+
+```go
+```
 
 # Sharing read channels is fun, sharing write channels is not
 
