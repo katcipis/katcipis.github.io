@@ -14,8 +14,8 @@ type = "post"
 
 Here I will provide some context on how the
 concept of multiplexing (or joining) channels
-got into my life and present an implementation
-of that idea.
+got into my life, how it changed how I design concurrent algorithms
+and present an implementation of that idea.
 
 I have a feeling that this may be something well know
 by people who have experience with concurrent algorithms,
