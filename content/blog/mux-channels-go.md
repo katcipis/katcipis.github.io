@@ -177,12 +177,6 @@ a shared map and use some locking mechanism around it, but for the
 sake of brevity I will focus on how to model this problem
 using only channels and explicit communication between the concurrent units.
 
-Enriching the diagram to use channels gives a hint that it is
-a good idea to use channels and communication to solve
-the problem, it fits very well:
-
-TODO: Diagram now annotated with channels/Go specific stuff
-
 The fan-out part is usually easy, specially if generating
 a task is fast when compared to executing the task, in this
 case (with me it usually is) you can have a single
