@@ -604,6 +604,10 @@ func main() {
 }
 ```
 
+The final design can be visualized like this:
+
+TODO: final diagram
+
 # Simplicity is complicated
 
 Even tough I advocate that the overall design and code is simple,
