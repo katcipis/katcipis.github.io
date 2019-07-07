@@ -170,7 +170,7 @@ a meaningful result.
 
 This would look at something like this:
 
-TODO: Fan out / Fan in diagram
+![fanoutin](https://github.com/katcipis/katcipis.github.io/blob/muxingChannels/content/blog/mux-channels-go/faninout.png?raw=true)
 
 As I mentioned earlier, the design space is vast, you can even work with
 a shared map and use some locking mechanism around it, but for the
