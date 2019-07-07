@@ -529,13 +529,16 @@ design that had one worker is minimal. There is only one place
 of the code that is aware of the multiplexing, the rest of the
 design is oblivious to it and retained its simplicity.
 
-I would not advocate for the design of the multiplexer itself,
+I would not advocate for the design of the muxer package itself,
 it was the first idea that came to my mind at the time, but the
 idea is certainly worth attention. One sad side effect of
 the current design of the muxer is that the array of result
-channels needs to be declared as an array of empty interfaces.
+channels needs to be declared as an array of empty interfaces
+(there is considerable runtime type checking to avoid a panic).
+
 But this is more related to the design of the muxer itself
-than the idea (there are probably better designs).
+than the idea (there are probably better designs, this one is
+pretty lazy).
 
 Here is the whole code that you can use to check if this actually works:
 
