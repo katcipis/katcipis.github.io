@@ -263,8 +263,9 @@ simpler than that. Understanding the logic and how the computation
 ends is pretty simple when we leverage the close function
 and channel iteration.
 
-When just 3 goroutines is enough
-for your problem this is bliss, it forms a very simple pipeline.
+When just 3 concurrent units are enough
+for your problem this is bliss, it forms a very simple
+concurrent pipeline.
 The problem is that sometimes the task execution takes more time
 than the other phases in this pipeline, which brings us back
 to the fan-out.
