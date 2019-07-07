@@ -149,7 +149,7 @@ As luck would have it, just as I was toying around with this muxer
 package I had a problem at work that seemed that could benefit
 from the idea. Here I will try to express the underlying pattern
 which is a simple fan-out/fan-in using multiple concurrent
-workers to solve some problem.
+workers to solve a simple problem.
 
 # Fan Out / Fan in
 
@@ -194,9 +194,8 @@ a way embedded on channels to indicate that processing is over
 no more tasks to execute trivial.
 
 To understand how easy is to model things when there is
-a single writer on channels let me introduce the
-sample code that we will be working from now on
-(it is as simple/stupid as possible):
+a single writer on a channel let me introduce the
+sample code that we will be working from now on:
 
 ```go
 package main
@@ -249,6 +248,8 @@ func main() {
 	resultsAggregator(results)
 }
 ```
+
+TODO: explain sum of squares and generic names
 
 Usually all of these steps, task generation, execution and
 result aggregation, are more complex, so having as little
@@ -485,12 +486,126 @@ one worker to multiple workers with the same design ?
 
 # Enters multiplexing
 
-TODO: Explain how multiplexing channels can help you
-scale a one worker goroutine simple code to a very similar
-code that can run N workers.
+I made a suggestion before where scaling to multiple
+workers would involve just handling N channels instead of
+one, like this:
+
+```go
+func main() {
+	tasks := startTaskGenerator(1, 100)
+	for i := 0; i < 30; i++ {
+	        results := startWorker(tasks)
+	        // how to handle N result channels ?
+	}
+	resultsAggregator(results)
+}
+```
+
+Given that we have a channel multiplexer, we could go on
+and use this idea to scale to multiple workers with no change
+in the overall design. I say no change because the three concepts
+involved in the solution remain unaltered and simple, the
+only change is in the coordinator (in this case main)
+and even that change is minimal:
+
+```go
+func main() {
+	tasks := startTaskGenerator(1, 100)
+	results := []interface{}{}
+
+	for i := 0; i < 30; i++ {
+		results = append(results, startWorker(tasks))
+	}
+
+	muxedResults := make(chan Result)
+	muxer.Do(muxedResults, results...)
+
+	resultsAggregator(muxedResults)
+}
+```
+
+As you can see the changes on the code compared to the original
+design that had one worker is minimal. There is only one place
+of the code that is aware of the multiplexing, the rest of the
+design is oblivious to it and retained its simplicity.
+
+I would not advocate for the design of the multiplexer itself,
+it was the first idea that came to my mind at the time, but the
+idea is certainly worth attention. One sad side effect of
+the current design of the muxer is that the array of result
+channels needs to be declared as an array of empty interfaces.
+But this is more related to the design of the muxer itself
+than the idea (there are probably better designs).
+
+Here is the whole code that you can use to check if this actually works:
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/madlambda/spells/muxer"
+)
+
+type Task int
+
+type Result int
+
+func startTaskGenerator(start int, end int) <-chan Task {
+	tasks := make(chan Task)
+	go func() {
+		for i := start; i <= end; i++ {
+			tasks <- Task(i)
+		}
+		close(tasks)
+	}()
+	return tasks
+}
+
+func startWorker(tasks <-chan Task) <-chan Result {
+	results := make(chan Result)
+	go func() {
+		for task := range tasks {
+			results <- Result(int(task) * int(task))
+		}
+		close(results)
+	}()
+	return results
+}
+
+func resultsAggregator(results <-chan Result) {
+	sumSquares := 0
+	totalResults := 0
+	for res := range results {
+		fmt.Printf("received result %v\n", res)
+		sumSquares += int(res)
+		totalResults += 1
+	}
+	fmt.Printf("total os squares received: %d\n", totalResults)
+	fmt.Printf("sum of squares: %d\n", sumSquares)
+}
+
+func main() {
+	tasks := startTaskGenerator(1, 100)
+	results := []interface{}{}
+
+	for i := 0; i < 30; i++ {
+		results = append(results, startWorker(tasks))
+	}
+
+	muxedResults := make(chan Result)
+	muxer.Do(muxedResults, results...)
+
+	resultsAggregator(muxedResults)
+}
+```
 
 # Simplicity is complicated
 
-TODO: the overall design and code is simple, but some complexity
-is hidden inside the muxer. Make some comments using
+Even tough I advocate that the overall design and code is simple,
+this is only true if you ignore the complexity that 
+is hidden inside the muxer.
+
+TODO: Make some comments using
 [Simplicity is Complicated](https://www.youtube.com/watch?v=rFejpH_tAHM).
