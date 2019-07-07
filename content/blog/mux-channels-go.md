@@ -249,7 +249,11 @@ func main() {
 }
 ```
 
-TODO: explain sum of squares and generic names
+This is a concurrent sum of squares algorithm where
+the worker is responsible for calculating squares while
+the results aggregator will sum all the squares.
+The names are kept generic, like startWorker, to make
+it easier to explain the fan-out/fan-in idea and its steps.
 
 Usually all of these steps, task generation, execution and
 result aggregation, are more complex, so having as little
