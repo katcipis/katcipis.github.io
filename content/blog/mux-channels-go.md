@@ -155,7 +155,7 @@ workers to solve some problem.
 
 The solution space for concurrent algorithms design is pretty vast,
 but one way to solve some problem concurrently is to set a fixed set
-of long lived goroutines, that will act as workers, and distribute tasks
+of long lived concurrent units, that will act as workers, and distribute tasks
 to them. Usually in a scenario like that you have three concepts in play:
 
 * Task generation
@@ -166,8 +166,7 @@ This is a way to model concurrency that reminds me a lot of
 [Map Reduce](https://en.wikipedia.org/wiki/MapReduce), you can
 design the tasks to be completely independent of each other but
 in the end you need to aggregate the results before producing
-a meaningful result (in my case at work it was some metrics
-extracted from the results).
+a meaningful result.
 
 This would look at something like this:
 
@@ -176,7 +175,7 @@ TODO: Fan out / Fan in diagram
 As I mentioned earlier, the design space is vast, you can even work with
 a shared map and use some locking mechanism around it, but for the
 sake of brevity I will focus on how to model this problem
-using only channels and communication.
+using only channels and explicit communication between the concurrent units.
 
 Enriching the diagram to use channels gives a hint that it is
 a good idea to use channels and communication to solve
@@ -190,9 +189,9 @@ case (with me it usually is) you can have a single
 task generator goroutine writing to a channel and multiple
 workers reading from it, Go is designed to make it easier
 to have a single writer and multiple readers, and it provides
-a way embedded on channels to indicate that processing is over,
-which makes signalling that there are no more tasks to
-execute trivial.
+a way embedded on channels to indicate that processing is over
+(the close function), which makes signalling that there are
+no more tasks to execute trivial.
 
 To understand how easy is to model things when there is
 a single writer on channels let me introduce the
@@ -221,7 +220,7 @@ func startTaskGenerator(start int, end int) <-chan Task {
 	return tasks
 }
 
-func startTaskExecutor(tasks <-chan Task) <-chan Result {
+func startWorker(tasks <-chan Task) <-chan Result {
 	results := make(chan Result)
 	go func() {
 		for task := range tasks {
@@ -232,7 +231,7 @@ func startTaskExecutor(tasks <-chan Task) <-chan Result {
 	return results
 }
 
-func resultAggregator(results <-chan Result) {
+func resultsAggregator(results <-chan Result) {
 	sumSquares := 0
 	totalResults := 0
 	for res := range results {
@@ -246,8 +245,8 @@ func resultAggregator(results <-chan Result) {
 
 func main() {
 	tasks := startTaskGenerator(1, 100)
-	results := startTaskExecutor(tasks)
-	resultAggregator(results)
+	results := startWorker(tasks)
+	resultsAggregator(results)
 }
 ```
 
@@ -270,7 +269,7 @@ of the problem because the beauty of multiplexing channels
 stems from keeping this same simplicity but for a more complex
 problem, the fan-out.
 
-Let's say that now we want 30 concurrent task executors.
+Let's say that now we want 30 concurrent workers.
 With the previous design that is not quite possible because we would
 have something like this:
 
@@ -278,10 +277,10 @@ have something like this:
 func main() {
 	tasks := startTaskGenerator(1, 100)
 	for i := 0; i < 30; i++ {
-	        results := startTaskExecutor(tasks)
+	        results := startWorker(tasks)
 	        // how to handle N result channels ?
 	}
-	resultAggregator(results)
+	resultsAggregator(results)
 }
 ```
 
@@ -292,31 +291,32 @@ func main() {
 	tasks := startTaskGenerator(1, 100)
 	results := make(chan Result)
 	for i := 0; i < 30; i++ {
-	        startTaskExecutor(tasks, results)
+	        startWorker(tasks, results)
 	}
-	resultAggregator(results)
+	resultsAggregator(results)
 }
 ```
 
 Which has nothing essentially wrong with it, but will
 not work without some further redesign on the
-startTaskExecutor function and the overall concurrency control.
+startWorker function and the overall concurrency control.
 
 Why is that ?
 
 # Sharing read channels is fun, sharing write channels is not
 
-Sharing read channels is very simple, all our N executors
+Sharing read channels is very simple, all our N workers
 will read from the same channel, competing to get tasks,
 and when the taskGenerator finishes it will close the
-channel notifying all the executors, so far so good.
+channel notifying all the workers that there is no more
+work to be done, so far so good.
 
 The disadvantage of this design is that sharing write
 channels is not as fun as sharing read ones. Why ?
-because you have to be very careful when you close a channel
-that has multiple go routines writing on it. Reading
+Because you have to be very careful when you close a channel
+that has multiple goroutines writing on it. Reading
 from a closed channel is valid and a idiomatic way to
-understand that some computation is over (no more tasks),
+understand that no more messages will be received on that channel,
 writing to a closed channel is a programming error
 and results in a panic.
 
@@ -328,7 +328,7 @@ panics.
 
 If you try to avoid closing the channel altogether,
 you are left with the problem of notifying the
-resultAggregator that the computation is over so it
+resultsAggregator that the computation is over so it
 can properly finalize itself.
 
 For example, lets play with the idea of having a shared
@@ -356,7 +356,7 @@ func startTaskGenerator(start int, end int) <-chan Task {
 	return tasks
 }
 
-func startTaskExecutor(tasks <-chan Task, results chan<- Result) {
+func startWorker(tasks <-chan Task, results chan<- Result) {
 	go func() {
 		for task := range tasks {
 			results <- Result(int(task) * int(task))
@@ -364,7 +364,7 @@ func startTaskExecutor(tasks <-chan Task, results chan<- Result) {
 	}()
 }
 
-func resultAggregator(results <-chan Result) {
+func resultsAggregator(results <-chan Result) {
 	sumSquares := 0
 	totalResults := 0
 	for res := range results {
@@ -380,9 +380,9 @@ func main() {
 	tasks := startTaskGenerator(1, 100)
 	results := make(chan Result)
 	for i := 0; i < 30; i++ {
-		startTaskExecutor(tasks, results)
+		startWorker(tasks, results)
 	}
-	resultAggregator(results)
+	resultsAggregator(results)
 }
 ```
 
@@ -392,18 +392,18 @@ Which will result in:
 fatal error: all goroutines are asleep - deadlock!
 
 goroutine 1 [chan receive]:
-main.resultAggregator(0x4320c0, 0x4320c0)
+main.resultsAggregator(0x4320c0, 0x4320c0)
 	/tmp/sandbox287862370/prog.go:33 +0x100
 main.main()
 	/tmp/sandbox287862370/prog.go:48 +0xa0
 ```
 
-Because we avoided the problem of notifying the resultAggregator that
+Because we avoided the problem of notifying the resultsAggregator that
 there will be no more results.
 
 Now lets try to make this code work properly, the
 space for solutions here is considerable, lets try an approach
-where the resultAggregator remains unchanged, which can only
+where the resultsAggregator remains unchanged, which can only
 be achieved by closing the results channel:
 
 ```go
@@ -429,7 +429,7 @@ func startTaskGenerator(start int, end int) <-chan Task {
 	return tasks
 }
 
-func startTaskExecutor(tasks <-chan Task, results chan<- Result, wg *sync.WaitGroup) {
+func startWorker(tasks <-chan Task, results chan<- Result, wg *sync.WaitGroup) {
 	go func() {
 		for task := range tasks {
 			results <- Result(int(task) * int(task))
@@ -445,7 +445,7 @@ func startResultsCloser(results chan<-Result, wg *sync.WaitGroup) {
 	}()
 }
 
-func resultAggregator(results <-chan Result) {
+func resultsAggregator(results <-chan Result) {
 	sumSquares := 0
 	totalResults := 0
 	for res := range results {
@@ -463,15 +463,25 @@ func main() {
 	wg := &sync.WaitGroup{}
 	for i := 0; i < 30; i++ {
 		wg.Add(1)
-		startTaskExecutor(tasks, results, wg)
+		startWorker(tasks, results, wg)
 	}
 	startResultsCloser(results, wg)
-	resultAggregator(results)
+	resultsAggregator(results)
 }
 ```
 
-// TODO: Analyze this working version
+Which does work fine. This is usually how I would solve
+this kind of problem before thinking about multiplexing.
+There is nothing wrong with this solution but it always
+felt to me that it was more prone to bugs because you have
+this extra signalling using the WaitGroup. Nothing against
+WaitGroup, but the whole solution always felt a little complex
+and error prone.
 
+The ideal solution for me is the one that we got when we
+had only one worker, there is a symmetry and simplicity
+in it that is appealing to me, what if we could scale from
+one worker to multiple workers with the same design ?
 
 # Enters multiplexing
 
