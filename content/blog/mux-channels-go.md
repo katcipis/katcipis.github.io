@@ -613,11 +613,17 @@ The final design can be visualized like this:
 
 TODO: final diagram
 
-# Simplicity is complicated
 
-Even tough I advocate that the overall design and code is simple,
-this is only true if you ignore the complexity that 
-is hidden inside the muxer.
+# Simplicity is the art of hiding complexity
 
-TODO: Make some comments using
+Even tough I advocate that the overall design and code is simpler
+than the alternatives, this is only true if you ignore the complexity that 
+is hidden inside the muxer. This kind reminds me of a great
+presentation from Rob Pike,
 [Simplicity is Complicated](https://www.youtube.com/watch?v=rFejpH_tAHM).
+
+In the presentation he talks about how simple the interface with
+concurrency is in Go (three keystrokes and you start a goroutine),
+but under the hood making that work is quite complicated. Discovering
+channel multiplexing gave me a similar feeling, I hope it may
+be as useful to you as it has been to me.
