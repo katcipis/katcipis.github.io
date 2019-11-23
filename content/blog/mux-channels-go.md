@@ -15,7 +15,8 @@ type = "post"
 Here I will provide some context on how the
 concept of multiplexing (or joining) channels
 got into my life, how it changed how I design concurrent algorithms
-and present an implementation of that idea.
+and present an implementation of that idea comparing with
+a more common alternative.
 
 I have a feeling that this may be something well know
 by people who have experience with concurrent algorithms,
@@ -32,7 +33,8 @@ it was a very brief mention in the section regarding generics in Go
 (no, there is no way I'm not going to touch that subject here =P):
 
 ```
-Personally, I would like to be able to write general channel-processing functions like:
+Personally, I would like to be able to write general
+channel-processing functions like:
 
 // Join makes all messages received on the input channels
 // available for receiving from the returned channel.
@@ -42,12 +44,11 @@ func Join(inputs ...<-chan T) <-chan T
 func Dup(c <-chan T) (c1, c2 <-chan T)
 ```
 
-The first thing that caught my attention is that generics is usually
-exemplified with data structures, but in this case the example was a
-generic algorithm, so it stayed in the back of my mind but I was
-not able to come up with no apparent application to the idea
+I thought it was an interesting example of generic algorithm,
+so it stayed in the back of my mind, but I was
+not able to come up with an application to the idea
 (to be honest I did not even tried too hard, I just kinda thought it
-was a cool example of a possible generic algorithm).
+was a cool example).
 
 So I moved on with my life, and while I was reading some papers from
 the [Inferno](http://www.vitanuova.com/inferno/) operational system
@@ -90,7 +91,7 @@ to add concurrency to Go code.
 # Implementing a channel multiplexer
 
 I went ahead and did the only thing that usually helps me understand
-something, trying to build it, this is not always possible (sadly =(),
+something, trying to build it, this is not always possible (sadly),
 but in this case it seemed simple enough. I also wanted to give the idea of
 implementing a generic algorithm in Go a spin.
 
@@ -100,7 +101,7 @@ You can checkout the code
 As can be seen on the code, most of the logic is related with the
 hardships of trying to build safe generic algorithms in Go, it is
 indeed not very fun (although in Go defense that was the only time
-I needed this in like 4 years).
+I needed this in like 5 years of Go programming).
 
 The logic is pretty simple but at the
 same time I would not like to reimplement this for every different
@@ -109,32 +110,27 @@ the final result. It was not as good as with parametric polymorphism
 and not as good as Limbo which provides syntactic/semantic support
 to it directly in the language but it was good enough.
 
-![its something](https://raw.githubusercontent.com/katcipis/memes/master/itssomething.png)
+![its something](https://github.com/katcipis/katcipis.github.io/blob/muxingChannels/content/blog/mux-channels-go/itssomething.png?raw=true)
 
 There is one caveat which is the reason why there is also
 a [benchmark for the muxer](https://github.com/madlambda/spells/blob/master/muxer/muxer_bench_test.go),
 the algorithms for selecting the channels fairly is quadratic in
-time complexity (O(N^2)), so as the number of channels increases
+time complexity, so as the number of channels increases
 you can have some severe performance penalties. But it scales to
 a pretty useful amount of channels, results running it with
-Go 1.12:
+Go 1.13:
 
 ```
-go test ./... -bench .
-?       github.com/madlambda/spells/assert      [no test files]
-goos: linux
+goos: darwin
 goarch: amd64
 pkg: github.com/madlambda/spells/muxer
-BenchmarkMux10-4               1        1000363294 ns/op
-BenchmarkMux100-4              1        1000754728 ns/op
-BenchmarkMux1000-4             1        1004244489 ns/op
-BenchmarkMux2500-4             1        2334183235 ns/op
-BenchmarkMux5000-4             1        9755168646 ns/op
-BenchmarkMux10000-4            1        40901490254 ns/op
+BenchmarkMux10-16       	       1	1001432596 ns/op
+BenchmarkMux100-16      	       1	1000984369 ns/op
+BenchmarkMux1000-16     	       1	1002089369 ns/op
+BenchmarkMux2500-16     	       1	1202611220 ns/op
+BenchmarkMux5000-16     	       1	5080149894 ns/op
+BenchmarkMux10000-16    	       1	21996436464 ns/op
 PASS
-ok      github.com/madlambda/spells/muxer       56.012s
-PASS
-ok      github.com/madlambda/spells/semaphore   0.817s
 ```
 
 As you can see, things starts to go downhill pretty fast
@@ -147,7 +143,8 @@ which I have not experimented yet).
 
 As luck would have it, just as I was toying around with this muxer
 package I had a problem at work that seemed that could benefit
-from the idea. Here I will try to express the underlying pattern
+from the idea (or I had a hammer and saw a nail, who knows ? =P).
+Here I will try to express the underlying pattern
 which is a simple fan-out/fan-in using multiple concurrent
 workers to solve a simple problem.
 
