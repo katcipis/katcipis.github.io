@@ -88,65 +88,15 @@ read previously about joining channels (duh) and started to get
 strong feelings that this could be something useful when I needed
 to add concurrency to Go code.
 
-# Implementing a channel multiplexer
+As luck would have it, just as I was toying around with this idea
+I had a problem at work that seemed that could benefit
+from it (or I had a hammer and saw a nail, who knows ? =P).
+This led to the development of a small muxer package. But before
+I get onto specifics of the muxer package let me try to explain
+the underlying pattern of the problem I solved, which is a simple
+fan-out/fan-in using multiple concurrent workers and a final aggregation
+phase.
 
-I went ahead and did the only thing that usually helps me understand
-something, trying to build it, this is not always possible (sadly),
-but in this case it seemed simple enough. I also wanted to give the idea of
-implementing a generic algorithm in Go a spin.
-
-You can checkout the code
-[here](https://github.com/madlambda/spells/tree/master/muxer)
-(it even has some [docs](https://godoc.org/github.com/madlambda/spells/muxer) ).
-As can be seen on the code, most of the logic is related with the
-hardships of trying to build safe generic algorithms in Go, it is
-indeed not very fun (although in Go defense that was the only time
-I needed this in like 5 years of Go programming).
-
-The logic is pretty simple but at the
-same time I would not like to reimplement this for every different
-type that I need, so in the end I felt considerably good with
-the final result. It was not as good as with parametric polymorphism
-and not as good as Limbo which provides syntactic/semantic support
-to it directly in the language but it was good enough.
-
-![its something](https://github.com/katcipis/katcipis.github.io/blob/muxingChannels/content/blog/mux-channels-go/itssomething.png?raw=true)
-
-There is one caveat which is the reason why there is also
-a [benchmark for the muxer](https://github.com/madlambda/spells/blob/master/muxer/muxer_bench_test.go),
-the algorithms for selecting the channels fairly is quadratic in
-time complexity, so as the number of channels increases
-you can have some severe performance penalties. But it scales to
-a pretty useful amount of channels, results running it with
-Go 1.13:
-
-```
-goos: darwin
-goarch: amd64
-pkg: github.com/madlambda/spells/muxer
-BenchmarkMux10-16       	       1	1001432596 ns/op
-BenchmarkMux100-16      	       1	1000984369 ns/op
-BenchmarkMux1000-16     	       1	1002089369 ns/op
-BenchmarkMux2500-16     	       1	1202611220 ns/op
-BenchmarkMux5000-16     	       1	5080149894 ns/op
-BenchmarkMux10000-16    	       1	21996436464 ns/op
-PASS
-```
-
-As you can see, things starts to go downhill pretty fast
-with more than 1000 channels. I have not yet encountered
-a problem that had required me to use more than 100 channels
-so that limit never worried me (also there are alternatives
-designs that don't use
-[reflect.Select](https://golang.org/pkg/reflect/#Select)
-which I have not experimented yet).
-
-As luck would have it, just as I was toying around with this muxer
-package I had a problem at work that seemed that could benefit
-from the idea (or I had a hammer and saw a nail, who knows ? =P).
-Here I will try to express the underlying pattern
-which is a simple fan-out/fan-in using multiple concurrent
-workers to solve a simple problem.
 
 # Fan Out / Fan in
 
@@ -176,13 +126,12 @@ using only channels and explicit communication between the concurrent units.
 
 The fan-out part is usually easy, specially if generating
 a task is fast when compared to executing the task, in this
-case (with me it usually is) you can have a single
-task generator goroutine writing to a channel and multiple
-workers reading from it, Go is designed to make it easier
-to have a single writer and multiple readers, and it provides
-a way embedded on channels to indicate that processing is over
-(the close function), which makes signalling that there are
-no more tasks to execute trivial.
+case you can have a single task generator goroutine writing
+to a channel and multiple workers reading from it,
+Go is designed to make it easier to have a single writer and
+multiple readers, and it provides a way embedded on channels
+to indicate that processing is over, the close function, which makes
+signalling that there are no more tasks to execute trivial.
 
 To understand how easy is to model things when there is
 a single writer on a channel let me introduce the
@@ -254,9 +203,8 @@ simpler than that. Understanding the logic and how the computation
 ends is pretty simple when we leverage the close function
 and channel iteration.
 
-When just 3 concurrent units are enough
-for your problem this is bliss, it forms a very simple
-concurrent pipeline.
+When just 3 concurrent units are enough for your problem this is bliss,
+it forms a very simple concurrent pipeline.
 The problem is that sometimes the task execution takes more time
 than the other phases in this pipeline, which brings us back
 to the fan-out.
@@ -317,11 +265,10 @@ understand that no more messages will be received on that channel,
 writing to a closed channel is a programming error
 and results in a panic.
 
-You will need to use some signalization mechanism to know
+You will need to use some synchronization mechanism to know
 that all workers have finished and no more writes
 will happen and then you can close it. Not implementing
-this properly can result in very sad non-deterministic
-panics.
+this properly can result in very sad non-deterministic panics.
 
 If you try to avoid closing the channel altogether,
 you are left with the problem of notifying the
@@ -471,7 +418,7 @@ Which does work fine. This is usually how I would solve
 this kind of problem before thinking about multiplexing.
 There is nothing wrong with this solution but it always
 felt to me that it was more prone to bugs because you have
-this extra signalling using the WaitGroup. Nothing against
+this extra synchronization using the WaitGroup. Nothing against
 WaitGroup, but the whole solution always felt a little complex
 and error prone.
 
@@ -497,12 +444,38 @@ func main() {
 }
 ```
 
-Given that we have a channel multiplexer, we could go on
+But how to enable this ? If we have a channel multiplexer
+that transforms N channels in a single channel we can achieve it.
+
+I went ahead and did the only thing that usually helps me understand
+something, trying to build it, this is not always possible (sadly),
+but in this case it seemed simple enough. 
+
+You can checkout the muxer code
+[here](https://github.com/madlambda/spells/tree/master/muxer)
+(it even has some [docs](https://godoc.org/github.com/madlambda/spells/muxer) ).
+
+As can be seen on the code, most of the logic is related with the
+hardships of trying to build safe generic algorithms in Go, it is
+indeed not very fun (although in Go defense that was the only time
+I needed this in like 5 years of Go programming).
+
+The logic is pretty simple but at the
+same time I would not like to reimplement this for every different
+type that I need, so in the end I felt considerably good with
+the final result. It was not as good as with parametric polymorphism
+and not as good as Limbo which provides syntactic/semantic support
+to it directly in the language but it was good enough.
+
+![its something](https://github.com/katcipis/katcipis.github.io/blob/muxingChannels/content/blog/mux-channels-go/itssomething.png?raw=true)
+
+
+Now that we have a channel multiplexer, we could go on
 and use this idea to scale to multiple workers with no change
 in the overall design. I say no change because the three concepts
 involved in the solution remain unaltered and simple, the
 only change is in the coordinator (in this case main)
-and even that change is minimal:
+and even there the change is minimal:
 
 ```go
 func main() {
@@ -615,6 +588,7 @@ presentation from Rob Pike,
 
 In the presentation he talks about how simple the interface with
 concurrency is in Go (three keystrokes and you start a goroutine),
-but under the hood making that work is quite complicated. Discovering
-channel multiplexing gave me a similar feeling, I hope it may
-be as useful to you as it has been to me.
+but under the hood making that work is quite complicated.
+
+Discovering channel multiplexing gave me a similar feeling,
+I hope it may be as useful to you as it has been to me.
