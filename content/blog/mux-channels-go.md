@@ -89,31 +89,26 @@ strong feelings that this could be something useful when I needed
 to add concurrency to Go code.
 
 As luck would have it, just as I was toying around with this idea
-I had a problem at work that seemed that could benefit
-from it (or I had a hammer and saw a nail, who knows ? =P).
+I had a problem that seemed that could benefit from it
+(or I had a hammer and saw a nail, who knows ? =P).
 This led to the development of a small muxer package. But before
-I get onto specifics of the muxer package let me try to explain
-the underlying pattern of the problem I solved, which is a simple
-fan-out/fan-in using multiple concurrent workers and a final aggregation
-phase.
+I get into the specifics of the muxer package let me try to explain
+into small steps the applicability of multiplexing channels 
+for at least one kind of concurrent problem, the fan-out / fan-in.
 
 
 # Fan Out / Fan in
 
 The solution space for concurrent algorithms design is pretty vast,
 but one way to solve some problem concurrently is to set a fixed set
-of long lived concurrent units, that will act as workers, and distribute tasks
-to them. Usually in a scenario like that you have three concepts in play:
+of long lived concurrent units, that will act as workers, distribute tasks
+to them and then aggregate the results.
+
+Usually in a scenario like that you have three concepts in play:
 
 * Task generation
 * Task execution
 * Results aggregation
-
-This is a way to model concurrency that reminds me a lot of
-[Map Reduce](https://en.wikipedia.org/wiki/MapReduce), you can
-design the tasks to be completely independent of each other but
-in the end you need to aggregate the results before producing
-a meaningful result.
 
 This would look at something like this:
 
