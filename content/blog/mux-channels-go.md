@@ -252,7 +252,7 @@ channel notifying all the workers that there is no more
 work to be done, so far so good.
 
 The disadvantage of this design is that sharing write
-channels is not as fun as sharing read ones. Why ?
+channels is not as fun as sharing read ones. Why?
 Because you have to be very careful when you close a channel
 that has multiple goroutines writing on it. Reading
 from a closed channel is valid and a idiomatic way to
