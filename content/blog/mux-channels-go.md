@@ -47,7 +47,7 @@ func Dup(c <-chan T) (c1, c2 <-chan T)
 I thought it was an interesting example of generic algorithm,
 so it stayed in the back of my mind, but I was
 not able to come up with an application to the idea
-(to be honest I did not even tried too hard, I just kinda thought it
+(to be honest I did not even try too hard, I just kinda thought it
 was a cool example).
 
 So I moved on with my life, and while I was reading some papers from
