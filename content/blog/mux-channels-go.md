@@ -18,7 +18,7 @@ got into my life, how it changed how I design concurrent algorithms
 and present an implementation of that idea comparing with
 a more common alternative.
 
-I have a feeling that this may be something well know
+I have a feeling that this may be something well known
 by people who have experience with concurrent algorithms,
 but since there is a chance that I'm not the
 only person oblivious to this idea I'm going to try
