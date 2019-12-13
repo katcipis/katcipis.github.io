@@ -270,7 +270,7 @@ you are left with the problem of notifying the
 resultsAggregator that the computation is over so it
 can properly finalize itself.
 
-For example, lets play with the idea of having a shared
+For example, let's play with the idea of having a shared
 write channel and not closing the channel:
 
 ```go
