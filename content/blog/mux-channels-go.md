@@ -340,7 +340,7 @@ main.main()
 Because we avoided the problem of notifying the resultsAggregator that
 there will be no more results.
 
-Now lets try to make this code work properly, the
+Now let's try to make this code work properly, the
 space for solutions here is considerable, lets try an approach
 where the resultsAggregator remains unchanged, which can only
 be achieved by closing the results channel:
