@@ -582,3 +582,12 @@ but under the hood making that work is quite complicated.
 
 Discovering channel multiplexing gave me a similar feeling,
 I hope it may be as useful to you as it has been to me.
+
+
+# Notes
+
+**Thanks** to [Jhuliano Skittberg Moreno](https://github.com/jhuliano),
+[Manoel Vilela](https://github.com/ryukinix) and
+[Claudinei Callegari](https://github.com/cadicallegari)
+for reading drafts of this.
+for reading drafts of this.
