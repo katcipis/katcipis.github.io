@@ -2,12 +2,12 @@
 author = "Tiago Katcipis"
 categories = ["Go"]
 date = "2020-01-07"
-description = "Multiplexing Channels in Go"
+title = "Multiplexing Channels in Go"
+linktitle = "Multiplexing Channels in Go"
+description = "Write simpler concurrent algorithms for fun and profit"
 featured = "gopherfanout.png"
 featuredalt = "Illustration created for “A Journey With Go”, made from the original Go Gopher, created by Renee French."
 featuredpath = "img"
-linktitle = "Multiplexing Channels in Go"
-title = "Multiplexing Channels in Go"
 type = "post"
 
 +++
