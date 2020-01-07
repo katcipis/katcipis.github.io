@@ -654,7 +654,7 @@ to them and then aggregate the results.</p>
 <li>Results aggregation</li>
 </ul>
 <p>This would look at something like this:</p>
-<p><img src="https://github.com/katcipis/katcipis.github.io/blob/muxingChannels/content/blog/mux-channels-go/faninout.png?raw=true" alt="fanoutin"></p>
+<p><img src="faninout.png" alt="fanoutin"></p>
 <p>As I mentioned earlier, the design space is vast, you can even work with
 a shared map and use some locking mechanism around it, but for the
 sake of brevity I will focus on how to model this problem
@@ -953,7 +953,7 @@ type that I need, so in the end I felt considerably good with
 the final result. It was not as good as with parametric polymorphism
 and not as good as Limbo which provides syntactic/semantic support
 to it directly in the language but it was good enough.</p>
-<p><img src="https://github.com/katcipis/katcipis.github.io/blob/muxingChannels/content/blog/mux-channels-go/itssomething.png?raw=true" alt="its something"></p>
+<p><img src="itssomething.png" alt="its something"></p>
 <p>Now that we have a channel multiplexer, we could go on
 and use this idea to scale to multiple workers with no change
 in the overall design. I say no change because the three concepts
