@@ -2,6 +2,10 @@
 build:
 	hugo
 
+.PHONY: run
+run:
+	hugo server
+
 .PHONY: publish
 publish: build
 	git add blog categories tags
