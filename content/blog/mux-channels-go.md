@@ -1,7 +1,7 @@
 +++
 author = "Tiago Katcipis"
 categories = ["Go"]
-date = "2019-06-07"
+date = "2020-01-07"
 description = "Multiplexing Channels in Go"
 featured = "todo.png"
 featuredalt = "Go Channel Multiplexer"
@@ -567,11 +567,6 @@ func main() {
 	resultsAggregator(muxedResults)
 }
 ```
-
-The final design can be visualized like this:
-
-TODO: final diagram
-
 
 # Simplicity is the art of hiding complexity
 
