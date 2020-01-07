@@ -590,4 +590,3 @@ I hope it may be as useful to you as it has been to me.
 [Manoel Vilela](https://github.com/ryukinix) and
 [Claudinei Callegari](https://github.com/cadicallegari)
 for reading drafts of this.
-for reading drafts of this.

@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.49.2" />
+        <meta name="generator" content="Hugo 0.62.0" />
         
 
 
@@ -29,14 +29,12 @@
         <meta property="og:title" content="Exploring Go&#39;s objects" />
 <meta property="og:description" content="Exploring details on how objects are implemented in Go" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://katcipis.github.io/blog/exploring-go-objects/" /><meta property="article:published_time" content="2017-03-28T00:00:00&#43;00:00"/>
-<meta property="article:modified_time" content="2017-03-28T00:00:00&#43;00:00"/>
+<meta property="og:url" content="https://katcipis.github.io/blog/exploring-go-objects/" />
+<meta property="article:published_time" content="2017-03-28T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-03-28T00:00:00+00:00" />
 
-        
-<meta itemprop="name" content="Exploring Go&#39;s objects">
+        <meta itemprop="name" content="Exploring Go&#39;s objects">
 <meta itemprop="description" content="Exploring details on how objects are implemented in Go">
-
-
 <meta itemprop="datePublished" content="2017-03-28T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2017-03-28T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="2982">
@@ -44,7 +42,6 @@
 
 
 <meta itemprop="keywords" content="" />
-
         
 
         
@@ -182,6 +179,41 @@
                 
                         <article class="mini-post">
                             <header>
+                                <h3><a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2020-01-07'>
+                                    January 7, 2020</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/todo.png" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+                        <article class="mini-post">
+                            <header>
                                 <h3><a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a></h3>
                                 
                                 <time class="published" datetime=
@@ -314,41 +346,6 @@
 
         <a href="/blog/hack-go-types/" class="image featured">
             <img src="/img/gohacking.jpg" alt="">
-        </a>
-    
-
-
-                        </article>
-                
-                        <article class="mini-post">
-                            <header>
-                                <h3><a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a></h3>
-                                
-                                <time class="published" datetime=
-                                    '2017-03-28'>
-                                    March 28, 2017</time>
-                            </header>
-                            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
         </a>
     
 
@@ -575,64 +572,52 @@
 
 
   <div id="content">
-    
-
-<p>I started to understand Go&rsquo;s object model easier when I accepted
+    <p>I started to understand Go's object model easier when I accepted
 that there is no objects at all, there is just sets of functions
 that can operate on common state, with some sugar sprinkled on top.</p>
-
 <p>Perhaps you are thinking
 &ldquo;shut up, of course there are objects in Go&rdquo; or
 &ldquo;sets of functions that operates on common state is the definition
 of an object&rdquo;, well, you are probably right.</p>
-
-<p>I can&rsquo;t see a difference between a set of related functions
+<p>I can't see a difference between a set of related functions
 operating on the same state and an object, at least thinking
-on the objects that I&rsquo;m used to.
+on the objects that I'm used to.
 And there is more to Go object model than syntactic sugar
 (I was kinda pushing the idea to an extreme :-)).</p>
-
 <p>But it is an object model very different from
 the classical ones, like Java, C++ and Python
 (these are the ones I know at least).</p>
-
 <p>When struggling to get a sense of how Go objects works
 it helped me a lot to just let go of my traditional object
 notion and think only in terms of functions.</p>
-
-<p>What I&rsquo;m going to try is to de-construct the object model
+<p>What I'm going to try is to de-construct the object model
 to just functions and build it back to how Go works,
 showing that Go is much more prone to functions with objects
-as an aid to make some idiom&rsquo;s
+as an aid to make some idiom's
 easier than an object oriented language where everything
 is an object.</p>
-
-<p>It will probably be a lousy de-construction since I&rsquo;m not an
+<p>It will probably be a lousy de-construction since I'm not an
 expert in Go, but yet I feel compelled to try,
 since it looks like fun :-).</p>
-
 <h1 id="in-the-beginning-there-was-the-functions">In the beginning there was the functions</h1>
-
-<p>Well I&rsquo;m trying to make a point around thinking first about
+<p>Well I'm trying to make a point around thinking first about
 functions, so here goes a stupid example of what can be done with functions.</p>
-
 <p>Lets define a type that is actually a function:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Adder</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span></code></pre></div>
-<p>You can think about it as an interface (but it is not the same thing).
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Adder</span> <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span>
+</code></pre></div><p>You can think about it as an interface (but it is not the same thing).
 Any function that matches the signature will be acceptable as being of
 the type <strong>Adder</strong>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Same type as Adder
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>
-}</code></pre></div>
-<p>An abstract adder that does not know how to add:</p>
+}
+</code></pre></div><p>An abstract adder that does not know how to add:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">a</span> <span style="color:#a6e22e">Adder</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">c</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>(<span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">c</span>)
-}</code></pre></div>
-<p>This really recalls the kind of thing you can do with interfaces.
+}
+</code></pre></div><p>This really recalls the kind of thing you can do with interfaces.
 <strong>abstractedAdd</strong> does not know how to add, and it will accept any
 implementation of an Adder that respects the same protocol.</p>
-
 <p>Given this extremely useless and simple example,
 here is the full working code:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
@@ -657,9 +642,9 @@ here is the full working code:</p>
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;Adder initialized: %v\n&#34;</span>, <span style="color:#a6e22e">a</span>)
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">a</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">add</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
-}</code></pre></div>
-<p>With this example in mind we have the opportunity to start exploring
-Go&rsquo;s objects. Can a method satisfy the <strong>Adder</strong> type ? Depending
+}
+</code></pre></div><p>With this example in mind we have the opportunity to start exploring
+Go's objects. Can a method satisfy the <strong>Adder</strong> type ? Depending
 on your background this may sound counter intuitive (something like,
 one is a method, but you need a function, etc)
 lets take a look at an adder object:</p>
@@ -667,8 +652,8 @@ lets take a look at an adder object:</p>
 
 <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>) <span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">b</span>
-}</code></pre></div>
-<p>Sound about right, adding it on our example:</p>
+}
+</code></pre></div><p>Sound about right, adding it on our example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
@@ -699,89 +684,71 @@ lets take a look at an adder object:</p>
 
 	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Add</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
-}</code></pre></div>
-<p>Result:</p>
-
+}
+</code></pre></div><p>Result:</p>
 <pre><code>Adder: &lt;nil&gt;
 Adder initialized: 0x401000
 func: 1 + 1 = 2
 func: 1 + 1 = 2
 object: 1 + 1 = 2
-</code></pre>
-
-<p>Yep, it worked. Differently from interfaces, the function signature will not
+</code></pre><p>Yep, it worked. Differently from interfaces, the function signature will not
 match any kind of method name, you just pass the method as a parameter, since
 the method is actually just a function, it could be something like:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Whatever</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))</code></pre></div>
-<p>Should work just fine. Not convinced that the method is just a function ?
-Let&rsquo;s add this:</p>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">abstractedAdd</span>(<span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Whatever</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+</code></pre></div><p>Should work just fine. Not convinced that the method is just a function ?
+Let's add this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;func add: %T\n&#34;</span>, <span style="color:#a6e22e">add</span>)
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object.Add: %T\n&#34;</span>, <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Add</span>)</code></pre></div>
-<p>Result:</p>
-
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;object.Add: %T\n&#34;</span>, <span style="color:#a6e22e">o</span>.<span style="color:#a6e22e">Add</span>)
+</code></pre></div><p>Result:</p>
 <pre><code>func add: func(int, int) int
 object.Add: func(int, int) int
-</code></pre>
-
-<p>Do you see any difference on the type of the free function and
-the object method ? No ? It&rsquo;s because there is none. That is why passing
+</code></pre><p>Do you see any difference on the type of the free function and
+the object method ? No ? It's because there is none. That is why passing
 it as the parameter worked. This also explains another thing going on
 in this code that sometimes makes newcomers (like me) to Go confused.</p>
-
 <p>There is no fully initialized ObjectAdder on our example. I used a pointer
 by purpose, as you can see the pointer is not initialized at all (it is nil),
 yet it worked.  In any other object oriented language that I know this would
 never work, but in Go it worked, why ?</p>
-
 <p>Well because in Go, there is no methods at all, there is no method type,
 methods are actually syntactic sugar for calling functions passing
 an instance of the type as the first parameter (as people are used to do in C).
 In Go this first parameter is usually called the method receiver, but there
 is nothing special about it, it is just a parameter being
 passed to a function.</p>
-
 <p>Lets elaborate our example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ObjectAdder.Add: %T\n&#34;</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>).<span style="color:#a6e22e">Add</span>)
-	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ObjectAdder.Add: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>).<span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">nil</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))</code></pre></div>
-<p>What I&rsquo;m doing here ? Just making it explicit what Go actually does when you
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ObjectAdder.Add: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>).<span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">nil</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
+</code></pre></div><p>What I'm doing here ? Just making it explicit what Go actually does when you
 declare something like:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ObjectAdder</span> <span style="color:#66d9ef">struct</span>{}
 
 <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">o</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>) <span style="color:#a6e22e">Add</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">int</span> {
-}</code></pre></div>
-<p>It will add a function on the type <strong>*ObjectAdder</strong>.
+}
+</code></pre></div><p>It will add a function on the type <strong>*ObjectAdder</strong>.
 This function is accessible and can be used as any other value on the
 language (being called, passed as a parameter, etc).</p>
-
 <p>If you are thinking &ldquo;hey, but the type is ObjectAdder not *ObjectAdder&rdquo;,
 well in Go the pointer counter part of a type is actually another type
 and has even a different set of functions appended to it.
 To which of the types the function will be added is decided by the
 type of the method receiver, on this case it is a (*ObjectAdder).</p>
-
 <p>This relates to the <a href="https://github.com/golang/go/wiki/MethodSets">method sets</a>
 concept introduced by Go.</p>
-
 <p>Anyway, going on, the result:</p>
-
 <pre><code>ObjectAdder.Add: func(*main.ObjectAdder, int, int) int
 ObjectAdder.Add: 1 + 1 = 2
-</code></pre>
-
-<p>There is no method at all, it is just a function. What we see as an object in
+</code></pre><p>There is no method at all, it is just a function. What we see as an object in
 Go is actually a collection of functions associated
 to a type and syntactic sugar to pass the first argument for you.</p>
-
 <p>Which to be honest is like almost all object oriented languages
 is actually implemented.
 The good thing is that in Go this is 100% explicit, no magic, just some
 syntactic sugar. Go is really serious about being explicit.</p>
-
 <p>This makes a lot of things more simple and uniform, the examples
 showed that. Passing a function or a method as an argument has no
-difference at all (I can&rsquo;t think on a reason to exist a difference).</p>
-
+difference at all (I can't think on a reason to exist a difference).</p>
 <p>Here is the full code of the final example:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
@@ -819,12 +786,10 @@ difference at all (I can&rsquo;t think on a reason to exist a difference).</p>
 
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ObjectAdder.Add: %T\n&#34;</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>).<span style="color:#a6e22e">Add</span>)
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;ObjectAdder.Add: %d + %d = %d\n&#34;</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, (<span style="color:#f92672">*</span><span style="color:#a6e22e">ObjectAdder</span>).<span style="color:#a6e22e">Add</span>(<span style="color:#66d9ef">nil</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>))
-}</code></pre></div>
-<p>This example is completely stateless. Objects usually have state and
+}
+</code></pre></div><p>This example is completely stateless. Objects usually have state and
 side effects,can Go functions have state and side effects too ?</p>
-
 <h1 id="functions-and-state">Functions and state</h1>
-
 <p>To make the gap between functions and objects even smaller lets
 work with the oldest/simplest example, an iterator:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
@@ -846,26 +811,24 @@ work with the oldest/simplest example, an iterator:</p>
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 1: %d\n&#34;</span>, <span style="color:#a6e22e">iter</span>())
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 2: %d\n&#34;</span>, <span style="color:#a6e22e">iter</span>())
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 3: %d\n&#34;</span>, <span style="color:#a6e22e">iter</span>())
-}</code></pre></div>
-<p>If you run this you will see that it is a valid iterator.
+}
+</code></pre></div><p>If you run this you will see that it is a valid iterator.
 What we have here exactly ? We have a <strong>iterator</strong> function
 that acts as a constructor for another function, that will
 be returned, that is why the return type of <strong>iterator</strong> is:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span></code></pre></div>
-<p>What is usually referred as closure is this lexical construction:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span>
+</code></pre></div><p>What is usually referred as closure is this lexical construction:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
 	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">int</span> {
 		<span style="color:#a6e22e">a</span><span style="color:#f92672">++</span>
 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>
-	}</code></pre></div>
-<p>The function that we are instantiating access a variable that exists
+	}
+</code></pre></div><p>The function that we are instantiating access a variable that exists
 on the outer scope, this will associate the <strong>a</strong> variable to the
 newly created function, it has a reference to <strong>a</strong> and can manipulate it.</p>
-
 <p>This is a mind bender if you are used to only use objects as a mean to
 managing state (actually it is odd to most C programmers too,
 since functions are a static construction in C).</p>
-
 <p>In Go, functions are instantiated all the time, here goes another version
 of this example that makes it explicit that we are actually instantiating
 functions:</p>
@@ -892,26 +855,21 @@ functions:</p>
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iterb 1: %d\n&#34;</span>, <span style="color:#a6e22e">iterb</span>())
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iterb 2: %d\n&#34;</span>, <span style="color:#a6e22e">iterb</span>())
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iterb 3: %d\n&#34;</span>, <span style="color:#a6e22e">iterb</span>())
-}</code></pre></div>
-<p>We get:</p>
-
+}
+</code></pre></div><p>We get:</p>
 <pre><code>itera 1: 1
 itera 2: 2
 itera 3: 3
 iterb 1: 1
 iterb 2: 2
 iterb 3: 3
-</code></pre>
-
-<p>So each iterator is completely isolated from each other and there is
+</code></pre><p>So each iterator is completely isolated from each other and there is
 no way for one function to access state from the other, unless it is
 explicitly allowed lexically on the code, or you do some really bad
 ass pointer arithmetic using the unsafe package.</p>
-
 <p>This is fun, since languages like Lisp have closures since ever and
 this provides the absolute maximum level of encapsulation you can imagine.
 There is no way to access the state directly except through the function.</p>
-
 <p>Lets take a look on how this would look like using a Go object:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
@@ -938,17 +896,14 @@ There is no way to access the state directly except through the function.</p>
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 1: %d\n&#34;</span>, <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">iter</span>())
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 2: %d\n&#34;</span>, <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">iter</span>())
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;iter 3: %d\n&#34;</span>, <span style="color:#a6e22e">i</span>.<span style="color:#a6e22e">iter</span>())
-}</code></pre></div>
-<p>As you can see, for something very simple the object way seems
+}
+</code></pre></div><p>As you can see, for something very simple the object way seems
 a little more clumsy, at least it looks like it to me.
 I even gave the same lousy name <strong>a</strong> to the integer, that is
 actually the state.</p>
-
 <p>Here you create a struct to hold the state, add a function to the type,
 and use that function to manipulate the state.</p>
-
 <p>If you are feeling fancy, you can do this in Go without an struct at all:</p>
-
 <pre><code>package main
 
 import &quot;fmt&quot;
@@ -967,13 +922,10 @@ func main() {
 	fmt.Printf(&quot;iter 2: %d\n&quot;, i.iter())
 	fmt.Printf(&quot;iter 3: %d\n&quot;, i.iter())
 }
-</code></pre>
-
-<p>The function version did the same thing, on a different way. And
+</code></pre><p>The function version did the same thing, on a different way. And
 it was able to manage state just as an object would, with
 lexical scoping to guarantee state isolation, just the function
 is able to change the state.</p>
-
 <p>To finish this argument, lets develop a set of functions that
 operates on shared state (that is pretty much the work an object does):</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
@@ -1004,25 +956,22 @@ operates on shared state (that is pretty much the work an object does):</p>
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;dec 1: %d\n&#34;</span>, <span style="color:#a6e22e">dec</span>())
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;dec 2: %d\n&#34;</span>, <span style="color:#a6e22e">dec</span>())
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;dec 3: %d\n&#34;</span>, <span style="color:#a6e22e">dec</span>())
-}</code></pre></div>
-<p>The output:</p>
+}
+</code></pre></div><p>The output:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">inc</span> <span style="color:#ae81ff">1</span>: <span style="color:#ae81ff">1</span>
 <span style="color:#a6e22e">inc</span> <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">2</span>
 <span style="color:#a6e22e">inc</span> <span style="color:#ae81ff">3</span>: <span style="color:#ae81ff">3</span>
 <span style="color:#a6e22e">dec</span> <span style="color:#ae81ff">1</span>: <span style="color:#ae81ff">2</span>
 <span style="color:#a6e22e">dec</span> <span style="color:#ae81ff">2</span>: <span style="color:#ae81ff">1</span>
-<span style="color:#a6e22e">dec</span> <span style="color:#ae81ff">3</span>: <span style="color:#ae81ff">0</span></code></pre></div>
-<p>As can be seen clearly, both functions share the same common
+<span style="color:#a6e22e">dec</span> <span style="color:#ae81ff">3</span>: <span style="color:#ae81ff">0</span>
+</code></pre></div><p>As can be seen clearly, both functions share the same common
 state and can manipulate it, just as you would do with an
 object with two methods.</p>
-
-<p>Of course I&rsquo;m not advocating that you should just play around
+<p>Of course I'm not advocating that you should just play around
 with a bunch of variables holding functions, structs exist exactly
 to give name and meaning to a composition of other types.</p>
-
 <p>The same applies to functions, just having a lot of loose
 functions would be a mess on a lot of cases (just as is with data).</p>
-
 <p>Since Go does have functions as first class citizens,
 a struct could have some fields that holds functions,
 emulating the behaviour of methods, and representing a set of
@@ -1030,9 +979,7 @@ functions that operates on common state. But that
 would be clumsy and error prone, like the possibility of a non
 initialized field/method being called (anyone that have programmed in C
 will understand this problem very well, and its consequences).</p>
-
 <p>A working calculator:</p>
-
 <pre><code>package main
 
 import &quot;fmt&quot;
@@ -1058,14 +1005,10 @@ func main() {
 	fmt.Println(calc.Add(3, 2))
 	fmt.Println(calc.Sub(3, 2))
 }
-</code></pre>
-
-<p>Well, you could argue about the clumsiness, depending on your
+</code></pre><p>Well, you could argue about the clumsiness, depending on your
 background this may seem better than the way Go expresses methods.
-But you can&rsquo;t argue about the space this gives to error&rsquo;s.</p>
-
+But you can't argue about the space this gives to error's.</p>
 <p>For example, this:</p>
-
 <pre><code>package main
 
 import &quot;fmt&quot;
@@ -1091,52 +1034,39 @@ func main() {
 	fmt.Println(calc.Add(3, 2))
 	fmt.Println(calc.Sub(3, 2))
 }
-</code></pre>
-
-<p>Will result in:</p>
-
+</code></pre><p>Will result in:</p>
 <pre><code>panic: runtime error: invalid memory address or nil pointer dereference
 [signal SIGSEGV: segmentation violation code=0xffffffff addr=0x0 pc=0xc64e8]
 
 goroutine 1 [running]:
 main.main()
 	/tmp/sandbox772959961/main.go:23 +0x28
-</code></pre>
-
-<p>Even tough this is also possible to happen with methods, the feature of adding
+</code></pre><p>Even tough this is also possible to happen with methods, the feature of adding
 functions to a type gives a compile time safe way to represent a set of
 functions that operate on the same type. At least the call to the method is
 always safe (although you may have a invalid method receiver that will
 crash your program).</p>
-
 <p>Besides clumsiness and error proneness there is also the problem
 of how to express abstractions that are more complex than a single
 function.</p>
-
 <h1 id="abstracting">Abstracting</h1>
-
 <p>All our abstractions until now consisted of something that could
 be expressed with just one function, but what can you do
 when the abstraction requires more than one function ?</p>
-
 <p>If there is no way to express this you would always have to conflate
 your abstractions in one function, that would look just horrible
 (think about a read/write abstraction modeled on just one function).</p>
-
 <p>The calculator example above provided a way to simulate methods to
 a level that someone looking at how the Calculator is used would
-be unable to tell that it&rsquo;s methods are not methods at all.</p>
-
-<p>But there is a very important concept missing, a concept where Go&rsquo;s
+be unable to tell that it's methods are not methods at all.</p>
+<p>But there is a very important concept missing, a concept where Go's
 methods are fundamental, how you express that you require a set
 of functions without defining who will implement them and how
 it will be implemented ?</p>
-
 <p>To complete it, given a function X, that requires a set of functions Y,
 how would you syntactically express that a type Z
 implements the required set of functions Y, hence being a viable choice
 to integrate with the function X ?</p>
-
 <p>One way to solve this is with <strong>safe</strong> polymorphism. I want to be able to have
 multiple different implementations of the same set of functions that
 can interoperate seamlessly. There is emphasis on the <strong>safe</strong> part
@@ -1145,7 +1075,6 @@ possible and works very well, but it is definitely not safe.
 You could argue that no implementation is completely safe, but safer
 than C would be the basic, and it is what most languages like Java and
 Python delivered on the time they where developed.</p>
-
 <p>Safe is important because the calculator example could be used to implement
 a form of this. We could do this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Calculator</span> <span style="color:#66d9ef">struct</span> {
@@ -1155,35 +1084,27 @@ a form of this. We could do this:</p>
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">codeThatDependsOnCalculator</span>(<span style="color:#a6e22e">c</span> <span style="color:#a6e22e">Calculator</span>) {
         <span style="color:#75715e">// etc
-</span><span style="color:#75715e"></span>}</code></pre></div>
-<p>This would allow for N different implementations of a <strong>Calculator</strong>
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>This would allow for N different implementations of a <strong>Calculator</strong>
 to integrate with the code that depends on it, but it would not
 be safe. It is very easy to provide just half the implementation and
 get away with it. All functions that accept a <strong>Calculator</strong>
 would need to check if <strong>Add</strong> and <strong>Sub</strong> are not nil.</p>
-
 <p>This is awfully a lot alike how this is usually implemented in C,
 and is clearly job that a compiler can do for you (in C you
 can use some macros).</p>
-
 <p>The answer Go have for this is interfaces, which is in
 my opinion the most awesome feature of Go.</p>
-
 <p>Since this post is already very long, the evolution of the ideas
 to interfaces will be made on a subsequent post.</p>
-
 <p>Happy Go hacking ;-).</p>
-
 <h1 id="acknowledgments">Acknowledgments</h1>
-
 <p>Special thanks to:</p>
-
 <ul>
 <li><a href="https://github.com/tiago4orion">i4k</a></li>
 <li><a href="https://github.com/vitorarins">vitorarins</a></li>
 <li><a href="https://github.com/cadicallegari">cadicallegari</a></li>
 </ul>
-
 <p>For taking time reviewing and pointing out a lot
 of stupid mistakes.</p>
 
@@ -1388,6 +1309,43 @@ of stupid mistakes.</p>
           <article class="mini-post">
             <header>
               <h3>
+                <a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a>
+              </h3>
+              
+              <time class="published" datetime='2020-01-07'>
+                January 7, 2020
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/todo.png" alt="">
+        </a>
+    
+
+
+          </article>
+        
+          <article class="mini-post">
+            <header>
+              <h3>
                 <a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a>
               </h3>
               
@@ -1533,43 +1491,6 @@ of stupid mistakes.</p>
 
           </article>
         
-          <article class="mini-post">
-            <header>
-              <h3>
-                <a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a>
-              </h3>
-              
-              <time class="published" datetime='2017-03-28'>
-                March 28, 2017
-              </time>
-            </header>
-            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
-        </a>
-    
-
-
-          </article>
-        
       </div>
 
       
@@ -1601,8 +1522,8 @@ of stupid mistakes.</p>
           <article>
             <header>
               
-                <a href="/categories/go/">Go</a>
-                <span style="float:right;">5</span>
+                <a href="/categories/go/">go</a>
+                <span style="float:right;">6</span>
               
             </header>
           </article>
@@ -1612,7 +1533,7 @@ of stupid mistakes.</p>
           <article>
             <header>
               
-                <a href="/categories/distributed-systems/">Distributed Systems</a>
+                <a href="/categories/distributed-systems/">distributed-systems</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1623,7 +1544,7 @@ of stupid mistakes.</p>
           <article>
             <header>
               
-                <a href="/categories/python/">Python</a>
+                <a href="/categories/python/">python</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1735,7 +1656,7 @@ of stupid mistakes.</p>
     
     <p class="copyright">
       
-        &copy; 2018
+        &copy; 2020
         
           (define katcipis (λ () (write gibberish)))
         

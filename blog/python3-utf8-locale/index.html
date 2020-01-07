@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.49.2" />
+        <meta name="generator" content="Hugo 0.62.0" />
         
 
 
@@ -29,14 +29,12 @@
         <meta property="og:title" content="Python 3, UTF-8 and Locale" />
 <meta property="og:description" content="Having some fun with Python 3 and locale configuration" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://katcipis.github.io/blog/python3-utf8-locale/" /><meta property="article:published_time" content="2018-10-14T00:00:00&#43;00:00"/>
-<meta property="article:modified_time" content="2018-10-14T00:00:00&#43;00:00"/>
+<meta property="og:url" content="https://katcipis.github.io/blog/python3-utf8-locale/" />
+<meta property="article:published_time" content="2018-10-14T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-10-14T00:00:00+00:00" />
 
-        
-<meta itemprop="name" content="Python 3, UTF-8 and Locale">
+        <meta itemprop="name" content="Python 3, UTF-8 and Locale">
 <meta itemprop="description" content="Having some fun with Python 3 and locale configuration">
-
-
 <meta itemprop="datePublished" content="2018-10-14T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2018-10-14T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="2193">
@@ -44,7 +42,6 @@
 
 
 <meta itemprop="keywords" content="" />
-
         
 
         
@@ -182,6 +179,41 @@
                 
                         <article class="mini-post">
                             <header>
+                                <h3><a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2020-01-07'>
+                                    January 7, 2020</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/todo.png" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+                        <article class="mini-post">
+                            <header>
                                 <h3><a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a></h3>
                                 
                                 <time class="published" datetime=
@@ -314,41 +346,6 @@
 
         <a href="/blog/hack-go-types/" class="image featured">
             <img src="/img/gohacking.jpg" alt="">
-        </a>
-    
-
-
-                        </article>
-                
-                        <article class="mini-post">
-                            <header>
-                                <h3><a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a></h3>
-                                
-                                <time class="published" datetime=
-                                    '2017-03-28'>
-                                    March 28, 2017</time>
-                            </header>
-                            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
         </a>
     
 
@@ -575,36 +572,26 @@
 
 
   <div id="content">
-    
-
-<h1 id="python-3-utf-8-and-locale">Python 3, UTF-8 and Locale</h1>
-
+    <h1 id="python-3-utf-8-and-locale">Python 3, UTF-8 and Locale</h1>
 <p>This post will explore a problem that I had with Python 3 and UTF-8
 strings that caught me by surprise and has the objective of helping
-other people to don&rsquo;t be caught on the same trap.</p>
-
+other people to don't be caught on the same trap.</p>
 <p>It is not intended to be a rant against Python, but to be honest the
 problem and the behavior did not make me too happy about Python. Perhaps
 it was my failure in finding the proper documentation about it, but
 for people as stupid as I am it may help.</p>
-
 <p>OK enough of teasing, it is clear that this post is about a problem,
 what exactly is the problem ?</p>
-
-<h1 id="can-t-print-my-string">Can&rsquo;t print my string</h1>
-
+<h1 id="cant-print-my-string">Can't print my string</h1>
 <p>Yeah, the problem is that stupid, I was not able to print a string.
 Of course every simple problem starts as something that seems
 pretty complicated and in this case it is not different. I was
 working with code that integrated a C++ binding and websockets.</p>
-
 <p>The websocket part was responsible for doing speech to text
 (using Azure Bing Speech to Text service) and
 was developed using asyncio, it is heavily based (to not say copied =P)
 from <a href="https://github.com/jjuraska/cruzhacks2018">here</a>.</p>
-
 <p>I was all happy getting results when then I got this wonderful surprise:</p>
-
 <pre><code>Task exception was never retrieved
 future: &lt;Task finished coro=&lt;SpeechClient.process_response() done, defined at /app/speech.py:222&gt; exception=UnicodeEncodeError('ascii', 'X-RequestId:339e872cfcc64f6db6726fa1c7ba713c\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.hypothesis\r\n\r\n{&quot;Text&quot;:&quot;pre\xe7o&quot;,&quot;Offset&quot;:3900000,&quot;Duration&quot;:6200000}', 130, 131, 'ordinal not
 in range(128)')&gt;
@@ -614,98 +601,66 @@ Traceback (most recent call last):
   File &quot;/app/speech.py&quot;, line 363, in parse_body_json
     print(response)
 UnicodeEncodeError: 'ascii' codec can't encode character '\xe7' in position 130: ordinal not in range(128)
-</code></pre>
-
-<p>I was working on the whole thing for some weeks already, I was almost
+</code></pre><p>I was working on the whole thing for some weeks already, I was almost
 done and now all of sudden I was all like:
 <strong>GODDAMMIT, STRING ENCODING PROBLEMS, MY LIFE IS OVER !!</strong> .</p>
-
 <p>I worked for years with Python 2 and my experience with this is
 that string encoding problems have a great potential to make you waste a
 lot of good time (is the source code that is not utf-8 ? is the string contents
 ? both ? is it a string or a unicode object ?).</p>
-
 <p>With Python 3 I had the impression that it was all utf-8 by default
 (also strings are no more just array of bytes, they are
 <a href="https://docs.python.org/3/howto/unicode.html#the-string-type">always unicode</a>).
 With that I imagined that the <strong>print</strong> function would also assume
 a default of being <strong>utf-8</strong>.</p>
-
 <p>Another important information is that this was happening inside a docker
 container using the <a href="https://hub.docker.com/_/ubuntu/">ubuntu 18.04</a> image,
 the main reason for using containers was the fact that my code had a ton of
 dependencies including bindings to C++ (besides the obvious reason
 that if you are not using containers you are not cool).</p>
-
 <p>So giving the dependencies and the environment there was a good chance
 that the problem could be pretty complex.</p>
-
 <p>As I descended on a spiral of despair I had a moment of clarity,
 these rare moments of clarity comes with years of wasting time chasing
 ghosts, so at least this time I did the basic thing of testing a
 very simple code sample before ghostbusting all over the place:</p>
-
 <pre><code>print(&quot;preço&quot;)
-</code></pre>
-
-<p>Yeah that is the code of the test. I was COMPLETELY sure it would
+</code></pre><p>Yeah that is the code of the test. I was COMPLETELY sure it would
 work but I would test it anyway.</p>
-
 <p>As it is usual in my life, I was wrong (this happens a lot with
 the TDD practice of writing the test first and being sure that it will fail,
-sometimes it doesn&rsquo;t =P).</p>
-
+sometimes it doesn't =P).</p>
 <p>Actually, thanks to Python I was half right =P.
 A quick test is my host worked, but the code itself was being run using
 docker container.  So the next logic step was to try the very idiotic code
 inside the container (another life lesson, always run problematic code on an
 env as close as possible to where you are having problems), I got this:</p>
-
 <pre><code>&gt;&gt;&gt; print(&quot;preço&quot;)
   File &quot;&lt;stdin&gt;&quot;, line 0
 
     ^
 SyntaxError: 'ascii' codec can't decode byte 0xc3 in position 10: ordinal not in range(128)
-</code></pre>
-
-<p>At this point I was all like&hellip;</p>
-
-<p><img src="https://raw.githubusercontent.com/katcipis/memes/master/reallydog.jpg" alt="really" /></p>
-
+</code></pre><p>At this point I was all like&hellip;</p>
+<p><img src="https://raw.githubusercontent.com/katcipis/memes/master/reallydog.jpg" alt="really"></p>
 <p>Once again wrong, but life goes on and I had a bug to fix.</p>
-
-<p><img src="https://raw.githubusercontent.com/katcipis/memes/master/shrug.jpg" alt="shrug" /></p>
-
+<p><img src="https://raw.githubusercontent.com/katcipis/memes/master/shrug.jpg" alt="shrug"></p>
 <p>To reproduce all code samples from now on just run:</p>
-
 <pre><code>docker run -ti ubuntu:18.04
-</code></pre>
-
-<p>Once inside the container run:</p>
-
+</code></pre><p>Once inside the container run:</p>
 <pre><code>apt-get update &amp;&amp; apt-get install python3
-</code></pre>
-
-<p>The good news is that now I have the simplest
+</code></pre><p>The good news is that now I have the simplest
 code to reproduce a problem ever know to humankind, the bad news is
 that this is so very basic that I got a little confused with what was
 going on, specially because on my host (and in every other hosts that
 I have worked with) this always worked for Python 3, I was like:</p>
-
-<p><img src="https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/img/unostring.jpg" alt="uno" /></p>
-
+<p><img src="https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/img/unostring.jpg" alt="uno"></p>
 <p>I started stack-overflowing around and found some useful hints,
 but almost all the problems that I found where related to the source code
 not being utf-8 or Python 2 (neither my case).</p>
-
 <p>In one of the comments I found this snippet:</p>
-
 <pre><code>import sys
 print(sys.getdefaultencoding())
-</code></pre>
-
-<p>OK, lets try it inside the container:</p>
-
+</code></pre><p>OK, lets try it inside the container:</p>
 <pre><code>root@1124aa23a637:/# python3
 Python 3.6.5 (default, Apr  1 2018, 05:46:30)
 [GCC 7.3.0] on linux
@@ -718,49 +673,33 @@ utf-8
 
     ^
 SyntaxError: 'ascii' codec can't decode byte 0xc3 in position 10: ordinal not in range(128)
-</code></pre>
-
-<p>Again I was pretty sure that the default encoding would be ascii,
+</code></pre><p>Again I was pretty sure that the default encoding would be ascii,
 but it is not, so besides the intuitive option of checking
 the <strong>DEFAULT ENCODING OF THE SYSTEM</strong> there
 was something else changing the behavior of the system.</p>
-
 <p>Other comments on stack overflow mentioned some problems with lack of
 locale configuration, it was the next candidate.</p>
-
 <h1 id="locale">Locale</h1>
-
 <p>Lets checkout the locale configuration:</p>
-
 <pre><code>&gt;&gt;&gt; import locale
 &gt;&gt;&gt; print(locale.getlocale())
 (None, None)
-</code></pre>
-
-<p>Hmm, lets review the consistency of the behavior being shown:</p>
-
+</code></pre><p>Hmm, lets review the consistency of the behavior being shown:</p>
 <ul>
 <li>The default encoding for source code is utf-8</li>
 <li>The sys default encoding is also utf-8</li>
 <li>The default locale is None</li>
 <li>The function print uses ascii =D</li>
 </ul>
-
 <p>Yeah, even if this was well documented (perhaps I just missed
 something obvious on the docs) it does not seems consistent at all.</p>
-
 <p>I would guess that this is probably consistent with
 something else, which generates a theoretic consistency that makes someone
-happy about it but in practice sux, or it is just a trade-off and I&rsquo;m on the
+happy about it but in practice sux, or it is just a trade-off and I'm on the
 end that pays for it not the one that gains from it.</p>
-
 <p>So now I can test this hypothesis by running inside the container:</p>
-
 <pre><code>apt-get install locales
-</code></pre>
-
-<p>And then:</p>
-
+</code></pre><p>And then:</p>
 <pre><code>root@1124aa23a637:/# locale-gen en_US.UTF-8
 Generating locales (this might take a while)...
   en_US.UTF-8... done
@@ -780,16 +719,12 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
 &gt;&gt;&gt; print(&quot;preço&quot;)
 preço
 &gt;&gt;&gt;
-</code></pre>
-
-<p>Success, it was indeed the lack of locale configuration with the
+</code></pre><p>Success, it was indeed the lack of locale configuration with the
 default choice of using ascii.
 Now that I knew exactly what was going on it was easier to
 find some discussion about it, like this <a href="https://bugs.python.org/issue19846">one</a>.</p>
-
 <p>The issue mentions the <strong>sys.getfilesystemencoding()</strong> which seems to be the
 one that would actually show ascii, lets take a look with a fresh container:</p>
-
 <pre><code>root@025b95a197f9:/# python3
 Python 3.6.5 (default, Apr  1 2018, 05:46:30)
 [GCC 7.3.0] on linux
@@ -797,27 +732,22 @@ Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;licen
 &gt;&gt;&gt; import sys
 &gt;&gt;&gt; print(sys.getfilesystemencoding())
 ascii
-</code></pre>
-
-<p>And now everything makes sense, well at least the why print was trying to
+</code></pre><p>And now everything makes sense, well at least the why print was trying to
 decode as an ascii string instead of utf-8, but the decision to use ascii
 as a default still puzzles me.</p>
-
 <p>Anything that comes from the operational system that is ascii would work
 perfectly fine with utf-8 since they are compatible. One sort of problem is
-allowing a filename that is utf-8 but the operational system doesn&rsquo;t support it,
+allowing a filename that is utf-8 but the operational system doesn't support it,
 but then I fail to understand how this is related to print itself, print is
 writing to os.stdout, why should I be constrained on what
 I can write in files ? Having problems with system calls like open would make
 sense, limiting what I can write in a file or which encoding I must use to
 do it does not.</p>
-
 <p>The best that I can imagine is that if the encoding is unknown perhaps the
 terminal would not support utf-8, hence print defaults to ascii. But if the
 terminal gets something that it does not recognize it can just do what
-terminals do today when they can&rsquo;t recognize characters, and it does not
+terminals do today when they can't recognize characters, and it does not
 seem to relate to operational system like other issues mentioned:</p>
-
 <pre><code>If the OS uses ISO-8859-1, forcing Python (filesystem) encoding to
 UTF-8 would produce invalid filenames, display mojibake and more
 generally produce data incompatible with other applicatons (who rely
@@ -837,35 +767,25 @@ some examples:
 - user/group entries in the grp/pwd modules
 - almost all functions of the os module, they return various type of
 information (ttyname, ctermid, current working directory, login, ...)
-</code></pre>
-
-<p>AFAIK the operational system does not expect anything in particular from any
+</code></pre><p>AFAIK the operational system does not expect anything in particular from any
 process stdout, and if I pipe two process the contract is just between them
 (any encoding can be piped), hence the only option is that displaying
 <a href="https://en.wikipedia.org/wiki/Mojibake">mojibake</a> would be terrible.</p>
-
 <p>It is like being stuck between a rock and a hard place.
 If print defaults to utf-8 it would be inconsistent with other
 operational systems related functions.</p>
-
 <p>But by being ascii by default it is inconsistent with the rest
 of Python 3 that assumes utf-8 as the default encoding for source code
 (it is the default encoding of the <strong>str</strong> constructor too).</p>
-
-<p>But I&rsquo;m pretty far from being an expert on the subject, actually this
+<p>But I'm pretty far from being an expert on the subject, actually this
 was the first time that I had a problem like that. For example, reading
 <a href="https://unix.stackexchange.com/questions/2089/what-charset-encoding-is-used-for-filenames-and-paths-on-linux">this</a>
 it seems that Glib goes with utf-8 as default while QT uses the locale.</p>
-
 <p>I have been working for a few years with Go too, so I got curious on
 how Go handled printing, from the <a href="https://golang.org/pkg/fmt/">docs</a>:</p>
-
 <pre><code>%s the uninterpreted bytes of the string or slice
-</code></pre>
-
-<p>Just to be sure lets ask to the only source of truth =)
+</code></pre><p>Just to be sure lets ask to the only source of truth =)
 (in this case the file fmt/print.go on the standard library).</p>
-
 <p>First the Println function is just a small indirection to Fprintln
 writing to <strong>os.Stdout</strong>, and Fprintln looks like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Fprintln</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">io</span>.<span style="color:#a6e22e">Writer</span>, <span style="color:#a6e22e">a</span> <span style="color:#f92672">...</span><span style="color:#66d9ef">interface</span>{}) (<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>) {
@@ -874,8 +794,8 @@ writing to <strong>os.Stdout</strong>, and Fprintln looks like this:</p>
 	<span style="color:#a6e22e">n</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Write</span>(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">buf</span>)
 	<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">free</span>()
 	<span style="color:#66d9ef">return</span>
-}</code></pre></div>
-<p>The <strong>p.buf</strong> is an array of bytes, so far so good, but what about
+}
+</code></pre></div><p>The <strong>p.buf</strong> is an array of bytes, so far so good, but what about
 <strong>p.doPrintln</strong> ? Digging on it I was able to find this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Some types can be done without reflection.
 </span><span style="color:#75715e"></span>	<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">f</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">arg</span>.(<span style="color:#66d9ef">type</span>) {
@@ -901,8 +821,8 @@ writing to <strong>os.Stdout</strong>, and Fprintln looks like this:</p>
 </span><span style="color:#75715e"></span>			<span style="color:#75715e">// interface methods that could be used for formatting.
 </span><span style="color:#75715e"></span>			<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">printValue</span>(<span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">ValueOf</span>(<span style="color:#a6e22e">f</span>), <span style="color:#a6e22e">verb</span>, <span style="color:#ae81ff">0</span>)
 		}
-	}</code></pre></div>
-<p>And p.fmtString/p.fmtBytes will lead to:</p>
+	}
+</code></pre></div><p>And p.fmtString/p.fmtBytes will lead to:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Use simple []byte instead of bytes.Buffer to avoid large dependency.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">buffer</span> []<span style="color:#66d9ef">byte</span>
 
@@ -916,32 +836,25 @@ writing to <strong>os.Stdout</strong>, and Fprintln looks like this:</p>
 
 <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">buffer</span>) <span style="color:#a6e22e">WriteByte</span>(<span style="color:#a6e22e">c</span> <span style="color:#66d9ef">byte</span>) {
 	<span style="color:#f92672">*</span><span style="color:#a6e22e">b</span> = append(<span style="color:#f92672">*</span><span style="color:#a6e22e">b</span>, <span style="color:#a6e22e">c</span>)
-}</code></pre></div>
-<p>Indeed strings are handled exactly the same way as byte arrays.
+}
+</code></pre></div><p>Indeed strings are handled exactly the same way as byte arrays.
 At least if printed without width parameters and other modifiers
 on the format description, a simple &ldquo;%v&rdquo; or &ldquo;%s&rdquo; or a fmt.Println
 will end up on the method above.</p>
-
-<p>Which makes sense to me since I&rsquo;m just writing to a file (stdout)
+<p>Which makes sense to me since I'm just writing to a file (stdout)
 and the contents can be anything and are subject to interpretation
 by the process reading the stdout (not the operational system).</p>
-
 <p>For example, I could have two processes with a pipe between them:</p>
-
 <pre><code>a | b
-</code></pre>
-
-<p>Where both establishes a contract of a text based procotol using utf-8
+</code></pre><p>Where both establishes a contract of a text based procotol using utf-8
 as encoding independent from any environment. A standard library print not
 getting on my way of developing something like this seems like
 a good design choice.</p>
-
 <p>If you want to have interoperability with other tools that uses
 locale, you can code it, but the standard implementation does not impose
 anything by default. Of course there are other problems involving OS encoding,
-but for print I&rsquo;m happier with Go&rsquo;s choice (at least for now,
+but for print I'm happier with Go's choice (at least for now,
 perhaps there are more trade-offs to understand in the future).</p>
-
 <p>Anyway I hope this post helps other people that go through a similar
 problem when using Python 3 in an environment without locale configuration
 (which is the default ubuntu 18.04 image).</p>
@@ -1014,6 +927,9 @@ problem when using Python 3 in an environment without locale configuration
                 class="button big previous">The RESTless struggle for RESTful</a></li>
     
 
+    
+        <li><a href="/blog/mux-channels-go/"
+                class="button big next">Multiplexing Channels in Go</a></li>
     
 </ul>
 
@@ -1140,6 +1056,43 @@ problem when using Python 3 in an environment without locale configuration
           
         
 
+        
+          <article class="mini-post">
+            <header>
+              <h3>
+                <a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a>
+              </h3>
+              
+              <time class="published" datetime='2020-01-07'>
+                January 7, 2020
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/todo.png" alt="">
+        </a>
+    
+
+
+          </article>
         
           <article class="mini-post">
             <header>
@@ -1289,43 +1242,6 @@ problem when using Python 3 in an environment without locale configuration
 
           </article>
         
-          <article class="mini-post">
-            <header>
-              <h3>
-                <a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a>
-              </h3>
-              
-              <time class="published" datetime='2017-03-28'>
-                March 28, 2017
-              </time>
-            </header>
-            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
-        </a>
-    
-
-
-          </article>
-        
       </div>
 
       
@@ -1357,8 +1273,8 @@ problem when using Python 3 in an environment without locale configuration
           <article>
             <header>
               
-                <a href="/categories/go/">Go</a>
-                <span style="float:right;">5</span>
+                <a href="/categories/go/">go</a>
+                <span style="float:right;">6</span>
               
             </header>
           </article>
@@ -1368,7 +1284,7 @@ problem when using Python 3 in an environment without locale configuration
           <article>
             <header>
               
-                <a href="/categories/distributed-systems/">Distributed Systems</a>
+                <a href="/categories/distributed-systems/">distributed-systems</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1379,7 +1295,7 @@ problem when using Python 3 in an environment without locale configuration
           <article>
             <header>
               
-                <a href="/categories/python/">Python</a>
+                <a href="/categories/python/">python</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1491,7 +1407,7 @@ problem when using Python 3 in an environment without locale configuration
     
     <p class="copyright">
       
-        &copy; 2018
+        &copy; 2020
         
           (define katcipis (λ () (write gibberish)))
         

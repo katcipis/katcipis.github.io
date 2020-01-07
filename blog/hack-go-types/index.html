@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.49.2" />
+        <meta name="generator" content="Hugo 0.62.0" />
         
 
 
@@ -29,14 +29,12 @@
         <meta property="og:title" content="Hacking Go&#39;s type system" />
 <meta property="og:description" content="Have some fun hacking Go type system to make safe casting unsafe again =)" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://katcipis.github.io/blog/hack-go-types/" /><meta property="article:published_time" content="2017-04-21T00:00:00&#43;00:00"/>
-<meta property="article:modified_time" content="2017-04-21T00:00:00&#43;00:00"/>
+<meta property="og:url" content="https://katcipis.github.io/blog/hack-go-types/" />
+<meta property="article:published_time" content="2017-04-21T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-04-21T00:00:00+00:00" />
 
-        
-<meta itemprop="name" content="Hacking Go&#39;s type system">
+        <meta itemprop="name" content="Hacking Go&#39;s type system">
 <meta itemprop="description" content="Have some fun hacking Go type system to make safe casting unsafe again =)">
-
-
 <meta itemprop="datePublished" content="2017-04-21T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2017-04-21T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="3321">
@@ -44,7 +42,6 @@
 
 
 <meta itemprop="keywords" content="" />
-
         
 
         
@@ -182,6 +179,41 @@
                 
                         <article class="mini-post">
                             <header>
+                                <h3><a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2020-01-07'>
+                                    January 7, 2020</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/todo.png" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+                        <article class="mini-post">
+                            <header>
                                 <h3><a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a></h3>
                                 
                                 <time class="published" datetime=
@@ -314,41 +346,6 @@
 
         <a href="/blog/hack-go-types/" class="image featured">
             <img src="/img/gohacking.jpg" alt="">
-        </a>
-    
-
-
-                        </article>
-                
-                        <article class="mini-post">
-                            <header>
-                                <h3><a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a></h3>
-                                
-                                <time class="published" datetime=
-                                    '2017-03-28'>
-                                    March 28, 2017</time>
-                            </header>
-                            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
         </a>
     
 
@@ -575,27 +572,21 @@
 
 
   <div id="content">
-    
-
-<p>Are you in the mood for a stroll inside Go&rsquo;s type system ?
+    <p>Are you in the mood for a stroll inside Go's type system ?
 If you are already familiarized with it, this post can be funny
 for you, or just plain stupid.</p>
-
 <p>If you have no idea how types and interfaces are implemented on Go,
 you may learn something, I sure did :-)</p>
-
 <p>Since I worked with handwritten type systems in C,
 like the one found in <a href="https://developer.gnome.org/gobject/stable/">glib GObjects</a>,
-I&rsquo;m always curious on how languages implement the
+I'm always curious on how languages implement the
 concept of type safety on a machine that actually only
 has numbers. This curiosity has extended to how I could
-bend Go&rsquo;s type system to my own will.</p>
-
-<p>Go&rsquo;s instances do not carry type information on them,
+bend Go's type system to my own will.</p>
+<p>Go's instances do not carry type information on them,
 so my only chance will involve using an interface{}. All type systems
-that I&rsquo;m aware off usually implement types as some sort of integer code,
+that I'm aware off usually implement types as some sort of integer code,
 which is used to check if the type corresponds to the one you are casting.</p>
-
 <p>To begin the exploration I wanted to find how type assertions are
 made, so I wrote this ridiculous code:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
@@ -607,16 +598,12 @@ made, so I wrote this ridiculous code:</p>
 	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> <span style="color:#66d9ef">interface</span>{} = <span style="color:#a6e22e">a</span>
 	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#66d9ef">int</span>)
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">c</span>)
-}</code></pre></div>
-<p>Compiled it outputing its assembly:</p>
-
+}
+</code></pre></div><p>Compiled it outputing its assembly:</p>
 <pre><code>go build -gcflags -S cast.go
-</code></pre>
-
-<p>Found that the assembly code corresponding to this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#66d9ef">int</span>)</code></pre></div>
-<p>Is (roughly) this:</p>
-
+</code></pre><p>Found that the assembly code corresponding to this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#66d9ef">int</span>)
+</code></pre></div><p>Is (roughly) this:</p>
 <pre><code>	0x002a 00042 (cast.go:7)	LEAQ	type.int(SB), AX
 	0x0031 00049 (cast.go:8)	CMPQ	AX, AX
 	0x0034 00052 (cast.go:8)	JNE	$0, 162
@@ -628,17 +615,15 @@ made, so I wrote this ridiculous code:</p>
 	0x005a 00090 (cast.go:9)	MOVQ	AX, 8(SP)
 	0x005f 00095 (cast.go:9)	PCDATA	$0, $1
 	0x005f 00095 (cast.go:9)	CALL	runtime.convT2E(SB)
-</code></pre>
-
-<p>The <strong>runtime.convT2E</strong> call caught my attention, it was not hard to
+</code></pre><p>The <strong>runtime.convT2E</strong> call caught my attention, it was not hard to
 find it on the <a href="https://github.com/golang/go/blob/master/src/runtime/iface.go">iface.go</a>
 file on the golang source code (on the time of writing, Go 1.8.1):</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// The conv and assert functions below do very similar things.
-</span><span style="color:#75715e">// The convXXX functions are guaranteed by the compiler to succeed.
-</span><span style="color:#75715e">// The assertXXX functions may fail (either panicking or returning false,
-</span><span style="color:#75715e">// depending on whether they are 1-result or 2-result).
-</span><span style="color:#75715e">// The convXXX functions succeed on a nil input, whereas the assertXXX
-</span><span style="color:#75715e">// functions fail on a nil input.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// The convXXX functions are guaranteed by the compiler to succeed.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// The assertXXX functions may fail (either panicking or returning false,
+</span><span style="color:#75715e"></span><span style="color:#75715e">// depending on whether they are 1-result or 2-result).
+</span><span style="color:#75715e"></span><span style="color:#75715e">// The convXXX functions succeed on a nil input, whereas the assertXXX
+</span><span style="color:#75715e"></span><span style="color:#75715e">// functions fail on a nil input.
 </span><span style="color:#75715e"></span>
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">convT2E</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span>, <span style="color:#a6e22e">elem</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>) (<span style="color:#a6e22e">e</span> <span style="color:#a6e22e">eface</span>) {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">raceenabled</span> {
@@ -658,8 +643,8 @@ file on the golang source code (on the time of writing, Go 1.8.1):</p>
 	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">_type</span> = <span style="color:#a6e22e">t</span>
 	<span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">data</span> = <span style="color:#a6e22e">x</span>
 	<span style="color:#66d9ef">return</span>
-}</code></pre></div>
-<p>There is the eface type, that has a <strong>_type</strong> field. Checking out what
+}
+</code></pre></div><p>There is the eface type, that has a <strong>_type</strong> field. Checking out what
 would be a <strong>eface</strong> I found this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">iface</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">tab</span>  <span style="color:#f92672">*</span><span style="color:#a6e22e">itab</span>
@@ -669,27 +654,23 @@ would be a <strong>eface</strong> I found this:</p>
 <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">eface</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">_type</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span>
 	<span style="color:#a6e22e">data</span>  <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
-}</code></pre></div>
-<p>From what I read before on
+}
+</code></pre></div><p>From what I read before on
 <a href="https://research.swtch.com/interfaces">Russ Cox post about interfaces</a>
 I would guess that the <strong>iface</strong> is used when you are using
 interfaces that have actually methods on it. That is why it has
 an itab, the interface table, which is roughly equivalent to
 a C++ vtable.</p>
-
 <p>I will ignore the iface (althought it is interesting) since it does not
-seem to be what I need to hack Go&rsquo;s type system, there is more potential
+seem to be what I need to hack Go's type system, there is more potential
 on <strong>eface</strong>, which covers the special case of empty interfaces
 (the equivalent of a void pointer in C).</p>
-
 <p>On the post Russ Cox says that the empty interface is a special case that holds
 only the type information + the data, there is no itable, since it makes
 no sense at all (a interface{} has no methods).</p>
-
 <p>The interface{} is just a way to transport runtime type information + data
 on a generic way through your code and it seems to be the more promising
 way to hack types.</p>
-
 <p>The <strong>type</strong> is:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">_type</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">size</span>       <span style="color:#66d9ef">uintptr</span>
@@ -706,37 +687,34 @@ way to hack types.</p>
 </span><span style="color:#75715e"></span>	<span style="color:#a6e22e">gcdata</span>    <span style="color:#f92672">*</span><span style="color:#66d9ef">byte</span>
 	<span style="color:#a6e22e">str</span>       <span style="color:#a6e22e">nameOff</span>
 	<span style="color:#a6e22e">ptrToThis</span> <span style="color:#a6e22e">typeOff</span>
-}</code></pre></div>
-<p>Lots of promissing fields to hack with, but actual type check is just
+}
+</code></pre></div><p>Lots of promissing fields to hack with, but actual type check is just
 a direct pointer comparison:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">_type</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">t</span> {
 		panic(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">TypeAssertionError</span>{<span style="color:#e6db74">&#34;&#34;</span>, <span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">_type</span>.string(), <span style="color:#a6e22e">t</span>.string(), <span style="color:#e6db74">&#34;&#34;</span>})
-	}</code></pre></div>
-<p>It seems easier to just find a way to get the eface struct and overwrite its
+	}
+</code></pre></div><p>It seems easier to just find a way to get the eface struct and overwrite its
 <strong>type</strong> pointer with the one I desire. This smells like a job to the
 <a href="https://golang.org/pkg/unsafe/">unsafe</a> package.</p>
-
-<p>I still don&rsquo;t have a good idea on how to get the <strong>_type</strong>, or how to manipulate
+<p>I still don't have a good idea on how to get the <strong>_type</strong>, or how to manipulate
 the eface type. My guess would be to just cast it as a pointer and do some
-old school pointer manipulation, but I&rsquo;m not sure yet.</p>
-
+old school pointer manipulation, but I'm not sure yet.</p>
 <p>One function that is a good candidate to give some directions
 on how to do it is <strong>reflect.TypeOf</strong>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TypeOf</span>(<span style="color:#a6e22e">i</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#a6e22e">Type</span> {
 	<span style="color:#a6e22e">eface</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">emptyInterface</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">i</span>))
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">toType</span>(<span style="color:#a6e22e">eface</span>.<span style="color:#a6e22e">typ</span>)
-}</code></pre></div>
-<p>Yeah, just cast the pointer to a eface pointer:</p>
+}
+</code></pre></div><p>Yeah, just cast the pointer to a eface pointer:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// emptyInterface is the header for an interface{} value.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">emptyInterface</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">typ</span>  <span style="color:#f92672">*</span><span style="color:#a6e22e">rtype</span>
 	<span style="color:#a6e22e">word</span> <span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>
-}</code></pre></div>
-<p>It seems that although the eface was private on the <strong>runtime</strong>
+}
+</code></pre></div><p>It seems that although the eface was private on the <strong>runtime</strong>
 package it is copied here on the <strong>reflect</strong> package. Well, if the
 reflect package can do it, so can I :-) (a little duplication is
 better than a big dependency, right ?).</p>
-
 <p>Before going on, I was curious about where the types are initialized.
 It seems that there is just one unique pointer with all the type
 information for each type. Thanks to <a href="https://github.com/fatih/vim-go">vim-go</a>
@@ -745,10 +723,10 @@ for the invaluable help on analysing code and allowing me to
 check all the referers to a type it has been
 pretty easy to find this on <a href="https://github.com/golang/go/blob/master/src/runtime/symtab.go">runtime/symtab.go</a>:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// moduledata records information about the layout of the executable
-</span><span style="color:#75715e">// image. It is written by the linker. Any changes here must be
-</span><span style="color:#75715e">// matched changes to the code in cmd/internal/ld/symtab.go:symtab.
-</span><span style="color:#75715e">// moduledata is stored in read-only memory; none of the pointers here
-</span><span style="color:#75715e">// are visible to the garbage collector.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// image. It is written by the linker. Any changes here must be
+</span><span style="color:#75715e"></span><span style="color:#75715e">// matched changes to the code in cmd/internal/ld/symtab.go:symtab.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// moduledata is stored in read-only memory; none of the pointers here
+</span><span style="color:#75715e"></span><span style="color:#75715e">// are visible to the garbage collector.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">moduledata</span> <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">pclntable</span>    []<span style="color:#66d9ef">byte</span>
 	<span style="color:#a6e22e">ftab</span>         []<span style="color:#a6e22e">functab</span>
@@ -781,11 +759,11 @@ pretty easy to find this on <a href="https://github.com/golang/go/blob/master/sr
 	<span style="color:#a6e22e">typemap</span> <span style="color:#66d9ef">map</span>[<span style="color:#a6e22e">typeOff</span>]<span style="color:#f92672">*</span><span style="color:#a6e22e">_type</span> <span style="color:#75715e">// offset to *_rtype in previous module
 </span><span style="color:#75715e"></span>
 	<span style="color:#a6e22e">next</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">moduledata</span>
-}</code></pre></div>
-<p>A good candidate is the <strong>typemap</strong> field, checking out how
+}
+</code></pre></div><p>A good candidate is the <strong>typemap</strong> field, checking out how
 it is used I found this on runtime/type.go:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// typelinksinit scans the types from extra modules and builds the
-</span><span style="color:#75715e">// moduledata typemap used to de-duplicate type pointers.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// moduledata typemap used to de-duplicate type pointers.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">typelinksinit</span>() {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">firstmoduledata</span>.<span style="color:#a6e22e">next</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
 		<span style="color:#66d9ef">return</span>
@@ -835,21 +813,20 @@ it is used I found this on runtime/type.go:</p>
 
 		<span style="color:#a6e22e">prev</span> = <span style="color:#a6e22e">md</span>
 	}
-}</code></pre></div>
-<p>It seems that the typemap is initialized on the startup of the
+}
+</code></pre></div><p>It seems that the typemap is initialized on the startup of the
 process, with help of information collected by the linker, on
 build time.</p>
-
 <p>The typelinksinit function is used on the schedinit function
 (from <a href="https://github.com/golang/go/blob/master/src/runtime/proc.go">runtime/proc.go</a>):</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// The bootstrap sequence is:
-</span><span style="color:#75715e">//
-</span><span style="color:#75715e">//	call osinit
-</span><span style="color:#75715e">//	call schedinit
-</span><span style="color:#75715e">//	make &amp; queue new G
-</span><span style="color:#75715e">//	call runtime·mstart
-</span><span style="color:#75715e">//
-</span><span style="color:#75715e">// The new G calls runtime·main.
+</span><span style="color:#75715e"></span><span style="color:#75715e">//
+</span><span style="color:#75715e"></span><span style="color:#75715e">//	call osinit
+</span><span style="color:#75715e"></span><span style="color:#75715e">//	call schedinit
+</span><span style="color:#75715e"></span><span style="color:#75715e">//	make &amp; queue new G
+</span><span style="color:#75715e"></span><span style="color:#75715e">//	call runtime·mstart
+</span><span style="color:#75715e"></span><span style="color:#75715e">//
+</span><span style="color:#75715e"></span><span style="color:#75715e">// The new G calls runtime·main.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">schedinit</span>() {
 	<span style="color:#75715e">// raceinit must be the first call to race detector.
 </span><span style="color:#75715e"></span>	<span style="color:#75715e">// In particular, it must be done before mallocinit below calls racemapshadow.
@@ -895,12 +872,10 @@ build time.</p>
 </span><span style="color:#75715e"></span>		<span style="color:#75715e">// to ensure runtime·buildVersion is kept in the resulting binary.
 </span><span style="color:#75715e"></span>		<span style="color:#a6e22e">buildVersion</span> = <span style="color:#e6db74">&#34;unknown&#34;</span>
 	}
-}</code></pre></div>
-<p>And schedinit, at least according to go guru, is not called anywhere.
+}
+</code></pre></div><p>And schedinit, at least according to go guru, is not called anywhere.
 The output of -gcflags -S also has no reference to this initialization.</p>
-
 <p>Searching inside the <strong>runtime</strong> package:</p>
-
 <pre><code>(runtime)λ&gt; grep -R schedinit .
 ./asm_amd64.s: CALL    runtime·schedinit(SB)
 ./asm_mips64x.s:       JAL     runtime·schedinit(SB)
@@ -914,11 +889,8 @@ The output of -gcflags -S also has no reference to this initialization.</p>
 ./asm_386.s:   CALL    runtime·schedinit(SB)
 ./asm_mipsx.s: JAL     runtime·schedinit(SB)
 ./asm_amd64p32.s:      CALL    runtime·schedinit(SB)
-</code></pre>
-
-<p>It seems like the bootstraping code for each supported platform is ASM code.
+</code></pre><p>It seems like the bootstraping code for each supported platform is ASM code.
 Lets take a look at the <strong>amd64</strong> implementation:</p>
-
 <pre><code>	CLD				// convention is D is always left cleared
 	CALL	runtime·check(SB)
 
@@ -937,13 +909,10 @@ Lets take a look at the <strong>amd64</strong> implementation:</p>
 	CALL	runtime·newproc(SB)
 	POPQ	AX
 	POPQ	AX
-</code></pre>
-
-<p>The whole thing has more than 2000 lines, so I just copied the
+</code></pre><p>The whole thing has more than 2000 lines, so I just copied the
 part that confirms that schedinit is called before running
 the actual code, and on schedinit the typelinksinit will be
 called, that will initialize the types map.</p>
-
 <p>Sorry, got pretty far from the objective, lets go back to the type system
 hacking fun. Lets start the copying fun, just like the reflect package does,
 to inspect details on different types:</p>
@@ -955,9 +924,9 @@ to inspect details on different types:</p>
 )
 
 <span style="color:#75715e">// tflag values must be kept in sync with copies in:
-</span><span style="color:#75715e">//	cmd/compile/internal/gc/reflect.go
-</span><span style="color:#75715e">//	cmd/link/internal/ld/decodesym.go
-</span><span style="color:#75715e">//	runtime/type.go
+</span><span style="color:#75715e"></span><span style="color:#75715e">//	cmd/compile/internal/gc/reflect.go
+</span><span style="color:#75715e"></span><span style="color:#75715e">//	cmd/link/internal/ld/decodesym.go
+</span><span style="color:#75715e"></span><span style="color:#75715e">//	runtime/type.go
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">tflag</span> <span style="color:#66d9ef">uint8</span>
 
 <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">typeAlg</span> <span style="color:#66d9ef">struct</span> {
@@ -1015,9 +984,8 @@ to inspect details on different types:</p>
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;e float64:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">e</span>))
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;f rtype:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">f</span>))
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;g eface:\n%s\n\n&#34;</span>, <span style="color:#a6e22e">getEface</span>(<span style="color:#a6e22e">g</span>))
-}</code></pre></div>
-<p>The output of running the code:</p>
-
+}
+</code></pre></div><p>The output of running the code:</p>
 <pre><code>(typehack(git master))λ&gt; go run inspectype.go
 a int:
 type: main.rtype{size:0x8, ptrdata:0x0, hash:0xf75371fa, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x82, alg:(*main.typeAlg)(0x4fb3d0), gcdata:(*uint8)(0x4b0eb8), str:843, ptrToThis:35392}
@@ -1053,59 +1021,47 @@ g eface:
 type: main.rtype{size:0x10, ptrdata:0x10, hash:0x4358c73f, tflag:0x7, align:0x8, fieldAlign:0x8, kind:0x19, alg:(*main.typeAlg)(0x4fb3e0), gcdata:(*uint8)(0x4b0eba), str:11606, ptrToThis:74272}
 
 dataptr: 0xc42000a5c0
-</code></pre>
-
-<p>Since this is already getting pretty extensive I won&rsquo;t dive in every single
+</code></pre><p>Since this is already getting pretty extensive I won't dive in every single
 detail of the outputs. But we can observe some interesting things.</p>
-
 <p>The hack seems to have worked perfectly, since the size of all types
 makes sense. Alignment information also makes sense too.
 And also there is the <strong>kind</strong> information. Like I said on the start,
 type systems usually just use a number to differentiate on the types.</p>
-
 <p>But comparing two different structs shows an interesting characteristic
 from Go. Although <strong>rtype</strong> and <strong>eface</strong> are two different types, and
-casting between the two types won&rsquo;t work, they are of the same kind <strong>0x19</strong>.</p>
-
+casting between the two types won't work, they are of the same kind <strong>0x19</strong>.</p>
 <p>On the reflect package there is the <a href="https://golang.org/pkg/reflect/#Kind">Kind</a>
-type, which is a enumeration of all Go&rsquo;s base types. There is some information
+type, which is a enumeration of all Go's base types. There is some information
 about that <a href="https://golang.org/ref/spec#Types">here</a>. Every named/unnamed type
 you define in Go will always have an underlying type, which will be one
 of the types on the kind enumeration (that shows up on our type struct).</p>
-
-<p>So in Go you can&rsquo;t create types in the same sense of the native types that
-comes with the language, you can&rsquo;t create new kinds, at least AFAIK.
+<p>So in Go you can't create types in the same sense of the native types that
+comes with the language, you can't create new kinds, at least AFAIK.
 This is considerably confusing, because kind is a synonim of type :-),
 but it is one of the two hardest challenges on programming, giving names
 to things (the other ones is implementing caches :-)).</p>
-
 <p>But the types you create work well enough, the compiler will help you, and
 reflection will also work properly. Even with the same kind, different
 types will have different <strong>rtype</strong> pointers associated with them, even different
 size in the struct case, but it is an interesting detail that I tought it was
 worth mentioning.</p>
-
 <p>Well, now we can go back to hacking the type system.</p>
-
 <p>There is a lot of ways to manipulate this type information, but the
 more naive way that I can think of is to define a function that gets
 an interface{} variable representing the value that will be casted
 and another interface{} variable that will carry the type information
 from where you want to cast to. The return is a new interface{}
 that can be casted to the desired target type. Something like this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Morph</span>(<span style="color:#a6e22e">value</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">desiredtype</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">interface</span>{}</code></pre></div>
-<p>Well, in this case the lack of generics on Go obligates me
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Morph</span>(<span style="color:#a6e22e">value</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">desiredtype</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">interface</span>{}
+</code></pre></div><p>Well, in this case the lack of generics on Go obligates me
 to use an interface{} and push the cast to the client, or develop
 a function for every basic type, but types defined by the client
 would require the client writing its own functions.</p>
-
-<p>Let&rsquo;s just let the client do some heavy lifting on this
-case, <a href="https://www.jwz.org/doc/worse-is-better.html">Jersey&rsquo;s style</a>
+<p>Let's just let the client do some heavy lifting on this
+case, <a href="https://www.jwz.org/doc/worse-is-better.html">Jersey's style</a>
 (not that &ldquo;The right thing&rdquo; also does not have its place).</p>
-
 <p>The final implementation can be found on <a href="https://github.com/katcipis/morfos">morfus</a>,
 the most small and stupid Go library ever :-).</p>
-
 <p>I say this because the final hack on the type system is so simple
 that it makes me want to cry, Go is indeed terribly simple, nothing
 to feed my ego here :-(. The whole magic:</p>
@@ -1123,18 +1079,18 @@ to feed my ego here :-(. The whole magic:</p>
 }
 
 <span style="color:#75715e">// Morph will coerce the given value to the type stored on desiredtype
-</span><span style="color:#75715e">// without copying or changing any data on value. The result will
-</span><span style="color:#75715e">// be a merge of the data stored on value with the type stored on
-</span><span style="color:#75715e">// desiredtype, basically a frankstein :-).
-</span><span style="color:#75715e">//
-</span><span style="color:#75715e">// The result value should be castable to the type of desiredtype.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// without copying or changing any data on value. The result will
+</span><span style="color:#75715e"></span><span style="color:#75715e">// be a merge of the data stored on value with the type stored on
+</span><span style="color:#75715e"></span><span style="color:#75715e">// desiredtype, basically a frankstein :-).
+</span><span style="color:#75715e"></span><span style="color:#75715e">//
+</span><span style="color:#75715e"></span><span style="color:#75715e">// The result value should be castable to the type of desiredtype.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Morph</span>(<span style="color:#a6e22e">value</span> <span style="color:#66d9ef">interface</span>{}, <span style="color:#a6e22e">desiredtype</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">interface</span>{} {
 	<span style="color:#a6e22e">valueeface</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">geteface</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">value</span>)
 	<span style="color:#a6e22e">typeeface</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">geteface</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">desiredtype</span>)
 	<span style="color:#a6e22e">valueeface</span>.<span style="color:#a6e22e">Type</span> = <span style="color:#a6e22e">typeeface</span>.<span style="color:#a6e22e">Type</span>
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">value</span>
-}</code></pre></div>
-<p>My very first passing test:</p>
+}
+</code></pre></div><p>My very first passing test:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">morfos_test</span>
 
 <span style="color:#f92672">import</span> (
@@ -1173,20 +1129,17 @@ to feed my ego here :-(. The whole magic:</p>
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">orig</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">!=</span> <span style="color:#a6e22e">morphedNotOriginal</span>.<span style="color:#a6e22e">w</span> {
 		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;expected y[%d] == w[%d]&#34;</span>, <span style="color:#a6e22e">orig</span>.<span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">morphedNotOriginal</span>.<span style="color:#a6e22e">w</span>)
 	}
-}</code></pre></div>
-<p>This test is &ldquo;safe&rdquo; because both structs have the same size,
+}
+</code></pre></div><p>This test is &ldquo;safe&rdquo; because both structs have the same size,
 C programmers must be feeling butterflies on their bellies :-).</p>
-
 <p>Although the hack is small, there is a lot of fun we can have
 with it, but before we go on there is one single line of unsafeness
 that is usually unknow to Go newcomers:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">geteface</span>(<span style="color:#a6e22e">i</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">interface</span>{}) <span style="color:#f92672">*</span><span style="color:#a6e22e">eface</span> {
 	<span style="color:#66d9ef">return</span> (<span style="color:#f92672">*</span><span style="color:#a6e22e">eface</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#a6e22e">i</span>))
-}</code></pre></div>
-<p>My feeling the first time I saw this was:</p>
-
-<p><img src="https://github.com/katcipis/katcipis.github.io/raw/master/_assets/hack-go-types/img/fly.jpg" alt="Go or C" /></p>
-
+}
+</code></pre></div><p>My feeling the first time I saw this was:</p>
+<p><img src="https://github.com/katcipis/katcipis.github.io/raw/master/_assets/hack-go-types/img/fly.jpg" alt="Go or C"></p>
 <p>With this kind of casting, my hack could be written as:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
@@ -1209,33 +1162,25 @@ that is usually unknow to Go newcomers:</p>
 	
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;x %v\n&#34;</span>, <span style="color:#a6e22e">x</span>)
 	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;y %v\n&#34;</span>, <span style="color:#a6e22e">y</span>)
-}</code></pre></div>
-<p>And get this:</p>
-
+}
+</code></pre></div><p>And get this:</p>
 <pre><code>x {100}
 y {100}
-</code></pre>
-
-<p>It works, as can be read <a href="https://golang.org/pkg/unsafe/#Pointer">here</a>
+</code></pre><p>It works, as can be read <a href="https://golang.org/pkg/unsafe/#Pointer">here</a>
 the unsafe.Pointer has special properties that allows it to be
 cast just like you do in C:</p>
-
 <pre><code>A Pointer can be converted to a pointer value of any type.
-</code></pre>
-
-<p>You may be thinking, what was the point of all this then ?
+</code></pre><p>You may be thinking, what was the point of all this then ?
 Well, the objective was to hack the type system, which is to
 make the runtime casting facility behave as I want,
 my interest was to break this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#a6e22e">someType</span>)</code></pre></div>
-<p>Make the &ldquo;safe&rdquo; cast behave unsafely, based on sheer curiosity on
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#a6e22e">someType</span>)
+</code></pre></div><p>Make the &ldquo;safe&rdquo; cast behave unsafely, based on sheer curiosity on
 how this can actually be safe (take a look under the hood).
 And this has been achieved.</p>
-
 <p>So lets forget that there is a <strong>VERY</strong> simpler way to force casts in Go
 and have some fun with my useless hack (we should at least have some
 fun, right ?).</p>
-
 <p>In Go strings are immutable, or are they ?</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestMutatingString</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
 
@@ -1274,27 +1219,22 @@ fun, right ?).</p>
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">mutableStr</span> <span style="color:#f92672">!=</span> <span style="color:#e6db74">&#34;hackd&#34;</span> {
 		<span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;expected hackd, got: %s&#34;</span>, <span style="color:#a6e22e">mutableStr</span>)
 	}
-}</code></pre></div>
-<p>To do this I exploited the fact that Go&rsquo;s strings are just structs
+}
+</code></pre></div><p>To do this I exploited the fact that Go's strings are just structs
 with a pointer to the actual byte array and a len, the string does not
 need to be null terminated, thanks to the len field.</p>
-
 <p>As expected this test pass. Without reassigning the <strong>mutableStr</strong>
 variable at any moment I was able to make it represent a different
 string, by changing its internal byte array.</p>
-
 <p>Besides being fun, this hack is another example on how using the
 <strong>unsafe</strong> package will trully make your program unsafe. Seeing this
 on the code:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">b</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">x</span>))</code></pre></div>
-<p>Will make all kind of alarms bell on your head, but this:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#a6e22e">someType</span>)</code></pre></div>
-<p>Well, if <strong>ok</strong> is true it is safe to use <strong>val</strong>, or is it ? :-)</p>
-
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">b</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">x</span>))
+</code></pre></div><p>Will make all kind of alarms bell on your head, but this:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">        <span style="color:#a6e22e">val</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">b</span>.(<span style="color:#a6e22e">someType</span>)
+</code></pre></div><p>Well, if <strong>ok</strong> is true it is safe to use <strong>val</strong>, or is it ? :-)</p>
 <h1 id="thanks">Thanks</h1>
-
 <p>Thanks to my friends/reviewers:</p>
-
 <ul>
 <li><a href="https://github.com/kamilash">Kamila Hinckel</a></li>
 <li><a href="https://github.com/patito">Paulo Benatto</a></li>
@@ -1503,6 +1443,43 @@ on the code:</p>
           <article class="mini-post">
             <header>
               <h3>
+                <a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a>
+              </h3>
+              
+              <time class="published" datetime='2020-01-07'>
+                January 7, 2020
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/todo.png" alt="">
+        </a>
+    
+
+
+          </article>
+        
+          <article class="mini-post">
+            <header>
+              <h3>
                 <a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a>
               </h3>
               
@@ -1648,43 +1625,6 @@ on the code:</p>
 
           </article>
         
-          <article class="mini-post">
-            <header>
-              <h3>
-                <a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a>
-              </h3>
-              
-              <time class="published" datetime='2017-03-28'>
-                March 28, 2017
-              </time>
-            </header>
-            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
-        </a>
-    
-
-
-          </article>
-        
       </div>
 
       
@@ -1716,8 +1656,8 @@ on the code:</p>
           <article>
             <header>
               
-                <a href="/categories/go/">Go</a>
-                <span style="float:right;">5</span>
+                <a href="/categories/go/">go</a>
+                <span style="float:right;">6</span>
               
             </header>
           </article>
@@ -1727,7 +1667,7 @@ on the code:</p>
           <article>
             <header>
               
-                <a href="/categories/distributed-systems/">Distributed Systems</a>
+                <a href="/categories/distributed-systems/">distributed-systems</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1738,7 +1678,7 @@ on the code:</p>
           <article>
             <header>
               
-                <a href="/categories/python/">Python</a>
+                <a href="/categories/python/">python</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1850,7 +1790,7 @@ on the code:</p>
     
     <p class="copyright">
       
-        &copy; 2018
+        &copy; 2020
         
           (define katcipis (λ () (write gibberish)))
         
