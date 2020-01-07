@@ -1,6 +1,6 @@
 +++
 author = "Tiago Katcipis"
-categories = ["Go"]
+categories = ["Go", "Concurrency"]
 date = "2020-01-07"
 title = "Multiplexing Channels in Go"
 linktitle = "Multiplexing Channels in Go"
