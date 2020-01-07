@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.49.2" />
+        <meta name="generator" content="Hugo 0.62.0" />
         
 
 
@@ -29,14 +29,12 @@
         <meta property="og:title" content="The RESTless struggle for RESTful" />
 <meta property="og:description" content="My Personal Crusade for the Holy Grail: REST" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://katcipis.github.io/blog/restless-restful/" /><meta property="article:published_time" content="2018-07-15T00:00:00&#43;00:00"/>
-<meta property="article:modified_time" content="2018-07-15T00:00:00&#43;00:00"/>
+<meta property="og:url" content="https://katcipis.github.io/blog/restless-restful/" />
+<meta property="article:published_time" content="2018-07-15T00:00:00+00:00" />
+<meta property="article:modified_time" content="2018-07-15T00:00:00+00:00" />
 
-        
-<meta itemprop="name" content="The RESTless struggle for RESTful">
+        <meta itemprop="name" content="The RESTless struggle for RESTful">
 <meta itemprop="description" content="My Personal Crusade for the Holy Grail: REST">
-
-
 <meta itemprop="datePublished" content="2018-07-15T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2018-07-15T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="6255">
@@ -44,7 +42,6 @@
 
 
 <meta itemprop="keywords" content="" />
-
         
 
         
@@ -182,6 +179,41 @@
                 
                         <article class="mini-post">
                             <header>
+                                <h3><a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2020-01-07'>
+                                    January 7, 2020</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+                        <article class="mini-post">
+                            <header>
                                 <h3><a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a></h3>
                                 
                                 <time class="published" datetime=
@@ -314,41 +346,6 @@
 
         <a href="/blog/hack-go-types/" class="image featured">
             <img src="/img/gohacking.jpg" alt="">
-        </a>
-    
-
-
-                        </article>
-                
-                        <article class="mini-post">
-                            <header>
-                                <h3><a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a></h3>
-                                
-                                <time class="published" datetime=
-                                    '2017-03-28'>
-                                    March 28, 2017</time>
-                            </header>
-                            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
         </a>
     
 
@@ -575,32 +572,25 @@
 
 
   <div id="content">
-    
-
-<h1 id="the-restless-struggle-for-restfulness">The RESTless struggle for RESTfulness</h1>
-
+    <h1 id="the-restless-struggle-for-restfulness">The RESTless struggle for RESTfulness</h1>
 <p>This post will be about my history trying to understand
-REST and RESTfulness (whatever that is, spoiler alert, I&rsquo;m
+REST and RESTfulness (whatever that is, spoiler alert, I'm
 not going to define what it is), what worked for me and
 what sidetracked me.</p>
-
 <p>As I evolve my ideas do not confuse that with
-me being sure of anything, I&rsquo;m still not sure of shit
-until now, the only thing I&rsquo;m sure is that repeating
+me being sure of anything, I'm still not sure of shit
+until now, the only thing I'm sure is that repeating
 the same mistakes is not a good idea,
 but how to make new ones is another history.</p>
-
 <p>I decided to write this because I think it is a very important
 topic (duh, obviously or I would be an idiot for wasting time no ? =P).</p>
-
 <p>Having good abstractions and a good environment are essential to
 build a truly scalable distributed system. Not only scalable on
 the sense of supporting millions of users, but cognitively scalable,
 a system that very limited humans beings can understand. An example
 of this idea can be found on
-<a href="https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html">Dijkstra&rsquo;s The Humble Programmer</a>
+<a href="https://www.cs.utexas.edu/~EWD/transcriptions/EWD03xx/EWD340.html">Dijkstra's The Humble Programmer</a>
 where he uses the term &ldquo;intellectual manageability&rdquo;.</p>
-
 <p>For me this is one of the holy grails of computing,
 a great deal of our pain is caused by our feeble brains
 and its difficulty on handling details. And to make things worse,
@@ -610,7 +600,6 @@ They like computers and math (nothing wrong with that),
 but the problem is related to human cognition, that is the bottleneck
 on most systems, not the computers. Of course sometimes it is the computers,
 but on the industry the bottleneck is people by far.</p>
-
 <p>Why talk about cognition before talking about REST ? Well it is another
 spoiler alert, but REST is an architecture for a system with massive scalability
 (the internet). Almost every company out there will not work on that
@@ -618,141 +607,109 @@ scale. The closest you will find will be Google. So there is a great deal
 of chance that when you are contemplating REST you are not thinking about
 scaling to billions of requests but thinking on how to make your
 system easy to understand, to make intentions clear.</p>
-
-<p>But you don&rsquo;t have to believe me, here is a quote from
+<p>But you don't have to believe me, here is a quote from
 <a href="https://www.ics.uci.edu/%7Efielding/pubs/dissertation/top.htm">Architectural Styles and the Design of Network-based Software Architectures</a>:</p>
-
 <pre><code>A good architecture is not created in a vacuum. All design decisions at the
 architectural level should be made within the context of the functional,
 behavioral, and social requirements of the system being designed, which is a 
 principle that applies equally to both software architecture and the traditional
 field of building architecture.
-</code></pre>
-
-<p>Of course I could be wrong, but it seems that &ldquo;social requirements&rdquo; of the system
+</code></pre><p>Of course I could be wrong, but it seems that &ldquo;social requirements&rdquo; of the system
 involves people that are going to use the system and the ones that are going to develop
 it too, and since it is a social aspect it involves our cognition.</p>
-
 <p>But enough with spoilers and start with ancient history.</p>
-
 <h1 id="on-the-beginning-there-was-rest">On the beginning there was REST</h1>
-
 <p>OK it is not that ancient, the year is 2008 and I had the
 opportunity to take an internship on an awesome company.
-Since I don&rsquo;t seem to run out of luck in life, I had the opportunity
+Since I don't seem to run out of luck in life, I had the opportunity
 to work with a lot of new projects, developing from scratch, defining
 protocols, etc. Of course I was not doing it alone, I was just the curious
 talkative intern, there were much wiser people guiding me.</p>
-
 <p>Some of the projects were restricted to internal proprietary protocols,
 others were using RTMP (thank God that is over), but we faced some opportunity
-to do what all the other cool kids where doing, shiny new REST API&rsquo;s.
+to do what all the other cool kids where doing, shiny new REST API's.
 At that time it was so well established that WS-* stuff and SOAP were pure
-evil that I didn&rsquo;t even bother to look that up too much and delve directly
+evil that I didn't even bother to look that up too much and delve directly
 on REST and its blazing glory.</p>
-
 <p>When you have no idea what you are doing because something is new
 to you the first instinct is too come up with a set of rules to
 avoid stupid mistakes and to avoid handling with context that
-you can&rsquo;t understand yet, this fits with the
+you can't understand yet, this fits with the
 <a href="https://en.wikipedia.org/wiki/Dreyfus_model_of_skill_acquisition">Dreyfus Model Of Skill Acquisition</a>.</p>
-
 <p>Searching for guidance on this aspect we found several guidelines
 that helped us build our own. At this stage there was just
 some web searching. The guidelines were sound, that usual stuff
 of handling collections of stuff and individual stuff on a
-hierarchical way using URL&rsquo;s, the traditional dogs example:</p>
-
+hierarchical way using URL's, the traditional dogs example:</p>
 <p>Getting all dogs:</p>
-
 <pre><code>GET
 /myapi/dogs
-</code></pre>
-
-<p>Getting individual dog:</p>
-
+</code></pre><p>Getting individual dog:</p>
 <pre><code>GET
 /myapi/dogs/someid
-</code></pre>
-
-<p>Using verbs on URL names mean you got everything wrong and was a bad bad
+</code></pre><p>Using verbs on URL names mean you got everything wrong and was a bad bad
 developer, you where not thinking on the RESTful way and should feel
 bad about yourself. There was a <strong>LOT</strong> of focus on the CRUD thing too,
 on how the HTTP methods should be used correctly. Not that these are
 bad ideas, it is a good idea to have a uniform system where the intentions
 are clear. No one wants to use the <strong>DELETE</strong> method to get some data, etc.
 But I started to get frustrated on how almost all material that I was reading
-focused way too much on URL&rsquo;s naming and HTTP verbs.</p>
-
+focused way too much on URL's naming and HTTP verbs.</p>
 <p>They always explain the collection of resources thing, and them how to relate
 resources, like the dog has an owner, how to express that ? Again, not that it
 is a bad idea to think on how to properly handle this kind of relationship, but to
 be honest it was not one of my biggest problems at the time. Actually if
 you squint you will see that discussing this is the same as discussing how
 to organize data on a database.</p>
-
-<p>Since URL&rsquo;s are hierarchical you will have similar problems to when you
+<p>Since URL's are hierarchical you will have similar problems to when you
 represent sets of information (or resources) that have relationships between
 them using a document oriented database (hierarchical). You will need to think
 if you always send the resource with its related resources embedded, or return
-links, there will be tradeoff&rsquo;s with each approach, etc. There is a good space
+links, there will be tradeoff's with each approach, etc. There is a good space
 for discussion on this area, and it is good discussion, depending on the
-kind of system you are developing different sets of tradeoff&rsquo;s must be made.</p>
-
+kind of system you are developing different sets of tradeoff's must be made.</p>
 <p>A great article that helped me understand the solution space better is
 <a href="https://www.seas.upenn.edu/~zives/03f/cis550/codd.pdf">A Relational Model of Data for Large Shared Data Banks</a>.</p>
-
 <p>But even though this is an interesting space of discussion I was growing
 frustrated. Why ? Well because I was not developing a database with a REST API.
 It was not just a set of static data, or static data with relationships between
 it. I was still all alone on how to model processes.</p>
-
 <p>Now things get interesting. At least for me, you must be already dozing off =P.</p>
-
-<h1 id="who-ate-my-process">Who ate my process ?</h1>
-
+<h1 id="who-ate-my-process-">Who ate my process ?</h1>
 <p>On the land of substantives and resources there seems to have little
 space for processes, they tend to be verbs since they do stuff with
 your data to produce some other data, or just change the state
-of a system (OMG state ? but isn&rsquo;t REST stateless ? it took me some
-time to understand that, but it is basically because I&rsquo;m stupid, and
+of a system (OMG state ? but isn't REST stateless ? it took me some
+time to understand that, but it is basically because I'm stupid, and
 very little material makes this really clear too).</p>
-
 <p>I felt stuck on discussions on how to use status codes and which
 HTTP methods to use. Again, not that this is necessarily bad, but
 it crossed the point of being useful and started to feel like
 bike shedding, specially when compared with the tremendous difficulty
 that I was feeling on how to actually solve a problem being &ldquo;RESTful&rdquo;.</p>
-
 <p>I was very used to solve problems with data + algorithms and it seemed
 that I was being presented only with the data part of the idea + the
 bike shedding on how to properly use methods and status codes. It is
 important to do CRUD stuff consistently, but to be honest it is boring
 as hell to discuss CRUD stuff.</p>
-
 <p>I remember something like linkedin using 9XX status codes, twitter using
 only POST and GET and no other methods and some sacred quest for the
 true RESTful way to do stuff (create your own status codes ?
 use all methods ?).</p>
-
 <p>One example that I remember vaguely (bad memory + 8 years) is how to
 model on a REST API the transfer of a call on a PBX API. I do not even
 remember how we solved, I just remember that I was frustrated, specially
 because all that talk about methods and substantives was not helping me
 at all on how to design it properly.</p>
-
 <p>In the midst of this suffering a friend of mine recommended the
 <a href="http://www.amazon.com/gp/product/0596805829">REST in Practice</a> which helped
 me a lot to understand something that seemed much more interesting than
 the CRUD stuff.</p>
-
 <h1 id="state-machines-everywhere">State Machines Everywhere</h1>
-
 <p>As I read the book it explained much better the
 <a href="https://martinfowler.com/articles/richardsonMaturityModel.html">Richardson Maturity Model</a>.
 Specially because it did that with much more detail and explaining it
 like a series of trade-offs instead of a quest for glory.</p>
-
 <p>The Richardson Maturity Model already starts to give a hint on what is
 wrong with most talks about REST, the maturity part will make you feel
 immature when your problem do not fit the abstraction. RPC for example
@@ -760,55 +717,45 @@ is portraited as a swamp, perhaps it is if you use HTTP to transport it
 and use XML, but when you are young it is pretty hard to understand
 the difference and it is pretty easy to develop the notion that RPC is bad
 (specially with some bad implementations of RPC and remote objects).</p>
-
 <p>Perhaps the notion of maturity is intended to be used inside a REST API,
 but most people that advocate RESTfulness takes it as a maturity of any API
 (and no one wants to have an immature API).</p>
-
 <p>When you start to grown up you start to see that there are no demons,
 so RPC is not a demon and REST is not the glorious light that will
 vanquish it, but more on that later, lets focus on the REST learning
-(have I mentioned how I&rsquo;m slow to learn ?).</p>
-
+(have I mentioned how I'm slow to learn ?).</p>
 <p>Anyway, I was finally getting the idea behind <a href="https://en.wikipedia.org/wiki/HATEOAS">HATEOAS</a>
 (which is also known as the worse acronym ever created) and was excited
 because for the first time there was something on all the REST talk
 that was actually useful.</p>
-
-<p>OK I&rsquo;m exaggerating, it is not that the CRUD and status code talk does
+<p>OK I'm exaggerating, it is not that the CRUD and status code talk does
 not have some usefulness, but compared to the idea of designing cool
 state machines that helps enforce decoupling of clients and servers is
 so exciting that it got me frustrated how people talk so little about this.
 Actually usually there is not talk at all about this aspect of REST.</p>
-
 <p>An example of that was the tooling for writing docs at the time (CIRCA 2010-2011),
 they where pretty beautiful (like swagger) but they had 0 support to the
 idea of designing a state machine with links driving the next possible states.
-That frustrated the hell out of me (of course it may be that I&rsquo;m lousy at looking stuff
-on the internet,perhaps there was something, but I didn&rsquo;t found it).</p>
-
+That frustrated the hell out of me (of course it may be that I'm lousy at looking stuff
+on the internet,perhaps there was something, but I didn't found it).</p>
 <p>The best that I found was the
 <a href="http://stateless.co/hal_specification.html">JSON HAL</a> specification that I used
 as a inspiration for an API that I was developing at the time.</p>
-
 <p>Inspiration because I did not used it. It was simply too much for an API that
 was going to be used internally by less than a hundred clients, a lot of it
 seems focused on internet scale stuff and I was not building
 internet scale stuff.</p>
-
 <p>But the idea of expressing the state machine in-band on the protocol
 of the API is applicable on any scale. The alternative would be to
 document a series of URL templates (creates more coupling) and document
-in which states some of the URL&rsquo;s would be available and when it was not.</p>
-
+in which states some of the URL's would be available and when it was not.</p>
 <p>Using the HATEOAS idea I was able to decouple clients from internal details
 on how resources are organized on the service and also from details of
 which states some interactions where possible or not, the protocol embedded
 that on the answers. This does not solve all problems on earth, but it was
 the first time that I was actually feeling good about this
-REST stuff, life was good (who doesn&rsquo;t like opaque stuff ?
-opaque URL&rsquo;s rlz !).</p>
-
+REST stuff, life was good (who doesn't like opaque stuff ?
+opaque URL's rlz !).</p>
 <p>After some time I even started to feel stupid on how I did not get
 the HATEOAS idea before. What is great about navigating in the internet
 is the fact that you do not need to know anything about the site you
@@ -816,30 +763,24 @@ are visiting, only the initial entry point. After that you can understand
 what you can do and have links that you can click to express your desire
 to change state
 (or not if you just want to load a different resource).</p>
-
 <p>The name REST has State Transfer on it, how can we give so little attention to that
 and focus on representing collections of stuff ? The theory behind the
 <a href="https://en.wiktionary.org/wiki/bikeshedding">bike shedding phenomenon</a>
 explains that we do this because it is easy to stay forever discussing
 things that we understand better (and are simpler) instead of tackling
 the real harder problem.</p>
-
 <p>But the eternal bike shedding on REST methods was not over yet.
 And there was still the pain of ostracizing verbs, an URL is a
-Uniform Resource Location, RESOURCE, so it can&rsquo;t be a verb&hellip;
+Uniform Resource Location, RESOURCE, so it can't be a verb&hellip;
 fuck you and your API if it is a verb.</p>
-
-<h1 id="what-the-hell-is-a-resource">What the hell is a resource ?</h1>
-
+<h1 id="what-the-hell-is-a-resource-">What the hell is a resource ?</h1>
 <p>The path that took me to a better understanding (or less crappy, at
 least for me) involves not just resources, but also the dispute
 on HTTP methods. More exactly the PUT method (also the PATCH one).</p>
-
 <p>For me, trying to handle everything JUST with HTTP methods seemed
 again like working just with databases, the API felt anemic, like
 I have so little logic that just changing fields on JSON documents
 is enough to solve all my problems.</p>
-
 <p>One post that introduced me to some interesting ideas was the
 <a href="https://www.thoughtworks.com/insights/blog/rest-api-design-resource-modeling">REST API Design - Resource Modeling</a>.
 As far as I got it, it introduced the idea that everything
@@ -847,7 +788,6 @@ can be turned on a resource if this makes sense to be done
 on the domain of the problem that you are solving. It also
 shared my view that thinking only on CRUD generate an anemic API,
 if the API is anemic the client needs to get more complex:</p>
-
 <pre><code>Essentially, the low level CRUD oriented approach puts the business
 logic in the client code creating tight coupling between the client
 (API consumer) and services (API) it shouldn't care about,
@@ -855,65 +795,50 @@ and it loses the user intent by decomposing it in the client.
 
 Anytime the business logic changes,
 all your API consumers have to change the code and redeploy the system.
-</code></pre>
-
-<p>And it introduces an example of creating a resource to model something
+</code></pre><p>And it introduces an example of creating a resource to model something
 that is actually a process (see the &ldquo;Nouns versus Verbs&rdquo; part).</p>
-
 <p>This does seem at first as a way to introduce hacks instead of
 good design (specially if you are feeling RESTy), but almost all
 good ideas can be used as crappy hacks.
 Also the anemic feeling on APIs start to dissipate when you
 open yourself to this idea, so I embraced it.</p>
-
 <p>Later I encountered the concept of <a href="https://en.wikipedia.org/wiki/Reification">reification</a>,
 I was doing it for some time since it is what we do when we are programming,
-but I didn&rsquo;t have a name for it and never stopped to think on it
+but I didn't have a name for it and never stopped to think on it
 as a valid design goal on a system.</p>
-
 <p>For example, compilers use this idea to make it easier to be ported to
 multiple platforms. What would be the reification ? The intermediary code.
 It is treated and tested on the compiler as real code, it is a valid
 testable product of the compilation process, but it does not exist, there
 is no machine on the world that can run it, it is a pure design creation
 made to make the system easier to port and test.</p>
-
 <p>So it can be your passport to an horrible API or to wonderful abstractions
 and a more testable API (I first heard about this for testing on this
 <a href="http://www.se-radio.net/2010/09/episode-167-the-history-of-junit-and-the-future-of-testing-with-kent-beck/">great podcast</a>
 where Kent Beck talks about testing).</p>
-
-<h1 id="but-what-about-the-methods">But what about the methods ?</h1>
-
+<h1 id="but-what-about-the-methods-">But what about the methods ?</h1>
 <p>OK I got all excited with the state transfer thing and totally forgot
 that not being uniform on how you use a set of operations (methods) can
 be really hurtful to a distributed system.</p>
-
-<p>On a system where there are IDL&rsquo;s (Interface Description Languages)
-you usually don&rsquo;t have this problem
+<p>On a system where there are IDL's (Interface Description Languages)
+you usually don't have this problem
 since each interface has its own set of operations that is documented,
 there is less restrictions (also more space to inconsistencies in naming
 and other things, trade-offs, no free lunch, etc).</p>
-
 <p>So REST and its more known implementation on top of HTTP has a fixed
 set of methods with a specific semantic for each one.</p>
-
 <p>Before going deeper on the semantics of the methods, you must ask yourself,
 why it is so important to use the correct semantic of each method ?</p>
-
 <p>The first that always came to my mind is that consistency makes your API
 easier to understand, you can use intuition to infer how to do stuff instead
 of always reading docs. Being able to use intuition to do something on an API
 is a sign of a great API to me. But when we are thinking about distributed
 systems there are other important things to consider.</p>
-
 <p>The most important one, that always bites us in the ass, is side effects.
 Our inability to properly handle side effects is what makes functional
 programming so attractive, we suck at it.</p>
-
 <p>So how does HTTP specifies state changes ? Lets take a look on the
 <a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html">spec</a>:</p>
-
 <pre><code>In particular, the convention has been established that the GET and HEAD
 methods SHOULD NOT have the significance of taking an action
 other than retrieval.
@@ -928,15 +853,11 @@ generate side-effects as a result of performing a GET request; in fact,
 some dynamic resources consider that a feature. The important distinction
 here is that the user did not request the side-effects,
 so therefore cannot be held accountable for them.
-</code></pre>
-
-<p>The advantage of being explicit about state changes is a more obvious one.
-If the system is built properly and some code is only performing GET&rsquo;s you
+</code></pre><p>The advantage of being explicit about state changes is a more obvious one.
+If the system is built properly and some code is only performing GET's you
 can be sure that it is not the culprit for some state change (it also has
 applications on caching, which is pretty important to scale in some contexts).</p>
-
 <p>There are more subtle ones, like idempotent methods:</p>
-
 <pre><code>Methods can also have the property of &quot;idempotence&quot; in that
 (aside from error or expiration issues) the side-effects of
 N &gt; 0 identical requests is the same as for a single request.
@@ -957,22 +878,17 @@ value that is later modified in the same sequence.
 A sequence that never has side effects is idempotent,
 by definition (provided that no concurrent operations
 are being executed on the same set of resources).
-</code></pre>
-
-<p>If you never heard about idempotent methods this can be a little hard
-to digest, and can also generate a feeling of &ldquo;why should I care ?&rdquo;.</p>
-
+</code></pre><p>If you never heard about idempotent methods this can be a little hard
+to digest, and can also generate a feeling of &ldquo;why should I care ?&quot;.</p>
 <p>In a distributed system making idempotent operations explicit is
 important for failure recovery. If an operation is idempotent
 and its answer timeouts (perhaps a node went down, who knows ?)
 you can safely retransmit it, if the previous one was actually
-executed this will generate no problem&rsquo;s at all since the operation
+executed this will generate no problem's at all since the operation
 is idempotent. If this does not seem that important to you yet
 checkout this
 <a href="https://www.cockroachlabs.com/blog/cockroachdb-beta-passes-jepsen-testing/">awesome post on cockroachdb passing the jepsen test</a>.</p>
-
 <p>Quoting:</p>
-
 <pre><code>The sets test (described in section 2.7) revealed a bug
 when it was refactored to use a single auto-committed INSERT
 statement instead of a multi-statement BEGIN/INSERT/COMMIT transaction
@@ -989,54 +905,38 @@ and both attempts eventually succeeded
 (this was possible because the table had an
 auto-generated primary key, so the two insertion
 attempts were not using the same PK values).
-</code></pre>
-
-<p>Distributed systems are hard, being sure of what can be retried and what
-can&rsquo;t is essential. So right now we have 3 categories of operations:</p>
-
+</code></pre><p>Distributed systems are hard, being sure of what can be retried and what
+can't is essential. So right now we have 3 categories of operations:</p>
 <ul>
 <li>Side Effect Free</li>
 <li>Idempotent (with side effects, can be retransmited safely)</li>
-<li>Non-Idempotent  (with side effects, can&rsquo;t be retransmited safely)</li>
+<li>Non-Idempotent  (with side effects, can't be retransmited safely)</li>
 </ul>
-
 <p>To give a more simple example, deleting a resource using the <strong>DELETE</strong>
 method is safe for retransmission since deleting something twice
 ends up on the same final state, that thing has been deleted.</p>
-
 <p>It is important to not mistake leaving the system at the same state
 with it giving the same answer. The first delete will return OK and the second
 one will fail, the operation is still idempotent because the final state
 of the system is the same (the resource has been deleted).</p>
-
 <p>Another interesting property of operations is commutativity, since they
 enable parallelization, but AFAIK there is nothing on REST about that.</p>
-
 <p>We saw some examples of side effects free operations and idempotent ones,
 this leaves us with the non-idempotent one, the beloved <strong>POST</strong> method.</p>
-
 <p>What should be the semantics of <strong>POST</strong> ? This is one of the biggest
 sources of bike shedding on RESTfulness because of the addiction
 to creating resources, that does not map well with some sorts of processes
 (yeah, REST can not map well to stuff,
 it is real, it happens, more on that later).</p>
-
 <p>An example from a RESTful guideline:</p>
-
 <pre><code>POST requests are idiomatically used to create
 single resources on a collection resource endpoint,
-</code></pre>
-
-<p>Which leads to:</p>
-
+</code></pre><p>Which leads to:</p>
 <pre><code>POST request should only be applied to collection resources,
 and normally not on single resource, as this has an undefined semantic
-</code></pre>
-
-<p>Undefined semantic ? Creating resources ? OK lets take a look at the
+</code></pre><p>Undefined semantic ? Creating resources ? OK lets take a look at the
 <a href="https://tools.ietf.org/html/rfc2616#section-9">spec</a>, this time I will
 copy the entire method specification, because this is important.</p>
-
 <pre><code>9.5 POST
 
    The POST method is used to request that the origin server accept the
@@ -1081,69 +981,51 @@ copy the entire method specification, because this is important.</p>
    in section 8.2.
 
    See section 15.1.3 for security considerations.
-</code></pre>
-
-<p>Focus on:</p>
-
+</code></pre><p>Focus on:</p>
 <pre><code>   The actual function performed by the POST method is determined by the
    server and is usually dependent on the Request-URI.
-</code></pre>
-
-<p>And:</p>
-
+</code></pre><p>And:</p>
 <pre><code>   If a resource has been created on the origin server, the response
    SHOULD be 201 (Created) and contain an entity which describes the
    status of the request and refers to the new resource, and a Location
    header (see section 14.30).
-</code></pre>
-
-<p>So no, there is nothing undefined and wrong with a <em>POST</em> method
+</code></pre><p>So no, there is nothing undefined and wrong with a <em>POST</em> method
 that does not create a new resource, it MAY create resources but there
 are a lot of examples on the spec itself where they simply do not.</p>
-
 <p>The important thing to convey by using a <em>POST</em> method to a URL is that
 side effects will be produced by the request and that is it. There is
 nothing wrong, or hacky, on modelling a process as a resource and
 using a POST method for it to do its job when the process will
 result on state changes on the system but will produce no resources
 at all.</p>
-
 <p>This is the moment where I started to get strong feelings of
 <strong>guidelines considered harmful</strong>.
 If people do not actually study the specs and just
 follow these context sensitive derivatives they are prone to feel
 bad for doing something that is perfectly fine, or worse, be busted by
 the RESTful police:</p>
-
-<p><img src="https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/img/veganpolice.gif" alt="vegan police" /></p>
-
+<p><img src="https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/img/veganpolice.gif" alt="vegan police"></p>
 <p>Which may result on turning the API on a monster trying to
 fit it on a misconception of what would be &ldquo;RESTFul&rdquo; (which usually
 resembles a hierarchical database or a local file system).</p>
-
 <h1 id="restful-strikes-back">RESTful strikes back</h1>
-
-<p>There was I living my life, doing some crappy API&rsquo;s but not feeling
+<p>There was I living my life, doing some crappy API's but not feeling
 bad about it, people were using it and they worked. Since not a lot
 of people asked questions on how to use them I suppose it was not that
 hard to understand and integrate with them, although they would
 not be &ldquo;RESTful&rdquo; since sometimes POST
 was used not to create stuff and I used to model processes (verbs)
-on URL&rsquo;s where appropriate.</p>
-
+on URL's where appropriate.</p>
 <p>There was CRUD too, no problem with that, when it fits. If you do have
 collections of stuff and it is pretty clear how you add new ones to
 the collection and remove them, go for it, it is great too.</p>
-
 <p>Then, on a cloudy day on a meeting there was some discussion on
 being RESTful and a lot of old feelings resurfaced.</p>
-
 <p>What the fuck is REST anyway ? Sorry for the fuck part, but if
 what is REST or RESTful is subjective, then discussing it is
 pointless, it can be anything you want, even something that
-will impair your capacity to think and build API&rsquo;s that
+will impair your capacity to think and build API's that
 fit well to your problem.</p>
-
 <p>I was on a phase on my life where it has started to be obvious
 that the best way to solve these things is to go directly at
 the source. Specially since people like to be religious with
@@ -1151,24 +1033,20 @@ this stuff, having access to the source of their beliefs gives
 you a lot of power. So I started reading the
 <a href="https://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and the Design of Network-based Software Architectures</a>
 dissertation. AFAIK is the origin of the acronym REST.</p>
-
 <p>Since I was a little biased against RESTful stuff I was surprised
 at how awesome and different from everything you read about REST
 the dissertation was.</p>
-
 <p>The best part of it is the one that does not talk about REST, it actually
 builds a framework on how to compare different architectural styles
 to see which one fits better to your system. You can even create
 your own architectural style by composing existing architectural
 constraints, it was considerably enlightening to me and I highly
 recommend the read to anyone on the business of developing
-REST API&rsquo;s.</p>
-
+REST API's.</p>
 <p>How to properly architecture software starts on the dedication
 of the dissertation, it has an awesome quote from a book that
 is focused on architecture but it is very appliable on software
 architecture:</p>
-
 <pre><code>Almost everybody feels at peace with nature: listening to the
 ocean waves against the shore, by a still lake, in a field of grass,
 on a windblown heath.
@@ -1179,46 +1057,36 @@ peace in them, as we do today walking by the ocean, or stretched out in
 the long grass of a meadow.
 
 -- Christopher Alexander, The Timeless Way of Building (1979)
-</code></pre>
-
-<p>This quote is a source of inspiration on what software architecture should
+</code></pre><p>This quote is a source of inspiration on what software architecture should
 be about. It is the problem that you are solving, the people that are
 going to use that architecture everyday (will live inside of it).</p>
-
 <p>Software has two audiences, other developers that have to evolve the
 system and clients that just use the system. The definition of a successful
 architecture is when both are extremely pleased, and being pleased comes
 through simplicity, just like nature, it simply fits and feels good.</p>
-
 <p>It is a social phenomenon, deeply influenced by human cognition. Because
 what is easy to understand and feels confortable is related to cognition.</p>
-
 <p>Of course that the architecture also has to support the problem being
 solved, no one likes a building that is confortable but may collapse
 on your head. That is why architecting is so hard, you have a lot
 of variables that will push your design on different directions,
 the decisions of the trade-offs will be your responsibility.</p>
-
 <p>Uniformity is important, so discussing good practices and trying to
 enforce uniformity may be good, but uniformity has trade-offs too, so
 you need to know when to give it up, the dissertation is also very clear
 on this.</p>
-
-<p>The dissertation is pretty big, but totally worth it, I can&rsquo;t quote
+<p>The dissertation is pretty big, but totally worth it, I can't quote
 everything I find interesting from it here because it would make
 this post even bigger than already it is (if you are curious
 you can see
 <a href="https://github.com/katcipis/sophia/blob/master/notes/articles/fielding-dissertation-rest.md">my notes here</a>,
 but you will be best served reading the dissertation).</p>
-
 <p>I will focus just on things that can help you break free from
 the tiranny of RESTFulness with a series of quotes from the
 dissertation. Since it is the source of REST it should be
 a reliable source of guidance (if you like REST at least).</p>
-
 <p>What should guide design decisions on your architecture ? (Already quoted this
 at the beggining of the post, but now I try to make a different point)</p>
-
 <pre><code>A good architecture is not created in a vacuum. All design decisions at the
 architectural level should be made within the context of the functional,
 behavioral, and social requirements of the system being designed, which is a 
@@ -1228,12 +1096,9 @@ field of building architecture.
 The guideline that &quot;form follows function&quot; comes from hundreds of years of
 experience with failed building projects, but is often ignored by software
 practitioners.
-</code></pre>
-
-<p>Elaborating more on how usually function ends up following form, or the
+</code></pre><p>Elaborating more on how usually function ends up following form, or the
 desires of the architect he mentions a
 <a href="https://www.youtube.com/watch?v=DyL5mAqFJds">Monty Python sketch</a>:</p>
-
 <pre><code>The funny bit within the Monty Python sketch, cited above, is the absurd
 notion that an architect, when faced with the goal of designing an urban
 block of flats (apartments), would present a building design with all the
@@ -1242,15 +1107,11 @@ components of a modern slaughterhouse.
 It might very well be the best slaughterhouse design ever conceived,
 but that would be of little comfort to the prospective tenants as they
 are whisked along hallways containing rotating knives.
-</code></pre>
-
-<p>If I got a penny for each slaughterhouse I designed just because
+</code></pre><p>If I got a penny for each slaughterhouse I designed just because
 I liked the idea and it seemed right to me to do it that way
 (or because everyone else is doing slaughterhouses), I would
 be rich by now.</p>
-
 <p>And then the ultimate irony:</p>
-
 <pre><code>The hyperbole of The Architects Sketch may seem ridiculous,
 but consider how often we see software projects begin with adoption of
 the latest fad in architectural design, and only later discover whether or
@@ -1259,14 +1120,11 @@ not the system requirements call for such an architecture.
 Design-by-buzzword is a common occurrence. At least some of this behavior
 within the software industry is due to a lack of understanding of why a
 given set of architectural constraints is useful. 
-</code></pre>
-
-<p>He just describes exactly what sadly happened to REST, instead
+</code></pre><p>He just describes exactly what sadly happened to REST, instead
 of being considered as another architectural style, among others,
 with its own trade-offs, it has become the latest fad in architectural
 design. Design-by-buzzword, there is no way to put it better. Need more
 convincing ? Another pearl from the dissertation:</p>
-
 <pre><code>Some architectural styles are often portrayed as &quot;silver bullet&quot; solutions for
 all forms of software. However, a good designer should select a style that
 matches the needs of the particular problem being solved [119].
@@ -1277,10 +1135,7 @@ needs of the application, an awareness of the variety of architectural styles
 and the particular concerns they address, and the ability to anticipate the
 sensitivity of each interaction style to the characteristics of
 network-based communication
-</code></pre>
-
-<p>Again&hellip;oh the irony =/. Want a good example of trade-offs made on REST ?</p>
-
+</code></pre><p>Again&hellip;oh the irony =/. Want a good example of trade-offs made on REST ?</p>
 <pre><code>The trade-off, though, is that a uniform interface degrades efficiency,
 since information is transferred in a standardized form rather than one
 which is specific to an application's needs.
@@ -1288,84 +1143,67 @@ which is specific to an application's needs.
 The REST interface is designed to be efficient for large-grain hypermedia
 data transfer, optimizing for the common case of the Web, but resulting in
 an interface that is not optimal for other forms of architectural interaction.
-</code></pre>
-
-<p>I said that we would come back to uniformity. It is great,
+</code></pre><p>I said that we would come back to uniformity. It is great,
 but it has trade-offs.  REST ideas are heavilly based on
 large-grain data transfer, does this fit with
 what you need ? What are others alternatives ?</p>
-
 <p>Sadly this RESTful mindset seems to hinder the ability to discuss
 alternatives to REST. I certainly stopped me from doing it for a
 good time because I was too focused on perfecting REST to solve
 everything. Ironic that was the REST dissertation that
 helped me see my mistake.</p>
-
 <h1 id="resting-from-rest">RESTing from REST</h1>
-
 <p>Perhaps, in the end, this is just the normal process of learning something.
-Or I&rsquo;m just stupid. But things started to go sideways for me when I stopped
+Or I'm just stupid. But things started to go sideways for me when I stopped
 thinking about the problem I was trying to solve and kept thinking about how to
 be RESTful.</p>
-
 <p>When the problem did not fit my model of what was
 RESTful (whatever that actually is) I was kinda depressed, felt shame about
 my API, lost a lot of time trying to make it RESTful and even made it
 worse for the sake of being RESTful.</p>
-
 <p>Another problem that I observe is how much time we spend discussing
 REST and not studying other architectural styles for distributed systems.
 The REST dissertations lays down a way to compare architectural styles
 and provide incentives on thinking on your problem and defining your
 own set of architectural constraints.</p>
-
 <p>For the web the demand for standardization is much bigger than from
 internal services to solve a smaller/different problem than the
 web. On the dissertation one of the focus of REST and the design
 of the web was massive anarchic scalability, there is a great
 deal of focus on decoupling.</p>
-
 <p>Any experienced developer knows that even decoupling has a price,
 always understand the price you are paying and why, the web pays
 it because it is the web, you are not the web.</p>
-
-<p>There are systems that need to export API&rsquo;s
+<p>There are systems that need to export API's
 on the web, these are excellent cases for REST, or at least to use
 an ubiquitous protocol as HTTP, you need to focus on integration
 with third parties. But even those usually have inner systems that
 are not exported to the web, they are great candidates to
 focus on what solves the problem best, not standards.</p>
-
 <p>In some sense this reminds me of discussions on using a lot
 of different programming languages, you can create a mess if
 you never master a language properly and develop each service
 on a different one but you also lose a lot of insights and
 growth if you got stuck always with the same one. Architectural
-styles seems to be something like that to me, you don&rsquo;t need to
+styles seems to be something like that to me, you don't need to
 create a mess but standardizing everything does not seem to be a
 good way to do things either.</p>
-
 <p>What would be these different architectural styles ? One that I
 recently have been studying is the one used on Plan9 and Inferno,
 some good articles:</p>
-
 <ul>
 <li><a href="http://doc.cat-v.org/plan_9/4th_edition/papers/9">Plan9 from Bell Labs</a></li>
 <li><a href="http://doc.cat-v.org/inferno/4th_edition/styx">The Styx Architecture for Distributed Systems</a></li>
 <li><a href="http://doc.cat-v.org/plan_9/4th_edition/papers/net/">The Organization of Networks in Plan 9</a></li>
 <li><a href="http://doc.cat-v.org/plan_9/4th_edition/papers/names">The use of namespaces in Plan 9</a></li>
 </ul>
-
 <p>In the end the idea is not that REST is bad, RESTFul is bad, guidelines
 are bad. What is bad is to stop thinking about what you are doing and
 to stop searching for different answer that may fit your problems better.
-You can&rsquo;t do that if you believe that REST fits any kind of problem and
-all API&rsquo;s should be done this way.</p>
-
+You can't do that if you believe that REST fits any kind of problem and
+all API's should be done this way.</p>
 <h1 id="acknowlegements">Acknowlegements</h1>
-
 <p>Thanks for the following people for their help improving this text:</p>
-
 <ul>
 <li><a href="https://github.com/iuryfukuda">Iury Fukuda</a></li>
 <li><a href="https://github.com/ryukinix">Manoel Vilela</a></li>
@@ -1574,6 +1412,43 @@ all API&rsquo;s should be done this way.</p>
           <article class="mini-post">
             <header>
               <h3>
+                <a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a>
+              </h3>
+              
+              <time class="published" datetime='2020-01-07'>
+                January 7, 2020
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
+        </a>
+    
+
+
+          </article>
+        
+          <article class="mini-post">
+            <header>
+              <h3>
                 <a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a>
               </h3>
               
@@ -1719,43 +1594,6 @@ all API&rsquo;s should be done this way.</p>
 
           </article>
         
-          <article class="mini-post">
-            <header>
-              <h3>
-                <a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a>
-              </h3>
-              
-              <time class="published" datetime='2017-03-28'>
-                March 28, 2017
-              </time>
-            </header>
-            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
-        </a>
-    
-
-
-          </article>
-        
       </div>
 
       
@@ -1787,8 +1625,8 @@ all API&rsquo;s should be done this way.</p>
           <article>
             <header>
               
-                <a href="/categories/go/">Go</a>
-                <span style="float:right;">5</span>
+                <a href="/categories/go/">go</a>
+                <span style="float:right;">6</span>
               
             </header>
           </article>
@@ -1798,7 +1636,7 @@ all API&rsquo;s should be done this way.</p>
           <article>
             <header>
               
-                <a href="/categories/distributed-systems/">Distributed Systems</a>
+                <a href="/categories/distributed-systems/">distributed-systems</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1809,7 +1647,7 @@ all API&rsquo;s should be done this way.</p>
           <article>
             <header>
               
-                <a href="/categories/python/">Python</a>
+                <a href="/categories/python/">python</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1921,7 +1759,7 @@ all API&rsquo;s should be done this way.</p>
     
     <p class="copyright">
       
-        &copy; 2018
+        &copy; 2020
         
           (define katcipis (λ () (write gibberish)))
         

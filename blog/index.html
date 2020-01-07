@@ -16,7 +16,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.49.2" />
+        <meta name="generator" content="Hugo 0.62.0" />
         
 
 
@@ -36,13 +36,10 @@
 <meta property="og:description" content="HTML5 UP theme, Future Imperfect with some extra goodies, ported by Julio Pescador. Powered by Hugo" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://katcipis.github.io/blog/" />
-<meta property="og:updated_time" content="2018-10-14T00:00:00&#43;00:00"/>
+<meta property="og:updated_time" content="2020-01-07T00:00:00+00:00" />
 
-        
-<meta itemprop="name" content="Blog">
+        <meta itemprop="name" content="Blog">
 <meta itemprop="description" content="HTML5 UP theme, Future Imperfect with some extra goodies, ported by Julio Pescador. Powered by Hugo">
-
-
         
 
         
@@ -172,6 +169,41 @@
                     
                 
 
+                
+                        <article class="mini-post">
+                            <header>
+                                <h3><a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2020-01-07'>
+                                    January 7, 2020</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
+        </a>
+    
+
+
+                        </article>
                 
                         <article class="mini-post">
                             <header>
@@ -313,41 +345,6 @@
 
                         </article>
                 
-                        <article class="mini-post">
-                            <header>
-                                <h3><a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a></h3>
-                                
-                                <time class="published" datetime=
-                                    '2017-03-28'>
-                                    March 28, 2017</time>
-                            </header>
-                            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
-        </a>
-    
-
-
-                        </article>
-                
 
                 
                     <a href=
@@ -366,6 +363,97 @@
     
     <div id="main">
         
+        
+            <article class="post">
+    <header>
+    <div class="title">
+        
+            <h2><a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a></h2>
+        
+        
+            <p>Multiplexing Channels in Go</p>
+        
+    </div>
+    <div class="meta">
+        
+
+        <time class="published"
+            datetime='2020-01-07'>
+            January 7, 2020</time>
+        <span class="author">Tiago Katcipis</span>
+        
+            <p>14 minute read</p>
+        
+        
+    </div>
+</header>
+
+    
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
+        </a>
+    
+
+
+    <p>Here I will provide some context on how the concept of multiplexing (or joining) channels got into my life, how it changed how I design concurrent algorithms and present an implementation of that idea comparing with a more common alternative.
+I have a feeling that this may be something well known by people who have experience with concurrent algorithms, but since there is a chance that I'm not the only person oblivious to this idea I'm going to try and explain how I discovered it and then had some fun with it and how I think it now helps me, in some cases (it is not a silver bullet), to write simpler concurrent code.</p>
+
+    <footer>
+        <ul class="actions">
+            <li><a href="/blog/mux-channels-go/" class="button big">Continue Reading</a></li>
+        </ul>
+        <ul class="stats">
+    
+        
+
+        
+        
+            <li>
+                
+                
+                    
+
+                    
+
+                    
+                        <i class="fa fa-sitemap">&nbsp;</i>
+                    
+
+                    
+                        Category
+                    
+                
+            </li>
+        
+    
+
+    
+    
+        <li><a href='/categories/go'>Go</a></li>
+    
+</ul>
+
+    </footer>
+</article>
+
         
             <article class="post">
     <header>
@@ -416,7 +504,7 @@
     
 
 
-    <p>Python 3, UTF-8 and Locale This post will explore a problem that I had with Python 3 and UTF-8 strings that caught me by surprise and has the objective of helping other people to don&rsquo;t be caught on the same trap.
+    <p>Python 3, UTF-8 and Locale This post will explore a problem that I had with Python 3 and UTF-8 strings that caught me by surprise and has the objective of helping other people to don't be caught on the same trap.
 It is not intended to be a rant against Python, but to be honest the problem and the behavior did not make me too happy about Python. Perhaps it was my failure in finding the proper documentation about it, but for people as stupid as I am it may help.</p>
 
     <footer>
@@ -507,8 +595,8 @@ It is not intended to be a rant against Python, but to be honest the problem and
     
 
 
-    <p>The RESTless struggle for RESTfulness This post will be about my history trying to understand REST and RESTfulness (whatever that is, spoiler alert, I&rsquo;m not going to define what it is), what worked for me and what sidetracked me.
-As I evolve my ideas do not confuse that with me being sure of anything, I&rsquo;m still not sure of shit until now, the only thing I&rsquo;m sure is that repeating the same mistakes is not a good idea, but how to make new ones is another history.</p>
+    <p>The RESTless struggle for RESTfulness This post will be about my history trying to understand REST and RESTfulness (whatever that is, spoiler alert, I'm not going to define what it is), what worked for me and what sidetracked me.
+As I evolve my ideas do not confuse that with me being sure of anything, I'm still not sure of shit until now, the only thing I'm sure is that repeating the same mistakes is not a good idea, but how to make new ones is another history.</p>
 
     <footer>
         <ul class="actions">
@@ -542,97 +630,6 @@ As I evolve my ideas do not confuse that with me being sure of anything, I&rsquo
     
     
         <li><a href='/categories/distributed-systems'>Distributed Systems</a></li>
-    
-</ul>
-
-    </footer>
-</article>
-
-        
-            <article class="post">
-    <header>
-    <div class="title">
-        
-            <h2><a href="/blog/object-orientation-go/">Object Orientation in Go</a></h2>
-        
-        
-            <p>What is Object Orientation anyway ?</p>
-        
-    </div>
-    <div class="meta">
-        
-
-        <time class="published"
-            datetime='2017-12-03'>
-            December 3, 2017</time>
-        <span class="author">Tiago Katcipis</span>
-        
-            <p>12 minute read</p>
-        
-        
-    </div>
-</header>
-
-    
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/object-orientation-go/" class="image featured">
-            <img src="/img/gophermessages.jpg" alt="">
-        </a>
-    
-
-
-    <p>Here I try to share my journey understanding how Go approaches object orientation and how in the end it seems much more object oriented than most &ldquo;traditional&rdquo; object oriented languages.
-On a previous post I explored the idea of expressing everything just with functions, and that Go objects are actually just a safe way to express a set of functions that always go together with the same closure and may operate on same state.</p>
-
-    <footer>
-        <ul class="actions">
-            <li><a href="/blog/object-orientation-go/" class="button big">Continue Reading</a></li>
-        </ul>
-        <ul class="stats">
-    
-        
-
-        
-        
-            <li>
-                
-                
-                    
-
-                    
-
-                    
-                        <i class="fa fa-sitemap">&nbsp;</i>
-                    
-
-                    
-                        Category
-                    
-                
-            </li>
-        
-    
-
-    
-    
-        <li><a href='/categories/go'>Go</a></li>
     
 </ul>
 
@@ -775,6 +772,43 @@ On a previous post I explored the idea of expressing everything just with functi
           
         
 
+        
+          <article class="mini-post">
+            <header>
+              <h3>
+                <a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a>
+              </h3>
+              
+              <time class="published" datetime='2020-01-07'>
+                January 7, 2020
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
+        </a>
+    
+
+
+          </article>
         
           <article class="mini-post">
             <header>
@@ -924,43 +958,6 @@ On a previous post I explored the idea of expressing everything just with functi
 
           </article>
         
-          <article class="mini-post">
-            <header>
-              <h3>
-                <a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a>
-              </h3>
-              
-              <time class="published" datetime='2017-03-28'>
-                March 28, 2017
-              </time>
-            </header>
-            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
-        </a>
-    
-
-
-          </article>
-        
       </div>
 
       
@@ -992,8 +989,8 @@ On a previous post I explored the idea of expressing everything just with functi
           <article>
             <header>
               
-                <a href="/categories/go/">Go</a>
-                <span style="float:right;">5</span>
+                <a href="/categories/go/">go</a>
+                <span style="float:right;">6</span>
               
             </header>
           </article>
@@ -1003,7 +1000,7 @@ On a previous post I explored the idea of expressing everything just with functi
           <article>
             <header>
               
-                <a href="/categories/distributed-systems/">Distributed Systems</a>
+                <a href="/categories/distributed-systems/">distributed-systems</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1014,7 +1011,7 @@ On a previous post I explored the idea of expressing everything just with functi
           <article>
             <header>
               
-                <a href="/categories/python/">Python</a>
+                <a href="/categories/python/">python</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1126,7 +1123,7 @@ On a previous post I explored the idea of expressing everything just with functi
     
     <p class="copyright">
       
-        &copy; 2018
+        &copy; 2020
         
           (define katcipis (λ () (write gibberish)))
         

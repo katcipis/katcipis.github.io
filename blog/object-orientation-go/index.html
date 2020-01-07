@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.49.2" />
+        <meta name="generator" content="Hugo 0.62.0" />
         
 
 
@@ -29,14 +29,12 @@
         <meta property="og:title" content="Object Orientation in Go" />
 <meta property="og:description" content="What is Object Orientation anyway ?" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://katcipis.github.io/blog/object-orientation-go/" /><meta property="article:published_time" content="2017-12-03T00:00:00&#43;00:00"/>
-<meta property="article:modified_time" content="2017-12-03T00:00:00&#43;00:00"/>
+<meta property="og:url" content="https://katcipis.github.io/blog/object-orientation-go/" />
+<meta property="article:published_time" content="2017-12-03T00:00:00+00:00" />
+<meta property="article:modified_time" content="2017-12-03T00:00:00+00:00" />
 
-        
-<meta itemprop="name" content="Object Orientation in Go">
+        <meta itemprop="name" content="Object Orientation in Go">
 <meta itemprop="description" content="What is Object Orientation anyway ?">
-
-
 <meta itemprop="datePublished" content="2017-12-03T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2017-12-03T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="2492">
@@ -44,7 +42,6 @@
 
 
 <meta itemprop="keywords" content="" />
-
         
 
         
@@ -182,6 +179,41 @@
                 
                         <article class="mini-post">
                             <header>
+                                <h3><a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2020-01-07'>
+                                    January 7, 2020</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+                        <article class="mini-post">
+                            <header>
                                 <h3><a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a></h3>
                                 
                                 <time class="published" datetime=
@@ -314,41 +346,6 @@
 
         <a href="/blog/hack-go-types/" class="image featured">
             <img src="/img/gohacking.jpg" alt="">
-        </a>
-    
-
-
-                        </article>
-                
-                        <article class="mini-post">
-                            <header>
-                                <h3><a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a></h3>
-                                
-                                <time class="published" datetime=
-                                    '2017-03-28'>
-                                    March 28, 2017</time>
-                            </header>
-                            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
         </a>
     
 
@@ -575,55 +572,41 @@
 
 
   <div id="content">
-    
-
-<p>Here I try to share my journey understanding how Go approaches
+    <p>Here I try to share my journey understanding how Go approaches
 object orientation and how in the end it seems much
 more object oriented than most &ldquo;traditional&rdquo; object
 oriented languages.</p>
-
 <p>On a <a href="https://katcipis.github.io/blog/exploring-go-objects/">previous post</a>
 I explored the idea of expressing everything just with functions, and that
 Go objects are actually just a safe way to express a
 set of functions that always go together with the same closure
 and may operate on same state.</p>
-
 <p>Safely expressing sets of functions that operates on same state is pretty
 useful, but how to actually create abstractions that can have multiple
 different implementations ?</p>
-
 <p>Objects alone do not support that, each type has its own set of functions
 attached to it (what we call methods) and that is it.
 This is referred as polymorphism, but as I walk away from the traditional
 notion of object orientation being about the objects and its form (type)
 I find that thinking about protocols instead of polymorphism is more aligned
 with what should be the focus when you are designing software (more on that later).</p>
-
-<h1 id="how-to-define-a-protocol">How to define a protocol ?</h1>
-
+<h1 id="how-to-define-a-protocol-">How to define a protocol ?</h1>
 <p>First lets define what would be a protocol, for me a protocol
 is <strong>a set of operations required to achieve a desired outcome</strong>.</p>
-
 <p>If this seems confusing let me give an example with the easier
 to understand abstraction that I know, I/O.</p>
-
 <p>Lets say you want to read a file, the protocol will be:</p>
-
 <ul>
 <li>Open file</li>
 <li>Read its contents</li>
 <li>Close it</li>
 </ul>
-
 <p>To achieve your single purpose of reading all the contents of a file you
 need these 3 operations, so these operations are what forms your
 &ldquo;reading file&rdquo; protocol.</p>
-
 <p>Now lets get this example and work with it through the rest of the post.</p>
-
 <p>If functions are first class citizens in a language, structuring
 functions would not differ from structuring data.</p>
-
 <p>We have a way to compose data (structs), we could compose the functions the
 same way, like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Reader</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">data</span> []<span style="color:#66d9ef">byte</span>) (<span style="color:#66d9ef">int</span>, <span style="color:#66d9ef">error</span>)
@@ -647,11 +630,10 @@ same way, like this:</p>
         <span style="color:#a6e22e">useFileProtocol</span>(<span style="color:#66d9ef">func</span>() (<span style="color:#f92672">*</span><span style="color:#a6e22e">ReadCloser</span>, <span style="color:#66d9ef">error</span>) {
                 <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ReadCloser</span>{}, <span style="color:#66d9ef">nil</span>
         })
-}</code></pre></div>
-<p>Which is very hard (if not impossible) to be a compile time
+}
+</code></pre></div><p>Which is very hard (if not impossible) to be a compile time
 safe way to express a protocol. To make a point this example
 causes a segmentation fault.</p>
-
 <p>Another problem is that the code implementing the protocol
 needs to known the protocol it is implementing explicitly
 in order to initialize the struct properly
@@ -661,37 +643,29 @@ which would spread around the code the knowledge on how
 to initialize the struct properly.
 When you think about the same set of functions implementing multiple
 protocols this gets even worse.</p>
-
 <p>The object that needs some third party protocol needs a way to:</p>
-
 <ul>
 <li>Express clearly what is the protocol it needs</li>
 <li>Be sure that when it starts interacting with an implementation no function is missing</li>
 </ul>
-
 <p>The object that implements the service needs to:</p>
-
 <ul>
 <li>Be able to safely express that it has the required functions to satisfy the protocol</li>
 <li>Be able to satisfy a protocol even without knowing it explicitly</li>
 </ul>
-
 <p>There is no need for two objects to interact to achieve a common goal
 to have a specific type, all that matters is if the protocol between
 them matches.</p>
-
 <p>This is where Go interfaces comes in.
 It provides us with a compile time safe way to express protocols eliminating
 all the boilerplate of initializing structs with the proper functions.
 It will initialize the structs for us, and even optimize to
 initialize the struct just once, what is called in Go the <strong>iface</strong>,
 which is comparable to C++ <strong>vtable</strong>.</p>
-
-<p>It will also allow the code to be more decoupled since you don&rsquo;t have
+<p>It will also allow the code to be more decoupled since you don't have
 to known the package where the interface is defined to implement it.
 This is fundamental to how Go allows more flexibility with the same
 compile time safety as languages like Java/C++.</p>
-
 <p>Lets revisit the previous file protocol with interfaces:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
@@ -731,83 +705,74 @@ compile time safety as languages like Java/C++.</p>
         <span style="color:#a6e22e">useFileProtocol</span>(<span style="color:#66d9ef">func</span>() (<span style="color:#a6e22e">ReadCloser</span>, <span style="color:#66d9ef">error</span>) {
                 <span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">File</span>{}, <span style="color:#66d9ef">nil</span>
         })
-}</code></pre></div>
-<p>One key difference is that with interfaces this code is now
+}
+</code></pre></div><p>One key difference is that with interfaces this code is now
 safe. The <strong>useFileProtocol</strong> do not have to worry with calling
 functions that are actually nil, the Go compiler will do the work
 of creating a struct that holds a pointer with a <strong>iface</strong> descriptor
 that has all the functions required to satisfy the protocol.
 It does this per match of type &lt;-&gt; interface, as it is used (initializes
 on first usage).</p>
-
 <p>You still can cause a segmentation fault if you do something like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">useFileProtocol</span>(<span style="color:#66d9ef">func</span>() (<span style="color:#a6e22e">ReadCloser</span>, <span style="color:#66d9ef">error</span>) {
         <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">ReadCloser</span>
         <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>, <span style="color:#66d9ef">nil</span>
-})</code></pre></div>
-<p>But there is still the bonus that every time you initialize the variable
+})
+</code></pre></div><p>But there is still the bonus that every time you initialize the variable
 properly, like this :</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">useFileProtocol</span>(<span style="color:#66d9ef">func</span>() (<span style="color:#a6e22e">ReadCloser</span>, <span style="color:#66d9ef">error</span>) {
         <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#a6e22e">ReadCloser</span> = <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Whatever</span>{}
         <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">a</span>, <span style="color:#66d9ef">nil</span>
-})</code></pre></div>
-<p>If it compiles you can be sure it is safe to call all functions of the interface.
-Also with the Go&rsquo;s interface mechanism an object can implement multiple different
+})
+</code></pre></div><p>If it compiles you can be sure it is safe to call all functions of the interface.
+Also with the Go's interface mechanism an object can implement multiple different
 protocols without even knowing these protocols.</p>
-
 <p>How useful can be implementing protocols that you do not even know it exists ?
 This is very useful if you want your code to be truly extensible. Allow me
 to provide a real world example from <a href="https://github.com/NeowayLabs/nash">nash</a>.</p>
-
 <h1 id="extending-code-beyond-its-original-purpose">Extending code beyond its original purpose</h1>
-
 <p>The first time I understood how powerful Go interfaces can be was
 when I was trying to code the tests for the built-in function <strong>exit</strong>
 on nash. The main problem was that it seemed like we would have to
 implement different tests for each platform because the exit status
-code was handled differently on some platforms. I don&rsquo;t remember all
+code was handled differently on some platforms. I don't remember all
 the details right now but on plan9 the exit status is an string instead
 of an integer.</p>
-
 <p>Basically on an error I wanted the status code, not just the error like
 it is provided on <a href="https://golang.org/pkg/os/exec/#Cmd.Run">Cmd.run</a>.</p>
-
 <p>There is the <a href="https://golang.org/pkg/os/exec/#ExitError">ExitError</a> type,
 so I could do something like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">if</span> <span style="color:#a6e22e">exiterr</span>, <span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">err</span>.(<span style="color:#f92672">*</span><span style="color:#a6e22e">exec</span>.<span style="color:#a6e22e">ExitError</span>); <span style="color:#a6e22e">ok</span> {
-}</code></pre></div>
-<p>To at least know that this is some error generated by an error
+}
+</code></pre></div><p>To at least know that this is some error generated by an error
 status on the process I just executed, but I was still out of luck
 on finding the actual status code.</p>
-
-<p>So I went on a stroll inside Go&rsquo;s code base to checkout how
+<p>So I went on a stroll inside Go's code base to checkout how
 I could get the error status code from ExitError.</p>
-
 <p>My clue was the ProcessState that is composed inside the ExitError struct,
 the <strong>Sys</strong> method seemed promissing:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Sys returns system-dependent exit information about
-</span><span style="color:#75715e">// the process. Convert it to the appropriate underlying
-</span><span style="color:#75715e">// type, such as syscall.WaitStatus on Unix, to access its contents.
+</span><span style="color:#75715e"></span><span style="color:#75715e">// the process. Convert it to the appropriate underlying
+</span><span style="color:#75715e"></span><span style="color:#75715e">// type, such as syscall.WaitStatus on Unix, to access its contents.
 </span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ProcessState</span>) <span style="color:#a6e22e">Sys</span>() <span style="color:#66d9ef">interface</span>{} {
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">sys</span>()
-}</code></pre></div>
-<p>Well, interface{} kinda says nothing, but following its threads I found
+}
+</code></pre></div><p>Well, interface{} kinda says nothing, but following its threads I found
 this posix implementation:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">p</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ProcessState</span>) <span style="color:#a6e22e">sys</span>() <span style="color:#66d9ef">interface</span>{} {
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">status</span>
-}</code></pre></div>
-<p>And what would be <strong>p.status</strong>, on posix:</p>
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">WaitStatus</span> <span style="color:#66d9ef">uint32</span></code></pre></div>
-<p>With the very interesting method:</p>
+}
+</code></pre></div><p>And what would be <strong>p.status</strong>, on posix:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">WaitStatus</span> <span style="color:#66d9ef">uint32</span>
+</code></pre></div><p>With the very interesting method:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">WaitStatus</span>) <span style="color:#a6e22e">ExitStatus</span>() <span style="color:#66d9ef">int</span> {
 	<span style="color:#66d9ef">if</span> !<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Exited</span>() {
 		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>
 	}
 	<span style="color:#66d9ef">return</span> int(<span style="color:#a6e22e">w</span><span style="color:#f92672">&gt;&gt;</span><span style="color:#a6e22e">shift</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0xFF</span>
-}</code></pre></div>
-<p>But this is for posix, what about other platforms ?
+}
+</code></pre></div><p>But this is for posix, what about other platforms ?
 Using this advanced inspection technique:</p>
-
 <pre><code>syscall % grep -R ExitStatus .
 ./syscall_nacl.go:func (w WaitStatus) ExitStatus() int    { return 0 }
 ./syscall_bsd.go:func (w WaitStatus) ExitStatus() int {
@@ -815,9 +780,7 @@ Using this advanced inspection technique:</p>
 ./syscall_linux.go:func (w WaitStatus) ExitStatus() int {
 ./syscall_windows.go:func (w WaitStatus) ExitStatus() int { return int(w.ExitCode) }
 ./syscall_plan9.go:func (w Waitmsg) ExitStatus() int { 
-</code></pre>
-
-<p>Looks like common protocol being implemented by a
+</code></pre><p>Looks like common protocol being implemented by a
 good enough amount of platforms, it was good enough for me at least
 (windows + linux + plan9 would be enough). Now that we have a common protocol
 for all desired platforms we can do something like this:</p>
@@ -836,143 +799,115 @@ for all desired platforms we can do something like this:</p>
                 } <span style="color:#66d9ef">else</span> {
                         <span style="color:#a6e22e">t</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#e6db74">&#34;exit result does not have a  ExitStatus method&#34;</span>)
                 }
-        }</code></pre></div>
-<p>The whole code can be found
+        }
+</code></pre></div><p>The whole code can be found
 <a href="https://github.com/NeowayLabs/nash/blob/c0cdacd3633ce7a21714c9c6e1ee76bceecd3f6e/internal/sh/builtin/exit_test.go">here</a></p>
-
 <p>If the Sys() method returned an abstraction more precise than just interface{}
 it would be easier to come up with a new interface that is a subset of its
 interface and we would have compile time safety, instead of just runtime
 safety that is provided by the checked runtime cast.</p>
-
 <p>But even an easy way to define a new interface and perform a safe runtime
 cast without changing the original code that implements the interface is
-pretty neat. In languages like Java or C++ I can&rsquo;t come up with a solution
+pretty neat. In languages like Java or C++ I can't come up with a solution
 that involves the same amount of code/complexity, specially because of
 the brittleness of hierarchy based polymorphism. Casting is only allowed
 if the original code knows the interface you are trying to cast and explicitly
 inherits from it. To solve my problem I would have to change the core Go code
 to know my interface, with Go interfaces this is not required (yay hierarchies).</p>
-
 <p>This is extremely important because it allows developers to come up
-with simple objects since they don&rsquo;t have to predict every single way
+with simple objects since they don't have to predict every single way
 that the object may be used on the future,
 like coming up with which interfaces may be useful.</p>
-
 <p>As long as the protocol of your object is clear and useful it may be
-reused on several ways that you never thought to be possible. You don&rsquo;t
+reused on several ways that you never thought to be possible. You don't
 even need to express interfaces explicitly for them to be defined and
 used later.</p>
-
-<h1 id="what-is-object-orientation-anyway">What is object orientation anyway ?</h1>
-
+<h1 id="what-is-object-orientation-anyway-">What is object orientation anyway ?</h1>
 <p>This is the part where I will try to make a point for Go as an awesome
 object oriented language. All the early contact that I had with programming
 was with languages like:</p>
-
 <ul>
 <li>Java</li>
 <li>C++</li>
 <li>Python</li>
 </ul>
-
 <p>And learned about inheritance, multiple inheritance, diamond inheritance, etc.
 There was a great focus on what are the types and inheritance trees,
 an exercise on taxonomy. Like creating a good taxonomy would be the definition
 of a good object oriented design.</p>
-
 <p>As I progressed I started to talk with people who said that object orientation
 was not about that (although all mainstream object oriented languages were)
 and that way of designing was not flexible. I did not understand
 that at the time but it got me curious. The best chance of understanding something
 is going the closest to its core as possible, so I went for Alan Kay which is
 the one who coined the term object orientation.</p>
-
 <p>There is much more awesome stuff that can be learned from him,
 but on the subject of object orientation there is the presentation
 <a href="https://www.youtube.com/watch?v=oKg1hTOQXoY">The computer revolution has not happened yet</a>
 at OOPSLA where he talks a little about the origin of object orientation
 (among other things).</p>
-
 <p>He says that object orientation was supposed to focus on what is
 between the objects, not the objects itself. He even says that a more process
 oriented name would be better, because the focus on objects seems to have
 generated a focus on types and taxonomy instead of this thing that actually
 exists between the objects, which for me it is the protocols.</p>
-
 <p>The important part of thinking about objects is the encapsulation
 (again, not types). He gives a good example which are cells, they have membranes
 that are explicit on what they allow to go out and what they allow to go in.</p>
-
 <p>Every cell that interacts with each other knows nothing about each other
-inner workings, they don&rsquo;t need to know the other cell type, they just have
+inner workings, they don't need to know the other cell type, they just have
 to implement the same protocol, exchange the same proteins, etc
-(I&rsquo;m not that good with biology =)). The focus is on the chemical reactions
+(I'm not that good with biology =)). The focus is on the chemical reactions
 (processes) not the cells types.</p>
-
 <p>So we end up with encapsulation and clear protocols as what object orientation
 should be about, and with a great metaphor on how to develop systems that imitate
 organisms instead of mechanisms, since organic life scales orders of magnitude
 better.</p>
-
 <p>Another great metaphor can be extracted from
 <a href="https://vimeo.com/71278954">The Future of Programming</a> presentation.
 When talking about the beginning of the ARPANET and the &ldquo;Intergalactic
 Computer Network&rdquo; one of the metaphors used to express how a system
 could REALLY scale is how software would integrate with other software
 that is completely alien (literally from other planet).</p>
-
 <p>The metaphor is great because it shows the need for good protocols
 and good forms to do content/protocol negotiation, which is what happens
 on nature all the time, and probably what would happen if we met
-alien life someday (hoping that we don&rsquo;t stupidly fight to death).</p>
-
+alien life someday (hoping that we don't stupidly fight to death).</p>
 <p>This metaphor even makes some point for dynamic languages, but to
-be honest I don&rsquo;t have an understanding of this that is good enough
+be honest I don't have an understanding of this that is good enough
 to propose something right now (I find hard to think on something
 really adaptative without being dynamic, even in Go you need some
 glue code to integrate the objects through manually created protocols).</p>
-
 <p>The most important take right now of this metaphor is not what
 would be best to represent this kind of system but to have the
 right mindset to find possible answers, quoting from the presentation:</p>
-
 <pre><code>The most dangerous thought that you can have as a creative person is to
 think that you know what you are doing
-</code></pre>
-
-<p>Even though I try to keep an open mind I can&rsquo;t find space for
+</code></pre><p>Even though I try to keep an open mind I can't find space for
 inheritance when I think about programming
 using the metaphors above. Alien life would never integrate since
 they need a common ancestor that may simply not exist.</p>
-
 <h1 id="conclusion">Conclusion</h1>
-
 <p>The example that I gave above in Go already shows a glimpse on how you can
 do more without having to change any pre existent code using the concept
-of protocols (Go&rsquo;s interfaces) instead of types.
+of protocols (Go's interfaces) instead of types.
 It seems to be easier to develop according
 to the <a href="https://en.wikipedia.org/wiki/Open/closed_principle">open closed</a>
 principle since I can easily extend other code to do things that it was not
 initially intended to without having to change it.</p>
-
 <p>It may seem misleading that Go and Java have
 interfaces since the only thing they have in common is their name.
 In Java interfaces create a <strong>is a</strong> relationship, in Go it does not.
 It simply defines a protocol that can be used to integrate objects
-that don&rsquo;t know each other directly (they don&rsquo;t even have to know the
+that don't know each other directly (they don't even have to know the
 interface explicitly).This seems more object oriented than
 anything that I know so far (not that I know too much of course =)).</p>
-
 <h1 id="acknowledgments">Acknowledgments</h1>
-
 <p>Special thanks to:</p>
-
 <ul>
 <li><a href="https://github.com/tiago4orion">i4k</a></li>
 <li><a href="https://github.com/kamilash">kamilash</a></li>
 </ul>
-
 <p>For taking time reviewing and pointing out a lot
 of stupid mistakes.</p>
 
@@ -1177,6 +1112,43 @@ of stupid mistakes.</p>
           <article class="mini-post">
             <header>
               <h3>
+                <a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a>
+              </h3>
+              
+              <time class="published" datetime='2020-01-07'>
+                January 7, 2020
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
+        </a>
+    
+
+
+          </article>
+        
+          <article class="mini-post">
+            <header>
+              <h3>
                 <a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a>
               </h3>
               
@@ -1322,43 +1294,6 @@ of stupid mistakes.</p>
 
           </article>
         
-          <article class="mini-post">
-            <header>
-              <h3>
-                <a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a>
-              </h3>
-              
-              <time class="published" datetime='2017-03-28'>
-                March 28, 2017
-              </time>
-            </header>
-            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
-        </a>
-    
-
-
-          </article>
-        
       </div>
 
       
@@ -1390,8 +1325,8 @@ of stupid mistakes.</p>
           <article>
             <header>
               
-                <a href="/categories/go/">Go</a>
-                <span style="float:right;">5</span>
+                <a href="/categories/go/">go</a>
+                <span style="float:right;">6</span>
               
             </header>
           </article>
@@ -1401,7 +1336,7 @@ of stupid mistakes.</p>
           <article>
             <header>
               
-                <a href="/categories/distributed-systems/">Distributed Systems</a>
+                <a href="/categories/distributed-systems/">distributed-systems</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1412,7 +1347,7 @@ of stupid mistakes.</p>
           <article>
             <header>
               
-                <a href="/categories/python/">Python</a>
+                <a href="/categories/python/">python</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1524,7 +1459,7 @@ of stupid mistakes.</p>
     
     <p class="copyright">
       
-        &copy; 2018
+        &copy; 2020
         
           (define katcipis (λ () (write gibberish)))
         

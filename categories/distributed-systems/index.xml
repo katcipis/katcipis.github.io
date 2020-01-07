@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Distributed Systems on (define katcipis (λ () (write gibberish)))</title>
@@ -17,8 +17,8 @@
       <pubDate>Sun, 15 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>https://katcipis.github.io/blog/restless-restful/</guid>
-      <description>The RESTless struggle for RESTfulness This post will be about my history trying to understand REST and RESTfulness (whatever that is, spoiler alert, I&amp;rsquo;m not going to define what it is), what worked for me and what sidetracked me.
-As I evolve my ideas do not confuse that with me being sure of anything, I&amp;rsquo;m still not sure of shit until now, the only thing I&amp;rsquo;m sure is that repeating the same mistakes is not a good idea, but how to make new ones is another history.</description>
+      <description>The RESTless struggle for RESTfulness This post will be about my history trying to understand REST and RESTfulness (whatever that is, spoiler alert, I&#39;m not going to define what it is), what worked for me and what sidetracked me.
+As I evolve my ideas do not confuse that with me being sure of anything, I&#39;m still not sure of shit until now, the only thing I&#39;m sure is that repeating the same mistakes is not a good idea, but how to make new ones is another history.</description>
     </item>
     
   </channel>

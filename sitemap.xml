@@ -1,10 +1,45 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://katcipis.github.io/</loc>
+    <lastmod>2020-01-07T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://katcipis.github.io/blog/</loc>
+    <lastmod>2020-01-07T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://katcipis.github.io/categories/</loc>
+    <lastmod>2020-01-07T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://katcipis.github.io/categories/go/</loc>
+    <lastmod>2020-01-07T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://katcipis.github.io/blog/mux-channels-go/</loc>
+    <lastmod>2020-01-07T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://katcipis.github.io/categories/python/</loc>
+    <lastmod>2018-10-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://katcipis.github.io/blog/python3-utf8-locale/</loc>
     <lastmod>2018-10-14T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://katcipis.github.io/categories/distributed-systems/</loc>
+    <lastmod>2018-07-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -39,46 +74,11 @@
   
   <url>
     <loc>https://katcipis.github.io/about/</loc>
-  </url>
-  
-  <url>
-    <loc>https://katcipis.github.io/</loc>
-    <lastmod>2018-10-14T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://katcipis.github.io/blog/</loc>
-    <lastmod>2018-10-14T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://katcipis.github.io/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://katcipis.github.io/categories/distributed-systems/</loc>
-    <lastmod>2018-07-15T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://katcipis.github.io/categories/go/</loc>
-    <lastmod>2017-12-03T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://katcipis.github.io/categories/python/</loc>
-    <lastmod>2018-10-14T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://katcipis.github.io/tags/</loc>
-    <priority>0</priority>
   </url>
   
 </urlset>

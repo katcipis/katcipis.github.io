@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.49.2" />
+        <meta name="generator" content="Hugo 0.62.0" />
         
 
 
@@ -29,14 +29,12 @@
         <meta property="og:title" content="Having fun with Go&#39;s nil, interfaces and errors" />
 <meta property="og:description" content="Details on how I debugged a fun problem involving errors &#43; nil &#43; interface{}" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://katcipis.github.io/blog/fun-nil-interfaces/" /><meta property="article:published_time" content="2016-08-27T00:00:00&#43;00:00"/>
-<meta property="article:modified_time" content="2016-08-27T00:00:00&#43;00:00"/>
+<meta property="og:url" content="https://katcipis.github.io/blog/fun-nil-interfaces/" />
+<meta property="article:published_time" content="2016-08-27T00:00:00+00:00" />
+<meta property="article:modified_time" content="2016-08-27T00:00:00+00:00" />
 
-        
-<meta itemprop="name" content="Having fun with Go&#39;s nil, interfaces and errors">
+        <meta itemprop="name" content="Having fun with Go&#39;s nil, interfaces and errors">
 <meta itemprop="description" content="Details on how I debugged a fun problem involving errors &#43; nil &#43; interface{}">
-
-
 <meta itemprop="datePublished" content="2016-08-27T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2016-08-27T00:00:00&#43;00:00" />
 <meta itemprop="wordCount" content="1696">
@@ -44,7 +42,6 @@
 
 
 <meta itemprop="keywords" content="" />
-
         
 
         
@@ -182,6 +179,41 @@
                 
                         <article class="mini-post">
                             <header>
+                                <h3><a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a></h3>
+                                
+                                <time class="published" datetime=
+                                    '2020-01-07'>
+                                    January 7, 2020</time>
+                            </header>
+                            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
+        </a>
+    
+
+
+                        </article>
+                
+                        <article class="mini-post">
+                            <header>
                                 <h3><a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a></h3>
                                 
                                 <time class="published" datetime=
@@ -314,41 +346,6 @@
 
         <a href="/blog/hack-go-types/" class="image featured">
             <img src="/img/gohacking.jpg" alt="">
-        </a>
-    
-
-
-                        </article>
-                
-                        <article class="mini-post">
-                            <header>
-                                <h3><a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a></h3>
-                                
-                                <time class="published" datetime=
-                                    '2017-03-28'>
-                                    March 28, 2017</time>
-                            </header>
-                            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
         </a>
     
 
@@ -575,303 +572,262 @@
 
 
   <div id="content">
-    
-
-<p>Learning and programming in Go has been delightful 99% of the time,
+    <p>Learning and programming in Go has been delightful 99% of the time,
 This makes even more remarkable when the language bites you in the ass :-).
 Actually it is a mix of my own ignorance + some other details, but for everyone
 that I presented this situation it did not seem like something obvious and intuitive.</p>
-
 <p>A few weeks ago I have watched the <a href="https://www.youtube.com/watch?v=ynoY2xz-F8s">Understanding Nil</a>
 presentation, it is great way to really understand what nil is in Go, and I had no idea
-nil could behave as explained on the presentation. I&rsquo;m still kinda torn about this in Go,
+nil could behave as explained on the presentation. I'm still kinda torn about this in Go,
 it still seems like a great lack of uniformity/symmetry the way nil behaves.</p>
-
 <p>It reminds me all my pain with channels, where there a full combinatorial explosion of
 different behaviours if you are reading/writing closed/nil/ok channels.</p>
-
 <p>For the channels I understood the reasons and the trade offs, it seems fair enough and I
-still can&rsquo;t come up with better solutions (although I still have some problems remembering
+still can't come up with better solutions (although I still have some problems remembering
 the correct behaviour depending on the combination).</p>
-
-<p>With nil I still don&rsquo;t get the benefit quite clearly. For example, a nil map behaves like
+<p>With nil I still don't get the benefit quite clearly. For example, a nil map behaves like
 an empty map:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>
-    <span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;whatever&#34;</span>]
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span>)
-}</code></pre></div>
-<p>Hmm, it seems like a way to initialize a empty map, ok. But it is a read only map,
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;whatever&#34;</span>]
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span>)
+}
+</code></pre></div><p>Hmm, it seems like a way to initialize a empty map, ok. But it is a read only map,
 if you try to add any data on it a panic will occur:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>
-    <span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;whatever&#34;</span>]
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span>)
-    
-    <span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;hi&#34;</span>] = <span style="color:#e6db74">&#34;a&#34;</span>
-}</code></pre></div>
-<p>Which makes me consider its usefulness, I used this on a lot of my tests, since I knew the
-map would be read only. But I&rsquo;m still not sure if it is a good choice, there is no way to communicate
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;whatever&#34;</span>]
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">b</span>,<span style="color:#a6e22e">ok</span>)
+	
+	<span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;hi&#34;</span>] = <span style="color:#e6db74">&#34;a&#34;</span>
+}
+</code></pre></div><p>Which makes me consider its usefulness, I used this on a lot of my tests, since I knew the
+map would be read only. But I'm still not sure if it is a good choice, there is no way to communicate
 that a map is read only, and the minimal change on the behaviour of the code can cause
 a panic.</p>
-
 <p>But that is not even why I started to write this, I had an interesting experience
 playing around with error aggregation + nil behaviour + interfaces +
 <a href="https://github.com/stretchr/testify">testify</a>, and I hope this
 experience may be useful to someone else.</p>
-
 <p>Just wanted to start with some warm up on nil behaviour, if you did not know that nil maps
 behave like that in Go, watch the presentation, it will be enlightening and will give some
 base to understand the rest of the post.</p>
-
 <p>In the end the problem is more about interface initialization than nil behaviour,
 but I wanted to use this opportunity to bring this up, since it is a common source
 of problem for newcomers like me.</p>
-
 <h1 id="the-problem">The problem</h1>
-
 <p>There was I writing some new service in Go when I was presented with this situation where
 I had to perform two operations, if the first one failed I was also required to execute
 the second one, but if any of them failed I had to report the error, and if both failed I
 was also required to report it and coalesce the errors.</p>
-
 <p>So the caller should receive a nil error if everything went ok, and an error if any of
 the operations failed, or both.</p>
-
 <p>This is a very interesting situation (and not a very common one for me) because it is
-where Go&rsquo;s simple errors as values decisions shines. Doing this kind of thing with exceptions
+where Go's simple errors as values decisions shines. Doing this kind of thing with exceptions
 would be pretty clumsy, at least with my knowledge of exceptions, with Go it seemed that
 code would be pretty clean, and in the end it was, and I believe that more experienced
-developers can even come with better solutions than mine. But before a definitive
+developers can even come with better solutions than mine. But before a definitive 
 solution has been found some thorns where on the way.</p>
-
 <h1 id="the-first-solution-an-array-of-errors-as-an-error">The first solution, an array of errors as an error</h1>
-
 <p>My first solution was to define an array of errors that behaves as one error,
 and I was feeling pretty hacker about it :-), with the exception that it exploded on my
 face. Here is an example of the idea, with some code omitted for brevity sake:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">errorsAggregate</span> []<span style="color:#66d9ef">error</span>
 
 <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">errors</span> <span style="color:#a6e22e">errorsAggregate</span>) <span style="color:#a6e22e">Error</span>() <span style="color:#66d9ef">string</span> {
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;errors is nil&#34;</span>
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;concatenate all error messages inside the slice here&#34;</span>
-}</code></pre></div>
-<p>The idea was to use my errorsAggregate as any slice to append multiple errors.
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;errors is nil&#34;</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;concatenate all error messages inside the slice here&#34;</span>
+}
+</code></pre></div><p>The idea was to use my errorsAggregate as any slice to append multiple errors.
 If no error at all has been appended on it, it would be nil, and I would be happy.</p>
-
 <p>I tested the code, using <a href="https://github.com/stretchr/testify#assert-package">testify assert package</a>,
 and it was working like a charm.</p>
-
 <p>If any error happened, assert.NotNil caught it. If no error happened, assert.Nil
 passed ok. Development continued on, and things started when I started to do some
 integration testing, stuff started to break down and I was very confusing.</p>
-
 <p>My function that was returning the errors array was always returning a non-nil value
 (or something that was not passing on a err == nil check anyway), and I was
 very confused, specially with my previous tests still working.</p>
-
 <p>I had to isolate the problem since it was extremely bizarre, when I did this I came up
 with something like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
 
 <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">errorsAggregate</span> []<span style="color:#66d9ef">error</span>
 
 <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">errors</span> <span style="color:#a6e22e">errorsAggregate</span>) <span style="color:#a6e22e">Error</span>() <span style="color:#66d9ef">string</span> {
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-        <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;errors is nil&#34;</span>
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;concatenate all error messages&#34;</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errors</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;errors is nil&#34;</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#34;concatenate all error messages&#34;</span>
 }
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">returnsErrors</span>() <span style="color:#66d9ef">error</span> {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">errs</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errs</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">errs</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errs</span>
 }
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">returnsErrors</span>()
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
-}</code></pre></div>
-<p>If you run it on the Go playground you will get this:</p>
-
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">returnsErrors</span>()
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+}
+</code></pre></div><p>If you run it on the Go playground you will get this:</p>
 <pre><code>true
 errors is nil
 false
-</code></pre>
-
-<p>What the actual fuck ??? Inside the function my errs variable is nil, when I try
+</code></pre><p>What the actual fuck ??? Inside the function my errs variable is nil, when I try
 to print the error with Error() it evaluates as nil, but when
 I check err == nil on the error returned by <strong>returnsErrors</strong> the error is actually not nil ?</p>
-
 <p>And on top of that calling assert.Nil on err, like:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">returnsErrors</span>()
-<span style="color:#a6e22e">assert</span>.<span style="color:#a6e22e">Nil</span>(<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">err</span>)</code></pre></div>
-<p>Was passing the test. How ??? It is not nil !!!</p>
-
+<span style="color:#a6e22e">assert</span>.<span style="color:#a6e22e">Nil</span>(<span style="color:#a6e22e">t</span>, <span style="color:#a6e22e">err</span>)
+</code></pre></div><p>Was passing the test. How ??? It is not nil !!!</p>
 <p>Here is the answer, inside the testify assert package:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">isNil</span>(<span style="color:#a6e22e">object</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">bool</span> {
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">object</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-    }
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">object</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+	}
 
-    <span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">ValueOf</span>(<span style="color:#a6e22e">object</span>)
-    <span style="color:#a6e22e">kind</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">Kind</span>()
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">kind</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Chan</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">kind</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Slice</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">IsNil</span>() {
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-    }
+	<span style="color:#a6e22e">value</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">ValueOf</span>(<span style="color:#a6e22e">object</span>)
+	<span style="color:#a6e22e">kind</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">Kind</span>()
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">kind</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Chan</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">kind</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">Slice</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">value</span>.<span style="color:#a6e22e">IsNil</span>() {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+	}
 
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-}</code></pre></div>
-<p>Why the hell are they doing that check on a range of kinds and chaining with a value.IsNil() ?
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+}
+</code></pre></div><p>Why the hell are they doing that check on a range of kinds and chaining with a value.IsNil() ?
 The answer is on how interfaces behaves with nil. A pretty good source on that is this
-<a href="http://research.swtch.com/interfaces">Russ Cox post about interfaces</a>, I&rsquo;m going to
+<a href="http://research.swtch.com/interfaces">Russ Cox post about interfaces</a>, I'm going to
 try to explain at least what was happening with me based on what I learned there.</p>
-
-<h1 id="what-is-a-nil-interface">What is a nil interface ?</h1>
-
+<h1 id="what-is-a-nil-interface-">What is a nil interface ?</h1>
 <p>Well, a nil interface would be this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">interface</span>{}
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
-}</code></pre></div>
-<p>This is not:</p>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">interface</span>{}
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+}
+</code></pre></div><p>This is not:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">interface</span>{} = <span style="color:#a6e22e">b</span>
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
-}</code></pre></div>
-<p>Why ? It seems to me that it happens because how interfaces are implemented:</p>
-
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">a</span> <span style="color:#66d9ef">interface</span>{} = <span style="color:#a6e22e">b</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+}
+</code></pre></div><p>Why ? It seems to me that it happens because how interfaces are implemented:</p>
 <p>When you assign the string to the interface{} variable, the interface{} is initialized
 with the string type, and a nil string pointer as data. The variable holds that, which is
 not nil.</p>
-
 <p>This image stolen from Russ Cox post may make it more clear:</p>
-
-<p><img src="http://research.swtch.com/gointer3.png" alt="interface{}" /></p>
-
+<p><img src="http://research.swtch.com/gointer3.png" alt="interface{}"></p>
 <p>Here he uses a Binary type, but it makes clear how the interface{} is initialized.
 It is not actually nil, it has type information.</p>
-
 <p>When an explicit assignment is made, and you are aware of how interfaces are initialized, this starts
 to get a little intuitive. But on a function return this is more subtle (at least for me):</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">returnsErrors</span>() <span style="color:#66d9ef">error</span> {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">errs</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errs</span>
-}</code></pre></div>
-<p>The error interface is being initialized with the errorsAggregate type information and its nil data pointer.
-Since error is not an empty interface it would be pointing to a itable matching errorsAggregate Error method
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">errs</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errs</span>
+}
+</code></pre></div><p>The error interface is being initialized with the errorsAggregate type information and its nil data pointer.
+Since error is not an empty interface it would be pointing to a itable matching errorsAggregate Error method 
 with the error interface Error, and a nil data pointer. But the error is not nil. This subtle detail +
 testity.assert behaviour created a very bizarre scenario for me.</p>
-
 <p>Although testify assert behaviour makes perfectly sense, since the function accepts a empty interface,
 this kind of code would pass as non nil:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
 )
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">assertNil</span>(<span style="color:#a6e22e">a</span> <span style="color:#66d9ef">interface</span>{}) {
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
 }
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
-    <span style="color:#a6e22e">assertNil</span>(<span style="color:#a6e22e">b</span>)
-}</code></pre></div>
-<p>It explains why it uses reflection on the interface{} and checks if the value of interface{}
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">string</span>
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">b</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+	<span style="color:#a6e22e">assertNil</span>(<span style="color:#a6e22e">b</span>)
+}
+</code></pre></div><p>It explains why it uses reflection on the interface{} and checks if the value of interface{}
 is actually nil, which on this case will be the string pointer.</p>
-
 <p>This makes me wonder if it is a good idea to use a generic assertion module or just roll out
 my own that would check for a nil string pointer directly on the test case.</p>
-
 <p>Also, if I used a simple err != nil on the test, I would have caught the problem right away
 ,it would not be nil. It seems like another instance of generic programming (the interface{})
 just making life harder.</p>
-
 <p>As I develop more code on Go, the more I like the idea of just using the core language,
 but that would be a topic for a entire other post.</p>
-
 <h1 id="the-final-solution">The final solution</h1>
-
 <p>The final solution is basically the aggregator with a method that actually returns a nil error
 if it is empty:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
 <span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;fmt&#34;</span>
-    <span style="color:#e6db74">&#34;errors&#34;</span>
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;errors&#34;</span>
 )
 
 
 <span style="color:#66d9ef">type</span> <span style="color:#a6e22e">errorsAggregate</span> []<span style="color:#66d9ef">error</span>
 
 <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>) <span style="color:#a6e22e">err</span>() <span style="color:#66d9ef">error</span> {
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errs</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-    }
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;aggregate errors here&#34;</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">errs</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;aggregate errors here&#34;</span>)
 }
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">returnsErrors</span>() <span style="color:#66d9ef">error</span> {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>
-    <span style="color:#75715e">//some code here
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//like errs = append(errs, err)
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//altough a method to protect for appending nil errors would be better
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errs</span>.<span style="color:#a6e22e">err</span>()
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errs</span> <span style="color:#a6e22e">errorsAggregate</span>
+	<span style="color:#75715e">//some code here
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//like errs = append(errs, err)
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">//altough a method to protect for appending nil errors would be better
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errs</span>.<span style="color:#a6e22e">err</span>()
 }
 
 <span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">returnsErrors</span>()
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
-    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
-}</code></pre></div>
-<p>I have this feeling that this is not the better solution out there, but it is doing
+	<span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">returnsErrors</span>()
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span>)
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">err</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span>)
+}
+</code></pre></div><p>I have this feeling that this is not the better solution out there, but it is doing
 its job properly right now.</p>
-
 <p>I have a long way to go on understand how interfaces in Go work, but this experience already
 taught me a lot and I hope it helps you to avoid this kind of problem on the future.</p>
-
 <h1 id="acks">ACKs</h1>
-
 <p>Special thanks for my friends that helped me reviewing my lousy English:</p>
-
 <ul>
 <li><a href="https://github.com/patito">Paulo Benatto</a></li>
 <li><a href="https://github.com/tiago4orion">Tiago Natel</a></li>
@@ -1078,6 +1034,43 @@ taught me a lot and I hope it helps you to avoid this kind of problem on the fut
           <article class="mini-post">
             <header>
               <h3>
+                <a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a>
+              </h3>
+              
+              <time class="published" datetime='2020-01-07'>
+                January 7, 2020
+              </time>
+            </header>
+            
+    
+
+    
+        
+        
+
+
+
+
+
+
+    
+
+
+        
+        
+        
+
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
+        </a>
+    
+
+
+          </article>
+        
+          <article class="mini-post">
+            <header>
+              <h3>
                 <a href="/blog/python3-utf8-locale/">Python 3, UTF-8 and Locale</a>
               </h3>
               
@@ -1223,43 +1216,6 @@ taught me a lot and I hope it helps you to avoid this kind of problem on the fut
 
           </article>
         
-          <article class="mini-post">
-            <header>
-              <h3>
-                <a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a>
-              </h3>
-              
-              <time class="published" datetime='2017-03-28'>
-                March 28, 2017
-              </time>
-            </header>
-            
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
-        </a>
-    
-
-
-          </article>
-        
       </div>
 
       
@@ -1291,8 +1247,8 @@ taught me a lot and I hope it helps you to avoid this kind of problem on the fut
           <article>
             <header>
               
-                <a href="/categories/go/">Go</a>
-                <span style="float:right;">5</span>
+                <a href="/categories/go/">go</a>
+                <span style="float:right;">6</span>
               
             </header>
           </article>
@@ -1302,7 +1258,7 @@ taught me a lot and I hope it helps you to avoid this kind of problem on the fut
           <article>
             <header>
               
-                <a href="/categories/distributed-systems/">Distributed Systems</a>
+                <a href="/categories/distributed-systems/">distributed-systems</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1313,7 +1269,7 @@ taught me a lot and I hope it helps you to avoid this kind of problem on the fut
           <article>
             <header>
               
-                <a href="/categories/python/">Python</a>
+                <a href="/categories/python/">python</a>
                 <span style="float:right;">1</span>
               
             </header>
@@ -1425,7 +1381,7 @@ taught me a lot and I hope it helps you to avoid this kind of problem on the fut
     
     <p class="copyright">
       
-        &copy; 2018
+        &copy; 2020
         
           (define katcipis (λ () (write gibberish)))
         
