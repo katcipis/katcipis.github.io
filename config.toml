@@ -14,7 +14,7 @@ pygmentsCodeFences = true
   # Sets the meta tag description
   description          = "HTML5 UP theme, Future Imperfect with some extra goodies, ported by Julio Pescador. Powered by Hugo"
   # Sets the navbarTitle that appears in the top left of the navigation bar
-  navbarTitle          = "lambda"
+  navbarTitle          = ""
   # Sets where "View More Posts" links
   viewMorePostLink     = "/blog/"
 
