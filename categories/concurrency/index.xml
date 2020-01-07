@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Concurrency on (define katcipis (λ () (write gibberish)))</title>
+    <link>https://katcipis.github.io/categories/concurrency/</link>
+    <description>Recent content in Concurrency on (define katcipis (λ () (write gibberish)))</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 07 Jan 2020 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://katcipis.github.io/categories/concurrency/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Multiplexing Channels in Go</title>
+      <link>https://katcipis.github.io/blog/mux-channels-go/</link>
+      <pubDate>Tue, 07 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://katcipis.github.io/blog/mux-channels-go/</guid>
+      <description>Here I will provide some context on how the concept of multiplexing (or joining) channels got into my life, how it changed how I design concurrent algorithms and present an implementation of that idea comparing with a more common alternative.
+I have a feeling that this may be something well known by people who have experience with concurrent algorithms, but since there is a chance that I&#39;m not the only person oblivious to this idea I&#39;m going to try and explain how I discovered it and then had some fun with it and how I think it now helps me, in some cases (it is not a silver bullet), to write simpler concurrent code.</description>
+    </item>
+    
+  </channel>
+</rss>

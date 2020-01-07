@@ -2,6 +2,8 @@
 
 
     
+        
+    
 
 
 
@@ -11,7 +13,7 @@
 <html>
     <head>
         
-            <title>Blog - (define katcipis (λ () (write gibberish)))</title>
+            <title>Concurrency Posts - (define katcipis (λ () (write gibberish)))</title>
         
 
         <meta charset="utf-8" />
@@ -28,17 +30,17 @@
         
 
         <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Blog"/>
+<meta name="twitter:title" content="Concurrency"/>
 <meta name="twitter:description" content="HTML5 UP theme, Future Imperfect with some extra goodies, ported by Julio Pescador. Powered by Hugo"/>
 <meta name="twitter:site" content="@tiagokatcipis"/>
 
-        <meta property="og:title" content="Blog" />
+        <meta property="og:title" content="Concurrency" />
 <meta property="og:description" content="HTML5 UP theme, Future Imperfect with some extra goodies, ported by Julio Pescador. Powered by Hugo" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://katcipis.github.io/blog/" />
+<meta property="og:url" content="https://katcipis.github.io/categories/concurrency/" />
 <meta property="og:updated_time" content="2020-01-07T00:00:00+00:00" />
 
-        <meta itemprop="name" content="Blog">
+        <meta itemprop="name" content="Concurrency">
 <meta itemprop="description" content="HTML5 UP theme, Future Imperfect with some extra goodies, ported by Julio Pescador. Powered by Hugo">
         
 
@@ -72,7 +74,7 @@
     
 <header id="header">
     
-      <h1><a href="/">blog</a></h1>
+      <h1><a href="/">categories</a></h1>
     
 
     <nav class="links">
@@ -362,207 +364,25 @@
 
     
     <div id="main">
+        <h1>Concurrency</h1>
         
         
             <article class="post">
     <header>
     <div class="title">
         
-            <h2><a href="/blog/object-orientation-go/">Object Orientation in Go</a></h2>
+            <h2><a href="/blog/mux-channels-go/">Multiplexing Channels in Go</a></h2>
         
         
-            <p>What is Object Orientation anyway ?</p>
-        
-    </div>
-    <div class="meta">
-        
-
-        <time class="published"
-            datetime='2017-12-03'>
-            December 3, 2017</time>
-        <span class="author">Tiago Katcipis</span>
-        
-            <p>12 minute read</p>
-        
-        
-    </div>
-</header>
-
-    
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/object-orientation-go/" class="image featured">
-            <img src="/img/gophermessages.jpg" alt="">
-        </a>
-    
-
-
-    <p>Here I try to share my journey understanding how Go approaches object orientation and how in the end it seems much more object oriented than most “traditional” object oriented languages.
-On a previous post I explored the idea of expressing everything just with functions, and that Go objects are actually just a safe way to express a set of functions that always go together with the same closure and may operate on same state.</p>
-
-    <footer>
-        <ul class="actions">
-            <li><a href="/blog/object-orientation-go/" class="button big">Continue Reading</a></li>
-        </ul>
-        <ul class="stats">
-    
-        
-
-        
-        
-            <li>
-                
-                
-                    
-
-                    
-
-                    
-                        <i class="fa fa-sitemap">&nbsp;</i>
-                    
-
-                    
-                        Category
-                    
-                
-            </li>
-        
-    
-
-    
-    
-        <li><a href='/categories/go'>Go</a></li>
-    
-</ul>
-
-    </footer>
-</article>
-
-        
-            <article class="post">
-    <header>
-    <div class="title">
-        
-            <h2><a href="/blog/hack-go-types/">Hacking Go&#39;s type system</a></h2>
-        
-        
-            <p>Have some fun hacking Go type system to make safe casting unsafe again =)</p>
+            <p>Write simpler concurrent algorithms for fun and profit</p>
         
     </div>
     <div class="meta">
         
 
         <time class="published"
-            datetime='2017-04-21'>
-            April 21, 2017</time>
-        <span class="author">Tiago Katcipis</span>
-        
-            <p>16 minute read</p>
-        
-        
-    </div>
-</header>
-
-    
-    
-
-    
-        
-        
-
-
-
-
-
-
-    
-
-
-        
-        
-        
-
-        <a href="/blog/hack-go-types/" class="image featured">
-            <img src="/img/gohacking.jpg" alt="">
-        </a>
-    
-
-
-    <p>Are you in the mood for a stroll inside Go's type system ? If you are already familiarized with it, this post can be funny for you, or just plain stupid.
-If you have no idea how types and interfaces are implemented on Go, you may learn something, I sure did :-)
-Since I worked with handwritten type systems in C, like the one found in glib GObjects, I'm always curious on how languages implement the concept of type safety on a machine that actually only has numbers.</p>
-
-    <footer>
-        <ul class="actions">
-            <li><a href="/blog/hack-go-types/" class="button big">Continue Reading</a></li>
-        </ul>
-        <ul class="stats">
-    
-        
-
-        
-        
-            <li>
-                
-                
-                    
-
-                    
-
-                    
-                        <i class="fa fa-sitemap">&nbsp;</i>
-                    
-
-                    
-                        Category
-                    
-                
-            </li>
-        
-    
-
-    
-    
-        <li><a href='/categories/go'>Go</a></li>
-    
-</ul>
-
-    </footer>
-</article>
-
-        
-            <article class="post">
-    <header>
-    <div class="title">
-        
-            <h2><a href="/blog/exploring-go-objects/">Exploring Go&#39;s objects</a></h2>
-        
-        
-            <p>Exploring details on how objects are implemented in Go</p>
-        
-    </div>
-    <div class="meta">
-        
-
-        <time class="published"
-            datetime='2017-03-28'>
-            March 28, 2017</time>
+            datetime='2020-01-07'>
+            January 7, 2020</time>
         <span class="author">Tiago Katcipis</span>
         
             <p>14 minute read</p>
@@ -590,19 +410,18 @@ Since I worked with handwritten type systems in C, like the one found in glib GO
         
         
 
-        <a href="/blog/exploring-go-objects/" class="image featured">
-            <img src="/img/goexplorer.png" alt="">
+        <a href="/blog/mux-channels-go/" class="image featured">
+            <img src="/img/gopherfanout.png" alt="">
         </a>
     
 
 
-    <p>I started to understand Go's object model easier when I accepted that there is no objects at all, there is just sets of functions that can operate on common state, with some sugar sprinkled on top.
-Perhaps you are thinking “shut up, of course there are objects in Go” or “sets of functions that operates on common state is the definition of an object”, well, you are probably right.
-I can't see a difference between a set of related functions operating on the same state and an object, at least thinking on the objects that I'm used to.</p>
+    <p>Here I will provide some context on how the concept of multiplexing (or joining) channels got into my life, how it changed how I design concurrent algorithms and present an implementation of that idea comparing with a more common alternative.
+I have a feeling that this may be something well known by people who have experience with concurrent algorithms, but since there is a chance that I'm not the only person oblivious to this idea I'm going to try and explain how I discovered it and then had some fun with it and how I think it now helps me, in some cases (it is not a silver bullet), to write simpler concurrent code.</p>
 
     <footer>
         <ul class="actions">
-            <li><a href="/blog/exploring-go-objects/" class="button big">Continue Reading</a></li>
+            <li><a href="/blog/mux-channels-go/" class="button big">Continue Reading</a></li>
         </ul>
         <ul class="stats">
     
@@ -622,7 +441,7 @@ I can't see a difference between a set of related functions operating on the sam
                     
 
                     
-                        Category
+                        Categories
                     
                 
             </li>
@@ -632,6 +451,8 @@ I can't see a difference between a set of related functions operating on the sam
     
     
         <li><a href='/categories/go'>Go</a></li>
+    
+        <li><a href='/categories/concurrency'>Concurrency</a></li>
     
 </ul>
 
@@ -643,13 +464,11 @@ I can't see a difference between a set of related functions operating on the sam
         
 <ul class="actions pagination">
     
-        <li><a href="/blog/"
-                class="button big previous">Previous Page</a></li>
+        <li><a href="#" class="disabled button big previous">Previous Page</a></li>
     
 
     
-        <li><a href="/blog/page/3/"
-                class="button big next">Next Page</a></li>
+        <li><a href="#" class="disabled button big next">Next Page</a></li>
     
 </ul>
 
@@ -675,7 +494,7 @@ I can't see a difference between a set of related functions operating on the sam
       <ul class="icons">
         
           <li>
-            <a href="https://katcipis.github.io/blog/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
+            <a href="https://katcipis.github.io/categories/concurrency/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
           </li>
         
         
@@ -1050,7 +869,7 @@ I can't see a difference between a set of related functions operating on the sam
       <ul class="icons">
         
           <li>
-            <a href="https://katcipis.github.io/blog/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
+            <a href="https://katcipis.github.io/categories/concurrency/index.xml" type="application/rss+xml" target="_blank" title="RSS" class="fa fa-rss"></a>
           </li>
         
         
