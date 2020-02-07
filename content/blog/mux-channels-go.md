@@ -112,7 +112,7 @@ Usually in a scenario like that you have three concepts in play:
 
 This would look at something like this:
 
-![fanoutin](faninout.png)
+![fanoutin](https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/content/blog/mux-channels-go/faninout.png)
 
 
 As I mentioned earlier, the design space is vast, you can even work with
@@ -463,7 +463,7 @@ the final result. It was not as good as with parametric polymorphism
 and not as good as Limbo which provides syntactic/semantic support
 to it directly in the language but it was good enough.
 
-![its something](itssomething.png)
+![its something](https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/content/blog/mux-channels-go/itssomething.png)
 
 Now that we have a channel multiplexer, we could go on
 and use this idea to scale to multiple workers with no change
