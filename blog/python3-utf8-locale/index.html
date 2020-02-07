@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.62.0" />
+        <meta name="generator" content="Hugo 0.64.0" />
         
 
 
@@ -575,14 +575,14 @@
     <h1 id="python-3-utf-8-and-locale">Python 3, UTF-8 and Locale</h1>
 <p>This post will explore a problem that I had with Python 3 and UTF-8
 strings that caught me by surprise and has the objective of helping
-other people to don't be caught on the same trap.</p>
+other people to don&rsquo;t be caught on the same trap.</p>
 <p>It is not intended to be a rant against Python, but to be honest the
 problem and the behavior did not make me too happy about Python. Perhaps
 it was my failure in finding the proper documentation about it, but
 for people as stupid as I am it may help.</p>
 <p>OK enough of teasing, it is clear that this post is about a problem,
 what exactly is the problem ?</p>
-<h1 id="cant-print-my-string">Can't print my string</h1>
+<h1 id="cant-print-my-string">Can&rsquo;t print my string</h1>
 <p>Yeah, the problem is that stupid, I was not able to print a string.
 Of course every simple problem starts as something that seems
 pretty complicated and in this case it is not different. I was
@@ -629,7 +629,7 @@ very simple code sample before ghostbusting all over the place:</p>
 work but I would test it anyway.</p>
 <p>As it is usual in my life, I was wrong (this happens a lot with
 the TDD practice of writing the test first and being sure that it will fail,
-sometimes it doesn't =P).</p>
+sometimes it doesn&rsquo;t =P).</p>
 <p>Actually, thanks to Python I was half right =P.
 A quick test is my host worked, but the code itself was being run using
 docker container.  So the next logic step was to try the very idiotic code
@@ -695,7 +695,7 @@ locale configuration, it was the next candidate.</p>
 something obvious on the docs) it does not seems consistent at all.</p>
 <p>I would guess that this is probably consistent with
 something else, which generates a theoretic consistency that makes someone
-happy about it but in practice sux, or it is just a trade-off and I'm on the
+happy about it but in practice sux, or it is just a trade-off and I&rsquo;m on the
 end that pays for it not the one that gains from it.</p>
 <p>So now I can test this hypothesis by running inside the container:</p>
 <pre><code>apt-get install locales
@@ -737,7 +737,7 @@ decode as an ascii string instead of utf-8, but the decision to use ascii
 as a default still puzzles me.</p>
 <p>Anything that comes from the operational system that is ascii would work
 perfectly fine with utf-8 since they are compatible. One sort of problem is
-allowing a filename that is utf-8 but the operational system doesn't support it,
+allowing a filename that is utf-8 but the operational system doesn&rsquo;t support it,
 but then I fail to understand how this is related to print itself, print is
 writing to os.stdout, why should I be constrained on what
 I can write in files ? Having problems with system calls like open would make
@@ -746,7 +746,7 @@ do it does not.</p>
 <p>The best that I can imagine is that if the encoding is unknown perhaps the
 terminal would not support utf-8, hence print defaults to ascii. But if the
 terminal gets something that it does not recognize it can just do what
-terminals do today when they can't recognize characters, and it does not
+terminals do today when they can&rsquo;t recognize characters, and it does not
 seem to relate to operational system like other issues mentioned:</p>
 <pre><code>If the OS uses ISO-8859-1, forcing Python (filesystem) encoding to
 UTF-8 would produce invalid filenames, display mojibake and more
@@ -777,7 +777,7 @@ operational systems related functions.</p>
 <p>But by being ascii by default it is inconsistent with the rest
 of Python 3 that assumes utf-8 as the default encoding for source code
 (it is the default encoding of the <strong>str</strong> constructor too).</p>
-<p>But I'm pretty far from being an expert on the subject, actually this
+<p>But I&rsquo;m pretty far from being an expert on the subject, actually this
 was the first time that I had a problem like that. For example, reading
 <a href="https://unix.stackexchange.com/questions/2089/what-charset-encoding-is-used-for-filenames-and-paths-on-linux">this</a>
 it seems that Glib goes with utf-8 as default while QT uses the locale.</p>
@@ -841,7 +841,7 @@ writing to <strong>os.Stdout</strong>, and Fprintln looks like this:</p>
 At least if printed without width parameters and other modifiers
 on the format description, a simple &ldquo;%v&rdquo; or &ldquo;%s&rdquo; or a fmt.Println
 will end up on the method above.</p>
-<p>Which makes sense to me since I'm just writing to a file (stdout)
+<p>Which makes sense to me since I&rsquo;m just writing to a file (stdout)
 and the contents can be anything and are subject to interpretation
 by the process reading the stdout (not the operational system).</p>
 <p>For example, I could have two processes with a pipe between them:</p>
@@ -853,7 +853,7 @@ a good design choice.</p>
 <p>If you want to have interoperability with other tools that uses
 locale, you can code it, but the standard implementation does not impose
 anything by default. Of course there are other problems involving OS encoding,
-but for print I'm happier with Go's choice (at least for now,
+but for print I&rsquo;m happier with Go&rsquo;s choice (at least for now,
 perhaps there are more trade-offs to understand in the future).</p>
 <p>Anyway I hope this post helps other people that go through a similar
 problem when using Python 3 in an environment without locale configuration

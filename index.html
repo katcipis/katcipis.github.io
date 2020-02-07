@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.62.0" />
+        <meta name="generator" content="Hugo 0.64.0" />
         
 
 
@@ -493,8 +493,8 @@ and present an implementation of that idea comparing with
 a more common alternative.</p>
 <p>I have a feeling that this may be something well known
 by people who have experience with concurrent algorithms,
-but since there is a chance that I'm not the
-only person oblivious to this idea I'm going to try
+but since there is a chance that I&rsquo;m not the
+only person oblivious to this idea I&rsquo;m going to try
 and explain how I discovered it and then had some fun with
 it and how I think it now helps me, in some cases
 (it is not a silver bullet), to write simpler concurrent code.</p>
@@ -502,7 +502,7 @@ it and how I think it now helps me, in some cases
 in Go was in Russ Cox blog post
 <a href="https://research.swtch.com/go2017">My Go Resolutions for 2017</a>,
 it was a very brief mention in the section regarding generics in Go
-(no, there is no way I'm not going to touch that subject here =P):</p>
+(no, there is no way I&rsquo;m not going to touch that subject here =P):</p>
 <pre><code>Personally, I would like to be able to write general
 channel-processing functions like:
 
@@ -568,7 +568,7 @@ to them and then aggregate the results.</p>
 <li>Results aggregation</li>
 </ul>
 <p>This would look at something like this:</p>
-<p><img src="faninout.png" alt="fanoutin"></p>
+<p><img src="https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/content/blog/mux-channels-go/faninout.png" alt="fanoutin"></p>
 <p>As I mentioned earlier, the design space is vast, you can even work with
 a shared map and use some locking mechanism around it, but for the
 sake of brevity I will focus on how to model this problem
@@ -654,7 +654,7 @@ to the fan-out.</p>
 of the problem because the beauty of multiplexing channels
 stems from keeping this same simplicity but for a more complex
 problem, the fan-out.</p>
-<p>Let's say that now we want 30 concurrent workers.
+<p>Let&rsquo;s say that now we want 30 concurrent workers.
 With the previous design that is not quite possible because we would
 have something like this:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
@@ -700,7 +700,7 @@ this properly can result in very sad non-deterministic panics.</p>
 you are left with the problem of notifying the
 resultsAggregator that the computation is over so it
 can properly finalize itself.</p>
-<p>For example, let's play with the idea of having a shared
+<p>For example, let&rsquo;s play with the idea of having a shared
 write channel and not closing the channel:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
@@ -761,8 +761,8 @@ main.main()
 	/tmp/sandbox287862370/prog.go:48 +0xa0
 </code></pre><p>Because we avoided the problem of notifying the resultsAggregator that
 there will be no more results.</p>
-<p>Now let's try to make this code work properly, the
-space for solutions here is considerable, let's try an approach
+<p>Now let&rsquo;s try to make this code work properly, the
+space for solutions here is considerable, let&rsquo;s try an approach
 where the resultsAggregator remains unchanged, which can only
 be achieved by closing the results channel:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
@@ -867,7 +867,7 @@ type that I need, so in the end I felt considerably good with
 the final result. It was not as good as with parametric polymorphism
 and not as good as Limbo which provides syntactic/semantic support
 to it directly in the language but it was good enough.</p>
-<p><img src="itssomething.png" alt="its something"></p>
+<p><img src="https://raw.githubusercontent.com/katcipis/katcipis.github.io/master/content/blog/mux-channels-go/itssomething.png" alt="its something"></p>
 <p>Now that we have a channel multiplexer, we could go on
 and use this idea to scale to multiple workers with no change
 in the overall design. I say no change because the three concepts

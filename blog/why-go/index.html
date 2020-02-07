@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.62.0" />
+        <meta name="generator" content="Hugo 0.64.0" />
         
 
 
@@ -614,7 +614,7 @@ I wont get in much detail on these right now, but if you are interested they are
 <li>Storage for the scrapers (where raw data is saved so we can trace parsed data to original raw data)</li>
 <li>An adapter between the new architecture and the current one</li>
 </ul>
-<p>For all services around the scrapers we decided to use Go, and that the history that I'm going
+<p>For all services around the scrapers we decided to use Go, and that the history that I&rsquo;m going
 to tell here.</p>
 <h2 id="why-go-">Why Go ?</h2>
 <p>As you can see, our scrapers are developed in Python, and Python has a lot of useful tools
@@ -739,8 +739,8 @@ block will ever get executed; that's too much a violation of finally's
 purpose to bear.
 </code></pre><p>Hmm&hellip; not so simple after all these generators :-(. What seems to be happening to me here is
 the usual problem of having too much possible control flows on the language. It is already
-more complex to have more than one flow on your program (yes exceptions, I'm looking at you,
-fancy goto's with even fancier switch cases), but now you have the 3 ways you can compose these
+more complex to have more than one flow on your program (yes exceptions, I&rsquo;m looking at you,
+fancy goto&rsquo;s with even fancier switch cases), but now you have the 3 ways you can compose these
 different control flows (Sequential + Exceptions + Generators yielding).
 On this particular case the addition of generators on Python caused some problems
 with the previous decision of having exceptions.</p>
@@ -768,7 +768,7 @@ own authors to use, and a lot of the worst ones were designed for other people t
 I always thought that about Java, but never from Go. It just does not seems like that.
 The language does not seem to be trying to restrict me, it is just trying to be simple.</p>
 <p>Java is just not simple, and does not allow me to do a lot of stuff because it assumes
-I'm stupid. Go does not have a lot of stuff not because it thinks you can't program well
+I&rsquo;m stupid. Go does not have a lot of stuff not because it thinks you can&rsquo;t program well
 with them, it just thinks they are not necessary (less is more).</p>
 <p>It is beautifully clear on the design of the language that they are people very close
 to the C language, but that wants some abstraction to make things easier and a
@@ -800,8 +800,8 @@ The community tries to make code as uniform as possible. A reflect of that is th
 gofmt tool only formats the code on one way and that is it.</p>
 <p>When I was younger I would not like that, you have to respect all those people that
 like spaces more than tabs.</p>
-<p>Now that I'm older&hellip; Honestly ? Fuck respect for freedom (I had my share of spaces VS tabs discussions),
-make the code be consistent and uniform. I don't like tabs, yet in Go I use tabs,
+<p>Now that I&rsquo;m older&hellip; Honestly ? Fuck respect for freedom (I had my share of spaces VS tabs discussions),
+make the code be consistent and uniform. I don&rsquo;t like tabs, yet in Go I use tabs,
 and if all code will have tabs and reading code will feel the same when I cross projects boundaries it
 is a win big enough to make me waive away my freedom to choose formatting.</p>
 <p>But even on that matter, you are not obligated to format your code that way, and it is the only
@@ -812,8 +812,8 @@ control on how you can get things done.</p>
 usually get overexcited with the concurrency model, leading to an overuse of it (which is the common
 pattern to every time you found something cool :-). But I really tried to not let myself go by
 the concurrency stuff, almost all our code make very little use of it, just because it is not necessary yet.</p>
-<p>Go's concurrency model is based on CSP (Communicating Sequential Processes), and is the best concurrency model
-I worked until today. Ok, I haven't worked with a lot of concurrency models, basically traditional multi-threading
+<p>Go&rsquo;s concurrency model is based on CSP (Communicating Sequential Processes), and is the best concurrency model
+I worked until today. Ok, I haven&rsquo;t worked with a lot of concurrency models, basically traditional multi-threading
 and asynchronous main loops (glib in C and NodeJS).</p>
 <p>Asynchronous main loops exploit the fact that heavy I/O loads do not need a lot of CPU time and threads, and that
 makes sense. The problem is that handling asynchronous code is simply harder than sequential code, you just
@@ -844,7 +844,7 @@ It is a good idea to avoid creating lots of goroutines if you dont have proof th
 And sometimes even the more high level abstractions wont cut it, as can be seen
 <a href="https://www.youtube.com/watch?v=1V7eJ0jN8-E">here</a>.</p>
 <h2 id="enough-why-lets-talk-code">Enough why, lets talk code</h2>
-<p>Since this post is already pretty big, I'm going to talk about the experience of developing the
+<p>Since this post is already pretty big, I&rsquo;m going to talk about the experience of developing the
 first services in Go and the bad and the good on a next one, or this one would get dangerously big.</p>
 <p>I focused a lot on why here because a decision like that must be well based, I dont like the idea of
 using something just because it is trending an there is a lot of fancy conferences about that.</p>

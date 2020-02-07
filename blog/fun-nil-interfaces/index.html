@@ -10,7 +10,7 @@
 
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="generator" content="Hugo 0.62.0" />
+        <meta name="generator" content="Hugo 0.64.0" />
         
 
 
@@ -578,14 +578,14 @@ Actually it is a mix of my own ignorance + some other details, but for everyone
 that I presented this situation it did not seem like something obvious and intuitive.</p>
 <p>A few weeks ago I have watched the <a href="https://www.youtube.com/watch?v=ynoY2xz-F8s">Understanding Nil</a>
 presentation, it is great way to really understand what nil is in Go, and I had no idea
-nil could behave as explained on the presentation. I'm still kinda torn about this in Go,
+nil could behave as explained on the presentation. I&rsquo;m still kinda torn about this in Go,
 it still seems like a great lack of uniformity/symmetry the way nil behaves.</p>
 <p>It reminds me all my pain with channels, where there a full combinatorial explosion of
 different behaviours if you are reading/writing closed/nil/ok channels.</p>
 <p>For the channels I understood the reasons and the trade offs, it seems fair enough and I
-still can't come up with better solutions (although I still have some problems remembering
+still can&rsquo;t come up with better solutions (although I still have some problems remembering
 the correct behaviour depending on the combination).</p>
-<p>With nil I still don't get the benefit quite clearly. For example, a nil map behaves like
+<p>With nil I still don&rsquo;t get the benefit quite clearly. For example, a nil map behaves like
 an empty map:</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
@@ -614,7 +614,7 @@ if you try to add any data on it a panic will occur:</p>
 	<span style="color:#a6e22e">a</span>[<span style="color:#e6db74">&#34;hi&#34;</span>] = <span style="color:#e6db74">&#34;a&#34;</span>
 }
 </code></pre></div><p>Which makes me consider its usefulness, I used this on a lot of my tests, since I knew the
-map would be read only. But I'm still not sure if it is a good choice, there is no way to communicate
+map would be read only. But I&rsquo;m still not sure if it is a good choice, there is no way to communicate
 that a map is read only, and the minimal change on the behaviour of the code can cause
 a panic.</p>
 <p>But that is not even why I started to write this, I had an interesting experience
@@ -635,7 +635,7 @@ was also required to report it and coalesce the errors.</p>
 <p>So the caller should receive a nil error if everything went ok, and an error if any of
 the operations failed, or both.</p>
 <p>This is a very interesting situation (and not a very common one for me) because it is
-where Go's simple errors as values decisions shines. Doing this kind of thing with exceptions
+where Go&rsquo;s simple errors as values decisions shines. Doing this kind of thing with exceptions
 would be pretty clumsy, at least with my knowledge of exceptions, with Go it seemed that
 code would be pretty clean, and in the end it was, and I believe that more experienced
 developers can even come with better solutions than mine. But before a definitive 
@@ -718,7 +718,7 @@ I check err == nil on the error returned by <strong>returnsErrors</strong> the e
 }
 </code></pre></div><p>Why the hell are they doing that check on a range of kinds and chaining with a value.IsNil() ?
 The answer is on how interfaces behaves with nil. A pretty good source on that is this
-<a href="http://research.swtch.com/interfaces">Russ Cox post about interfaces</a>, I'm going to
+<a href="http://research.swtch.com/interfaces">Russ Cox post about interfaces</a>, I&rsquo;m going to
 try to explain at least what was happening with me based on what I learned there.</p>
 <h1 id="what-is-a-nil-interface-">What is a nil interface ?</h1>
 <p>Well, a nil interface would be this:</p>
