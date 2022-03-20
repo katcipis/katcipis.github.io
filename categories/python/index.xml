@@ -17,7 +17,7 @@
       <pubDate>Sun, 14 Oct 2018 00:00:00 +0000</pubDate>
       
       <guid>https://katcipis.github.io/blog/python3-utf8-locale/</guid>
-      <description>Python 3, UTF-8 and Locale This post will explore a problem that I had with Python 3 and UTF-8 strings that caught me by surprise and has the objective of helping other people to don&#39;t be caught on the same trap.
+      <description>Python 3, UTF-8 and Locale This post will explore a problem that I had with Python 3 and UTF-8 strings that caught me by surprise and has the objective of helping other people to don&amp;rsquo;t be caught on the same trap.
 It is not intended to be a rant against Python, but to be honest the problem and the behavior did not make me too happy about Python. Perhaps it was my failure in finding the proper documentation about it, but for people as stupid as I am it may help.</description>
     </item>
     
