@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<script src="wasm_exec.js"></script>
+		<script>
+			const go = new Go();
+			WebAssembly.instantiateStreaming(fetch("playground.wasm"), go.importObject).then((result) => {
+				go.run(result.instance);
+			});
+		</script>
+                <style>
+                .button {
+                  border: none;
+                  color: white;
+                  padding: 15px 32px;
+                  text-align: center;
+                  text-decoration: none;
+                  display: inline-block;
+                  font-size: 16px;
+                  margin: 4px 2px;
+                  cursor: pointer;
+                }
+                .validate {background-color: #008CBA;} /* Blue */
+                </style>
+	</head>
+	<body>
+            <textarea id="code" name="code" autocorrect="off" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Try HCL" wrap="off" style="width: 700px; height: 900px">
+// You can edit this code!
+// Click here and start typing.
+
+string = "hi"
+bool   = true
+list   = []
+obj    = {}</textarea>
+            <textarea id="formatted" name="formatted" autocorrect="off" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Formatted" wrap="off" style="width: 700px; height: 900px">
+// On validation formatted code will be shown here</textarea>
+            <br>
+            <button id="validate" class="button validate">Validate</button>
+            <br>
+            <textarea id="errors" name="errors" autocorrect="off" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Formatted" wrap="off" style="width: 1400px; height: 200px">
+On validation, errors if any will be shown here</textarea>
+	</body>
+</html>
